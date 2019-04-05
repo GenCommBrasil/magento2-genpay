@@ -1,0 +1,25 @@
+{
+  "name": "rakuten/rakutenpay",
+  "authors": [
+    {
+      "name": "Rakuten Digital Commerce",
+      "email": "paytech@rakuten.com.br",
+      "homepage": "https://digitalcommerce.rakuten.com.br/"
+    }
+  ],
+  "description": "Payment Base Module",
+  "require": {
+    "php": "7.0.2|7.0.4|~7.0.6|~7.1.0",
+    "magento/magento-composer-installer": "*"
+  },
+  "type": "magento2-module",
+  "version": "1.0.0",
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Rakuten\\RakutenPay\\": ""
+    }
+  }
+}

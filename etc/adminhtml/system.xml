@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="payment">
+            <group id="rakutenpay" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label><![CDATA[<div class="rakutenpay-payment-logo"></div><div class="rakutenpay-payment-byline"><b>RakutenPay Payment Method</b><br/>Express payment method.<br/>Configure using your credentials created on RakutenPay to use the service.</div>]]></label>
+                <fieldset_css>complex rakutenpay-payment-section</fieldset_css>
+                <frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
+                <field id="version" type="text" translate="label comment" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <frontend_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\Form\Version</frontend_model>
+                </field>
+                <group id="rakutenpay_configuration" translate="label" type="text" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Configuration</label>
+                    <field id="environment" translate="label comment" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Environment</label>
+                        <source_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\Environment</source_model>
+                        <comment>For testing use the sandbox environment.</comment>
+                    </field>
+                    <field id="document" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Document/CNPJ</label>
+                        <validate>required-entry validate-number</validate>
+                        <comment>CNPJ number.</comment>
+                    </field>
+                    <field id="api_key" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>API Key</label>
+                        <validate>required-entry</validate>
+                        <comment>API generated on Rakuten.</comment>
+                    </field>
+                    <field id="signature_key" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Signature Key</label>
+                        <validate>required-entry</validate>
+                        <comment>Signature generated on Rakuten.</comment>
+                    </field>
+                    <field id="email" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Email</label>
+                        <validate>required-entry validate-email</validate>
+                        <comment>Email registered with Rakuten.</comment>
+                    </field>
+                </group>
+                <group id="rakutenpay_billet" translate="label" type="text" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Boleto</label>
+                    <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    </field>
+                    <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Title</label>
+                    </field>
+                    <field id="expiration" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Days due</label>
+                        <comment>Consecutive days.</comment>
+                        <validate>required-entry validate-number</validate>
+                    </field>
+                </group>
+                <group id="rakutenpay_cc" translate="label" type="text" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Cartão de Crédito</label>
+                    <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Enable</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    </field>
+                    <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Title</label>
+                    </field>
+                    <group id="installments" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Installment and interest</label>
+                        <field id="installments_active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Enable installment</label>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        </field>
+                        <field id="customer_interest" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Enable customer interest</label>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <depends>
+                                <field id="installments_active">1</field>
+                            </depends>
+                        </field>
+                        <field id="customer_interest_minimum_installments" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Minimum value of interest installment</label>
+                            <source_model>Rakuten\RakutenPay\Model\Config\Source\MinimumInterestInstallment</source_model>
+                            <depends>
+                                <field id="customer_interest">1</field>
+                            </depends>
+                        </field>
+                        <field id="minimum_installments" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Minimum value of installment</label>
+                            <depends>
+                                <field id="installments_active">1</field>
+                                <field id="customer_interest">0</field>
+                            </depends>
+                        </field>
+                        <field id="maximum_installments_quantity" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Maximum value of installment quantity</label>
+                            <depends>
+                                <field id="installments_active">1</field>
+                                <field id="customer_interest">0</field>
+                            </depends>
+                        </field>
+                    </group>
+                </group>
+            </group>
+        </section>
+    </system>
+</config>
