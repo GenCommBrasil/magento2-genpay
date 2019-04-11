@@ -5,7 +5,7 @@
             <block  class="Rakuten\RakutenPay\Block\Frontend\RequireJS"
                     before="-"
                     name="checkout.rakutenpay.rpay"
-                    template="page/require.phtml"
+                    template="page/js/require-js.phtml"
                     cacheable="false" />
         </referenceBlock>
         <referenceBlock name="checkout.root">
