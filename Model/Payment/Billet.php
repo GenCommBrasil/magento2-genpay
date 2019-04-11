@@ -1,14 +1,10 @@
 <?php
 namespace Rakuten\RakutenPay\Model\Payment;
 
-use Magento\Framework\UrlInterface;
-use \Magento\Payment\Model\Method\AbstractMethod;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Model\Order;
-use \Magento\Framework\Exception\LocalizedException;
-use \Magento\Sales\Model\Order\Payment;
-use \Moip\Moip;
-use \Moip\Auth\BasicAuth;
-
+use Magento\Sales\Model\Order\Payment;
+use Rakuten\RakutenPay\Enum\PaymentMethod;
 
 class Billet extends \Magento\Payment\Model\Method\Cc
 {
@@ -16,7 +12,7 @@ class Billet extends \Magento\Payment\Model\Method\Cc
     protected $_canAuthorize = true;
     protected $_canCapture = true;
     protected $_canRefund = true;
-    protected $_code = 'rakutenpay_billet';
+    protected $_code = PaymentMethod::BILLET_CODE;
     protected $_isGateway               = true;
     protected $_canCapturePartial       = true;
     protected $_canRefundInvoicePartial = true;
@@ -83,7 +79,6 @@ class Billet extends \Magento\Payment\Model\Method\Cc
         return $this;
     }
 
-
     /**
      * Payment authorize
      *
@@ -97,8 +92,7 @@ class Billet extends \Magento\Payment\Model\Method\Cc
         //parent::authorize($payment, $amount);
         $order = $payment->getOrder();
 
-        try{
-
+        try {
             if ($amount <= 0) {
                 throw new LocalizedException(__('Invalid amount for authorization.'));
             }
@@ -109,7 +103,6 @@ class Billet extends \Magento\Payment\Model\Method\Cc
 
             $customerMoip 	= $this->_moipHelper->generateCustomerMoip($order);
             $this->_logger->debug(print_r($customerMoip, true));
-
 
             try {
                 $items 				= $this->_cart->getQuote()->getAllItems();
@@ -123,7 +116,6 @@ class Billet extends \Magento\Payment\Model\Method\Cc
                 $discountPriceMoip 	= $this->_moipHelper->addDiscountPriceMoip($moipOrder, $order);
 
                 $additionalPrice	= $this->_moipHelper->addAdditionalPriceMoip($moipOrder, $order);
-
 
                 $moipOrder->setCustomer($customerMoip);
                 $moipOrder->create();
@@ -142,19 +134,16 @@ class Billet extends \Magento\Payment\Model\Method\Cc
                     'Order' => json_encode($moipOrder)
                 ];
 
-
                 $payment->setTransactionId($moipOrder->getId())
 
                     ->setIsTransactionClosed(1)
                     ->setIsTransactionPending(1)
                     ->setTransactionAdditionalInfo('raw_details_info', $data_payment);
                 $this->getInfoInstance()->setAdditionalInformation($data_payment);
-
-
-            }catch(\Exception $e) {
-                throw new LocalizedException(__( $e->getMessage()));
+            } catch (\Exception $e) {
+                throw new LocalizedException(__($e->getMessage()));
             }
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             throw new LocalizedException(__($e->getMessage()));
         }
         return $this;
@@ -166,7 +155,6 @@ class Billet extends \Magento\Payment\Model\Method\Cc
         $order = $payment->getOrder();
         $description_for_store = "Pagamento negado pelo admin";
         $order->registerCancellation($description_for_store);
-
     }
 
     public function acceptPayment(\Magento\Payment\Model\InfoInterface $payment)
@@ -175,10 +163,7 @@ class Billet extends \Magento\Payment\Model\Method\Cc
         $order = $payment->getOrder();
         $order->getPayment()->capture(null);
         $order->save();
-
     }
-
-
 
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {

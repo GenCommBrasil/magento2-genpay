@@ -8,6 +8,7 @@ use Magento\Sales\Model\Order\Config;
 use Magento\Framework\App\Http\Context as HttpContext;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Rakuten\RakutenPay\Enum\Environment;
 
 class RequireJS extends Template
 {
@@ -52,12 +53,10 @@ class RequireJS extends Template
      */
     public function getRPay()
     {
-        $environment = $this->scopeConfig->getValue('payment/rakutenpay_configuration/environment');
-        //TODO remove file
-        file_put_contents('var/log/test.txt', var_export($environment, true));
-
-        if (true) {
-            return "assada";
+        $environment = $this->scopeConfig->getValue('payment/rakutenpay/rakutenpay_configuration/environment');
+        //TODO rakuten-sdk-php
+        if ($environment == Environment::SANDBOX) {
+            return "https://static.rakutenpay.com.br/rpayjs/rpay-latest.dev.min.js";
         }
         return "https://static.rakutenpay.com.br/rpayjs/rpay-latest.min.js";
     }

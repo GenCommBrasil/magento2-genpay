@@ -22,13 +22,14 @@
             <!-- ko template: getTemplate() --><!-- /ko -->
             <!--/ko-->
         </div>
-        <form class="form" id ="rakutenpay-billet-form" method="post">
+        <form class="form" data-bind="attr: {id: getCode() + '-form'}" method="post">
             <fieldset data-bind="attr: {class: 'fieldset payment items ccard ' + getCode(), id: 'payment_form_' + getCode()}">
 
                 <input type="hidden"
                        class="rakutenFingerprint"
-                       value="" name="payment[fingerprint]"
-                       data-bind="attr: {id: getCode() + '_hash', 'data-container': getCode() + '-_hash'}" />
+                       value=""
+                       name="payment[fingerprint]"
+                       data-bind="attr: {id: getCode() + '_fingerprint', 'data-container': getCode() + '-fingerprint'}" />
 
                 <div class="field number required">
 
@@ -43,12 +44,12 @@
                                maxlength="18"
                                onblur="validateDocument(this)"
                                onkeydown="documentMask(event, this)"
+                               data-validate="{'required-entry':true, 'validate-document':true, 'required':true, 'validate-fingerprint':true}"
                                data-bind="attr: {
                                 autocomplete: off,
                                 id: 'tax_number',
                                 title: $t('CPF ou CNPJ'),
-                                'data-container': 'tax-number',
-                                'data-validate': JSON.stringify({'teste': '99', 'required-number':true, 'teste':'#' + getCode() + '_tax_number'})},
+                                'data-container': 'tax-number'},
                                 value: taxNumber,
                               valueUpdate: 'afterkeydown' "/>
                     </div>

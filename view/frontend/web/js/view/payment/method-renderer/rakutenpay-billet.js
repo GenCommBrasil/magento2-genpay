@@ -11,8 +11,8 @@ define(
         'ko',
         'Magento_Checkout/js/view/payment/default',
         'Rakuten_RakutenPay/js/model/custom',
-        'Rakuten_RakutenPay/js/model/billet',
-        'Magento_Checkout/js/model/payment/additional-validators'
+        'Magento_Checkout/js/model/payment/additional-validators',
+        'mage/translate'
     ],
     function (
         _,
@@ -20,7 +20,6 @@ define(
         ko,
         Component,
         custom,
-        billet,
         additionalValidators
         ) {
         'use strict';
@@ -28,7 +27,9 @@ define(
         return Component.extend({
             defaults: {
                 template: 'Rakuten_RakutenPay/payment/billet',
-                taxNumber: ''
+                taxNumber: '',
+                $fingerprint: null,
+                fingerprintSelector: '#rakutenpay_billet_fingerprint'
             },
 
             initObservable: function () {
@@ -46,30 +47,43 @@ define(
                 var self = this;
                 //Set credit card number to credit card data object
                 this.taxNumber.subscribe(function (value) {
+                    self.$fingerprint = $(self.fingerprintSelector);
 
                     if (value === '' || value === null) {
                         return false;
                     }
 
-                    generateFingerprint();
+                    if (self.$fingerprint.val() === '') {
+                        generateFingerprint();
+                    }
+
                     return true;
-                    // result = cardNumberValidator(value);
                 });
             },
 
-             /** Returns send check to info */
+            /** Returns send check to info */
             getInstruction: function() {
-                return window.checkoutConfig.payment.moipboleto.instruction;
+                return window.checkoutConfig.payment.rakutenpay_billet.instruction;
             },
 
             /** Returns payable to info */
             getDue: function() {
-                return "TESTE DOS TESTES";
+                return window.checkoutConfig.payment.rakutenpay_billet.due;
             },
 
             getCode: function() {
-                return 'rakutenpay_billet';
+                return window.checkoutConfig.payment.rakutenpay_billet.code;
             },
+
+            /** Return Title */
+            getTitle: function() {
+                return window.checkoutConfig.payment.rakutenpay_billet.title;
+            },
+
+            validate: function () {
+                var $form = $('#' + this.getCode() + '-form');
+                return $form.validation() && $form.validation('isValid');
+            }
         });
     }
 );
