@@ -29,11 +29,11 @@
                         <comment>API generated on Rakuten.</comment>
                         <config_path>payment/rakutenpay_configuration/api_key</config_path>
                     </field>
-                    <field id="signature_key" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="signature" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Signature Key</label>
                         <validate>required-entry</validate>
                         <comment>Signature generated on Rakuten.</comment>
-                        <config_path>payment/rakutenpay_configuration/signature_key</config_path>
+                        <config_path>payment/rakutenpay_configuration/signature</config_path>
                     </field>
                     <field id="email" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Email</label>

@@ -54,10 +54,11 @@ class RequireJS extends Template
     public function getRPay()
     {
         $environment = $this->scopeConfig->getValue('payment/rakutenpay/rakutenpay_configuration/environment');
-        //TODO rakuten-sdk-php
         if ($environment == Environment::SANDBOX) {
-            return "https://static.rakutenpay.com.br/rpayjs/rpay-latest.dev.min.js";
+
+            return Environment::RPAY_SANDBOX;
         }
-        return "https://static.rakutenpay.com.br/rpayjs/rpay-latest.min.js";
+
+        return Environment::RPAY_PRODUCTION;
     }
 }
