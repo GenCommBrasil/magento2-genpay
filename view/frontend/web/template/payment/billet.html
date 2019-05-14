@@ -47,7 +47,7 @@
                                data-validate="{'required-entry':true, 'validate-document':true, 'required':true, 'validate-fingerprint':true}"
                                data-bind="attr: {
                                 autocomplete: off,
-                                id: 'tax_number',
+                                id: getCode() + '_tax_number',
                                 title: $t('CPF ou CNPJ'),
                                 'data-container': 'tax-number'},
                                 value: taxNumber,

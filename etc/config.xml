@@ -8,8 +8,9 @@
                 <environment>sandbox</environment>
                 <document>document</document>
                 <api_key>api_key</api_key>
-                <signature_key>signature_key</signature_key>
+                <signature>signature</signature>
                 <email>email</email>
+                <notification>{{base_url}}rakutenpay/notification/webhook/</notification>
             </rakutenpay_configuration>
             <rakutenpay_billet>
                 <active>0</active>

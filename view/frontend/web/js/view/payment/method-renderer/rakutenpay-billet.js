@@ -6,21 +6,26 @@
 /*global define*/
 define(
     [
-        'underscore',
         'jquery',
-        'ko',
         'Magento_Checkout/js/view/payment/default',
+        'Magento_Checkout/js/model/quote',
+        'Magento_Checkout/js/model/full-screen-loader',
+        'Magento_Checkout/js/action/set-payment-information',
+        'Magento_Checkout/js/action/place-order',
         'Rakuten_RakutenPay/js/model/custom',
         'Magento_Checkout/js/model/payment/additional-validators',
         'mage/translate'
     ],
     function (
-        _,
         $,
-        ko,
         Component,
+        quote,
+        fullScreenLoader,
+        setPaymentInformationAction,
+        placeOrder,
         custom,
-        additionalValidators
+        additionalValidators,
+        translate
         ) {
         'use strict';
 
@@ -78,6 +83,39 @@ define(
             /** Return Title */
             getTitle: function() {
                 return window.checkoutConfig.payment.rakutenpay_billet.title;
+            },
+
+            /**
+             * @override
+             */
+            placeOrder: function () {
+                var self = this;
+                var paymentData = quote.paymentMethod();
+                var messageContainer = this.messageContainer;
+                fullScreenLoader.startLoader();
+                this.isPlaceOrderActionAllowed(false);
+                if (! self.validate()) {
+                    fullScreenLoader.stopLoader();
+                    this.isPlaceOrderActionAllowed(true);
+                    return;
+                }
+
+                $.when(setPaymentInformationAction(this.messageContainer, {
+                    'method': self.getCode(),
+                    'additional_data': {
+                        'billet_document': jQuery('#'+this.getCode()+'_tax_number').val(),
+                        'fingerprint': jQuery('#'+this.getCode()+'_fingerprint').val()
+                    }
+                })).done(function () {
+                    delete paymentData['title'];
+                    $.when(placeOrder(paymentData, messageContainer)).done(function () {
+                        $.mage.redirect(window.checkoutConfig.payment.rakutenpay_billet.url);
+                    });
+                }).fail(function () {
+                    self.isPlaceOrderActionAllowed(true);
+                }).always(function(){
+                    fullScreenLoader.stopLoader();
+                });
             },
 
             validate: function () {

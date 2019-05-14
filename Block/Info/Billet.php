@@ -2,40 +2,23 @@
 
 namespace Rakuten\RakutenPay\Block\Info;
 
+/**
+ * Class Billet
+ * @package Rakuten\RakutenPay\Block\Info
+ */
 class Billet extends \Magento\Payment\Block\Info
 {
+    protected $_template = 'Rakuten_RakutenPay::info/billet.phtml';
 
-    protected $_template = 'Moip_Magento2::info/boleto.phtml';
+    /**
+     * @return mixed
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getBilletUrl()
+    {
+        $info = $this->getInfo();
+        $billetUrl = $info->getAdditionalInformation('billet_url');
 
-
-    public function getLinkPay(){
-        $_info = $this->getInfo();
-        $transactionId = $_info->getAdditionalInformation('href_boleto');
-
-        return $transactionId;
+        return $billetUrl;
     }
-
-    public function getLinkPrintPay(){
-        $_info = $this->getInfo();
-        $transactionId = $_info->getAdditionalInformation('href_boleto_print');
-
-        return $transactionId;
-    }
-
-    public function getLineCodeBoleto(){
-        $_info = $this->getInfo();
-        $transactionId = $_info->getAdditionalInformation('line_code_boleto');
-
-        return $transactionId;
-    }
-
-    public function getExpirationDateBoleto(){
-        $_info = $this->getInfo();
-        $transactionId = $_info->getAdditionalInformation('expiration_date_boleto');
-
-        return $transactionId;
-    }
-
-
-
 }

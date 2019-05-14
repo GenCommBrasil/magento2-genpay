@@ -25,6 +25,11 @@ class Billet implements ConfigProviderInterface
     protected $scopeConfig;
 
     /**
+     * @var \Rakuten\RakutenPay\Model\Payment\Billet
+     */
+    protected $billetMethod;
+
+    /**
      * Billet constructor.
      * @param PaymentHelper $paymentHelper
      * @param Escaper $escaper
@@ -39,6 +44,7 @@ class Billet implements ConfigProviderInterface
         $this->escaper = $escaper;
         $this->method = $paymentHelper->getMethodInstance(PaymentMethod::BILLET_CODE);
         $this->scopeConfig = $scopeConfig;
+        $this->billetMethod = $paymentHelper->getMethodInstance(PaymentMethod::BILLET_CODE);
     }
 
     /**
@@ -49,6 +55,7 @@ class Billet implements ConfigProviderInterface
         return $this->method->isAvailable() ? [
             'payment' => [
                 'rakutenpay_billet' => [
+                    'url' => $this->billetMethod->getCheckoutPaymentUrl(),
                     'instruction' =>  $this->getInstruction(),
                     'due' => $this->getDue(),
                     'title' => $this->getTitle(),
@@ -63,7 +70,7 @@ class Billet implements ConfigProviderInterface
      */
     protected function getTitle()
     {
-        return $this->scopeConfig->getValue('payment/rakutenpay_billet/title');
+        return $this->scopeConfig->getValue('payment/rakutenpay_billet/title', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -73,7 +80,7 @@ class Billet implements ConfigProviderInterface
      */
     protected function getInstruction()
     {
-        return nl2br($this->escaper->escapeHtml($this->scopeConfig->getValue("payment/rakutenpay_billet/instruction")));
+        return nl2br($this->escaper->escapeHtml($this->scopeConfig->getValue('payment/rakutenpay_billet/instruction', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)));
     }
 
     /**
@@ -83,7 +90,7 @@ class Billet implements ConfigProviderInterface
      */
     protected function getDue()
     {
-        $day = (int)$this->scopeConfig->getValue("payment/rakutenpay_billet/expiration");
+        $day = (int)$this->scopeConfig->getValue('payment/rakutenpay_billet/expiration', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         if ($day > 1) {
             return nl2br(sprintf(__('Expiration in %s days'), $day));
         } else {
