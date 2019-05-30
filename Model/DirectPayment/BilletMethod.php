@@ -3,6 +3,7 @@
 namespace Rakuten\RakutenPay\Model\DirectPayment;
 
 use Rakuten\Connector\Exception\RakutenException;
+use Rakuten\Connector\Helper\StringFormat;
 use Rakuten\Connector\Parser\Error;
 use Rakuten\Connector\Parser\RakutenPay\Transaction\Billet;
 
@@ -57,11 +58,11 @@ class BilletMethod extends PaymentMethod implements Payment
      */
     protected function setBilletDocument()
     {
-        $this->rakutenPayCustomer->setDocument($this->customerPaymentData['billet_document']);
+        $this->rakutenPayCustomer->setDocument(StringFormat::getOnlyNumbers($this->customerPaymentData['billetDocument']));
     }
 
     /**
-     * @return false|Error|Billet|\Rakuten\Connector\Parser\RakutenPay\Transaction\CreditCard
+     * @return false|Error|Billet
      * @throws \Exception
      */
     public function createOrder()
@@ -75,10 +76,7 @@ class BilletMethod extends PaymentMethod implements Payment
 
         if ($response instanceof Billet) {
             $this->setAdditionInformation($response);
-
-            return $response;
         }
-        $this->cancelOrder($response->getMessage());
 
         return $response;
     }

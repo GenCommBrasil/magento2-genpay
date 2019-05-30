@@ -3,8 +3,10 @@
 namespace Rakuten\RakutenPay\Controller\Payment;
 
 use Rakuten\Connector\Exception\RakutenException;
+use Rakuten\Connector\Parser\Error;
 use Rakuten\RakutenPay\Enum\PaymentMethod;
 use Rakuten\RakutenPay\Model\DirectPayment\BilletMethod;
+use Rakuten\RakutenPay\Model\DirectPayment\CreditCardMethod;
 
 /**
  * Class Request
@@ -62,27 +64,27 @@ class Request extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         $lastRealOrder = $this->_checkoutSession->getLastRealOrder();
+        $result = null;
+        try {
+            if (is_null($lastRealOrder->getPayment())) {
+                throw new \Magento\Framework\Exception\NotFoundException(__('No order associated.'));
+            }
 
-        if (is_null($lastRealOrder->getPayment())) {
-            throw new \Magento\Framework\Exception\NotFoundException(__('No order associated.'));
-        }
+            $paymentData = $lastRealOrder->getPayment()->getData();
+            $this->orderId = $lastRealOrder->getId();
+            $this->order = $this->loadOrder($this->orderId);
+            $this->clearAdditionalInformation();
+            if (is_null($this->orderId)) {
+                throw new RakutenException("There is not order associated with this session.");
+            }
 
-        $paymentData = $lastRealOrder->getPayment()->getData();
-        $this->orderId = $lastRealOrder->getId();
-        $this->order = $this->loadOrder($this->orderId);
-        $this->clearAdditionalInformation();
+            if ($lastRealOrder->getPayment()->getMethod() === PaymentMethod::BILLET_CODE) {
 
-        if ($lastRealOrder->getPayment()->getMethod() === PaymentMethod::BILLET_CODE) {
-            try {
-
-                if (is_null($this->orderId)) {
-                    throw new RakutenException("There is not order associated with this session.");
-                }
-
-                if (! isset($paymentData['additional_information']['billet_document'])
-                    || ! isset($paymentData['additional_information']['fingerprint'])) {
-                    throw new RakutenException("Error missing billet_document or fingerprint Request Controller");
-                }
+                $customerPaymentData = [
+                    'billetDocument' => $paymentData['additional_information']['billet_document'],
+                    'fingerprint' => $paymentData['additional_information']['fingerprint'],
+                    'orderId' => $this->orderId
+                ];
 
                 $billet = new BilletMethod(
                     $this->_objectManager->create('Magento\Directory\Api\CountryInformationAcquirerInterface'),
@@ -90,20 +92,50 @@ class Request extends \Magento\Framework\App\Action\Action
                     $this->_objectManager,
                     $this->order,
                     $this->rakutenHelper,
-                    $data = [
-                        'billet_document' => $paymentData['additional_information']['billet_document'],
-                        'fingerprint' => $paymentData['additional_information']['fingerprint'],
-                        'order_id' => $this->orderId
-                    ]
+                    $customerPaymentData
                 );
-                $billet->createOrder();
-
-                return $this->_redirect('checkout/onepage/success');
-            } catch (\Exception $exception) {
-                $this->cancelOrder($exception->getMessage());
-                $this->whenError($exception->getMessage());
-                return $this->_redirect('rakutenpay/payment/failure');
+                $result = $billet->createOrder();
             }
+
+            if ($lastRealOrder->getPayment()->getMethod() === PaymentMethod::CREDIT_CARD_CODE) {
+
+                $customerPaymentData = [
+                    'fingerprint' => $paymentData['additional_information']['fingerprint'],
+                    'creditCardCode' => $paymentData['additional_information']['credit_card_code'],
+                    'creditCardHolder' => $paymentData['additional_information']['credit_card_holder'],
+                    'creditCardDocument' => $paymentData['additional_information']['credit_card_document'],
+                    'creditCardToken' => $paymentData['additional_information']['credit_card_token'],
+                    'creditCardBrand' => $paymentData['additional_information']['credit_card_brand'],
+                    'creditCardInstallment' => $paymentData['additional_information']['credit_card_installment'],
+                    'creditCardInstallmentValue' => $paymentData['additional_information']['credit_card_installment_value'],
+                    'creditCardInterestPercent' => $paymentData['additional_information']['creditCard_interest_percent'],
+                    'creditCardInterestAmount' => $paymentData['additional_information']['credit_card_interest_amount'],
+                    'creditCardInstallmentTotalValue' => $paymentData['additional_information']['credit_card_installment_total_value'],
+                    'orderId' => $this->orderId
+                ];
+
+                $creditCard = new CreditCardMethod(
+                    $this->_objectManager->create('Magento\Directory\Api\CountryInformationAcquirerInterface'),
+                    $this->_objectManager->create('Magento\Framework\App\Config\ScopeConfigInterface'),
+                    $this->_objectManager,
+                    $this->order,
+                    $this->rakutenHelper,
+                    $customerPaymentData
+                );
+
+                $result = $creditCard->createOrder();
+            }
+
+            if ($result instanceof Error) {
+                $this->cancelOrder($result->getMessage());
+                $this->whenError($result->getMessage());
+            }
+
+            return $this->_redirect('checkout/onepage/success');
+        } catch (\Exception $exception) {
+            $this->cancelOrder($exception->getMessage());
+            $this->whenError($exception->getMessage());
+            return $this->_redirect('rakutenpay/payment/failure');
         }
     }
 

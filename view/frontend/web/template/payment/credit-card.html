@@ -1,0 +1,254 @@
+<div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
+
+    <div class="payment-method-title field choice">
+        <input type="radio"
+               name="payment[method]"
+               class="radio"
+               data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
+        <label data-bind="attr: {'for': getCode()}" class="label"><span data-bind="text: getTitle()"></span></label>
+    </div>
+
+    <div class="payment-method-content">
+        <div class="payment-method-billing-address">
+            <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+        <form class="form" data-bind="attr: {id: getCode() + '-form'}" method="post">
+            <div id="rakutenpay-cc-method-div"></div>
+            <fieldset data-bind="attr: {class: 'fieldset payment items ccard ' + getCode(), id: getCode() + '_payment_form'}">
+
+                <input type="hidden"
+                       class="rakutenFingerprint"
+                       value=""
+                       name="payment[fingerprint]"
+                       data-bind="attr: {id: getCode() + '_fingerprint', 'data-container': getCode() + '-fingerprint'}" />
+
+                <input type="hidden"
+                       value=""
+                       name="payment[credit_card_token]"
+                       data-bind="attr: {id: getCode() + '_creditCardToken', 'data-container': getCode() + '-creditCardToken'}" />
+
+                <input type="hidden"
+                       value=""
+                       name="payment[credit_card_brand]"
+                       data-bind="attr: {id: getCode() + '_creditCardBrand', 'data-container': getCode() + '-creditCardBrand'}" />
+
+                <input type="hidden"
+                       value=""
+                       name="payment[credit_card_installment]"
+                       data-bind="attr: {id: getCode() + '_creditCardInstallment', 'data-container': getCode() + '-creditCardInstallment'}" />
+
+                <input type="hidden"
+                       value=""
+                       name="payment[credit_card_installment_value]"
+                       data-bind="attr: {id: getCode() + '_creditCardInstallmentValue', 'data-container': getCode() + '-creditCardInstallmentValue'}" />
+
+                <input type="hidden"
+                       value=""
+                       name="payment[credit_card_interest_percent]"
+                       data-bind="attr: {id: getCode() + '_creditCardInterestPercent', 'data-container': getCode() + '-creditCardInterestPercent'}" />
+
+                <input type="hidden"
+                       value=""
+                       name="payment[credit_card_interest_amount]"
+                       data-bind="attr: {id: getCode() + '_creditCardInterestAmount', 'data-container': getCode() + '-creditCardInterestAmount'}" />
+
+                <input type="hidden"
+                       value=""
+                       name="payment[credit_card_installment_total_value]"
+                       data-bind="attr: {id: getCode() + '_creditCardInstallmentTotalValue', 'data-container': getCode() + '-creditCardInstallmentTotalValue'}" />
+
+                <div class="field number required">
+
+                    <label data-bind="attr: {for: getCode() + '_creditCardNumber'}" class="label">
+                        <span><!-- ko i18n: 'Credit Card Number'--><!-- /ko --></span>
+                    </label>
+                    <div class="control">
+                        <input type="text"
+                               name="payment[credit_card_number]"
+                               class="input-text"
+                               value=""
+                               maxlength="19"
+                               onblur="creditCardMask(event, this); getBrand(this);"
+                               onkeydown="creditCardMask(event, this)"
+                               data-validate="{'required-entry':true, 'required':true, 'validate-credit-card-number':true, 'validate-rakutenpay-form':true}"
+                               data-bind="attr: {
+                                autocomplete: off,
+                                id: getCode() + '_creditCardNumber',
+                                title: $t('Credit Card Number'),
+                                'data-container': '-creditCardNumber'},
+                                value: creditCardNumber,
+                              valueUpdate: 'keyup' "/>
+                    </div>
+                </div>
+
+                <div class="field cvv required">
+
+                    <label data-bind="attr: {for: getCode() + '_creditCardCode'}" class="label">
+                        <span><!-- ko i18n: 'Credit Card CVV'--><!-- /ko --></span>
+                    </label>
+                    <div class="control">
+                        <input type="text"
+                               name="payment[credit_card_code]"
+                               class="input-text"
+                               data-rkp="card-cvv"
+                               minlength="3"
+                               maxlength="4"
+                               onkeydown="creditCardCodeMask(event, this)"
+                               onblur="creditCardCodeMask(event, this);"
+                               data-validate="{'required-entry':true, 'required':true, 'validate-card-code':true}"
+                               data-bind="attr: {
+                                autocomplete: off,
+                                id: getCode() + '_creditCardCode',
+                                title: $t('Credit Card CVV'),
+                                'data-container': '-creditCardCode'},
+                                value: creditCardCode,
+                              valueUpdate: 'keyup' "/>
+                    </div>
+                </div>
+
+                <div class="field date required" data-bind="attr: {id: getCode() + '_credit_card_type_exp_div'}">
+                    <label data-bind="attr: {for: getCode() + '_expiration'}" class="label">
+                        <span><!-- ko i18n: 'Expiration Date'--><!-- /ko --></span>
+                    </label>
+                    <div class="control">
+                        <div class="fields group group-2">
+                            <div class="field no-label month">
+                                <div class="control">
+                                    <select
+                                        name="rakutenpay_credit_card_creditCardExpirationMonth"
+                                        class="select select-month"
+                                        data-rkp="card-expiration-month"
+                                        data-validate="{'required':true, 'validate-card-date':true}"
+                                        data-bind="attr: {id: getCode() + '_creditCardExpirationMonth',
+                                            'data-container': getCode() + '-creditCardExpirationMonth'},
+                                            optionsText: 'month',
+                                            optionsCaption: $t('Month'),
+                                            value: creditCardExpirationMonth">
+                                        <option value="" disabled selected>Mês</option>
+                                        <option value="01">01</option>
+                                        <option value="02">02</option>
+                                        <option value="03">03</option>
+                                        <option value="04">04</option>
+                                        <option value="05">05</option>
+                                        <option value="06">06</option>
+                                        <option value="07">07</option>
+                                        <option value="08">08</option>
+                                        <option value="09">09</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="field no-label year">
+                                <div class="control">
+                                    <select name="rakutenpay_credit_card_creditCardExpirationYear"
+                                            class="select select-year"
+                                            data-rkp="card-expiration-year"
+                                            data-validate="{'required':true, 'validate-card-date':true}"
+                                            data-bind="attr: {id: getCode() + '_creditCardExpirationYear',
+                                                'data-container': getCode() + '-creditCardExpirationYear'},
+											   options: getYearValues(),
+											   optionsValue: 'value',
+											   optionsText: 'year',
+											   optionsCaption: $t('Year'),
+											   value: creditCardExpirationYear">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field name required">
+
+                    <label data-bind="attr: {for: getCode() + '_creditCardHolder'}" class="label">
+                        <span><!-- ko i18n: 'Card Holder Name'--><!-- /ko --></span>
+                    </label>
+                    <div class="control">
+                        <input type="text"
+                               name="payment[credit_card_holder]"
+                               class="input-text"
+                               data-rkp="card-holder-name"
+                               minlength="3"
+                               onkeydown="notNumberMask(event)"
+                               data-validate="{'required-entry':true, 'required':true, 'validate-card-holder':true}"
+                               data-bind="attr: {
+                                autocomplete: off,
+                                id: getCode() + '_creditCardHolder',
+                                title: $t('Card Holder Name'),
+                                'data-container': '-creditCardHolder'},
+                                value: creditCardHolder "/>
+                    </div>
+                </div>
+
+                <div class="field number required">
+
+                    <label data-bind="attr: {for: getCode() + '_creditCardDocument'}" class="label">
+                        <span><!-- ko i18n: 'CPF ou CNPJ'--><!-- /ko --></span>
+                    </label>
+                    <div class="control">
+                        <input type="text"
+                               name="payment[credit_card_document]"
+                               class="input-text"
+                               value=""
+                               maxlength="18"
+                               onkeydown="documentMask(event, this)"
+                               data-rkp="card-holder-document"
+                               data-validate="{'required-entry':true, 'validate-document':true, 'required':true}"
+                               data-bind="attr: {
+                                autocomplete: off,
+                                id: getCode() + '_creditCardDocument',
+                                title: $t('CPF ou CNPJ'),
+                                'data-container': getCode() + '-creditCardDocument'},
+                                value: creditCardDocument "/>
+                    </div>
+                </div>
+
+                <div class="field installment required">
+
+                    <label data-bind="attr: {for: getCode() + '_installments'}" class="label">
+                        <span><!-- ko i18n: 'Installments'--><!-- /ko --></span>
+                    </label>
+                    <div class="control">
+                        <select
+                            name="rakutenpay_credit_card_installments"
+                            class="select select-installments"
+                            data-validate="{'required-entry':true, 'validate-credit-card-installments':true, 'required':true}"
+                            data-bind="attr: {id: getCode() + '_installments',
+                                title: $t('Installments'),
+                                'data-container': getCode() + '-installments'},
+                                value: creditCardInstallments
+                            ">
+                            <option value="" disabled selected>Escolha o N° de parcelas</option>
+                        </select>
+                    </div>
+
+                </div>
+
+            </fieldset>
+        </form>
+        <div class="checkout-agreements-block">
+            <!-- ko foreach: $parent.getRegion('before-place-order') -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+        <div class="actions-toolbar" style="margin-top: 15px;">
+            <div class="primary">
+                <button class="action primary checkout"
+                        type="submit"
+                        data-bind="
+                        click: placeOrder,
+                        attr: {title: $t('Place Order')},
+                        css: {disabled: !isPlaceOrderActionAllowed()},
+                        enable: (getCode() == isChecked())
+                        "
+                        disabled>
+                    <span data-bind="text: $t('Place Order')"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

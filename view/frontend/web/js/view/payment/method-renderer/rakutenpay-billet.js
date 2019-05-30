@@ -50,7 +50,6 @@ define(
                 this._super();
 
                 var self = this;
-                //Set credit card number to credit card data object
                 this.taxNumber.subscribe(function (value) {
                     self.$fingerprint = $(self.fingerprintSelector);
 

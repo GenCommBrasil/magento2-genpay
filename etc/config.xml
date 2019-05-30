@@ -19,16 +19,16 @@
                 <expiration>3</expiration>
                 <instruction><![CDATA[Imprima o boleto e pague no banco ou na internet utilizando o seu código de barras. O boleto não será enviado ao seu endereço. Não parcelamos no boleto.]]></instruction>
             </rakutenpay_billet>
-            <rakutenpay_cc>
+            <rakutenpay_credit_card>
                 <active>0</active>
                 <group>rakutenpay</group>
-                <model>Rakuten\RakutenPay\Model\Payment\Billet</model>
+                <model>Rakuten\RakutenPay\Model\Payment\CreditCard</model>
                 <title>Rakuten Cartão de Crédito</title>
                 <installments_active>0</installments_active>
                 <customer_interest>0</customer_interest>
                 <minimum_installments>10</minimum_installments>
                 <maximum_installments_quantity>10</maximum_installments_quantity>
-            </rakutenpay_cc>
+            </rakutenpay_credit_card>
         </payment>
     </default>
 </config>

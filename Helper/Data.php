@@ -160,6 +160,52 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Check if installments show is enabled
+     * @return bool
+     */
+    public function isInstallments()
+    {
+        $isEnable = (int) $this->scopeConfig->getValue('payment/rakutenpay_credit_card/installments_active', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
+        return ($isEnable == 1) ? true : false;
+    }
+
+    /**
+     * Check if customer interest is enabled
+     * @return bool
+     */
+    public function isCustomerInterest()
+    {
+        $isEnable = (int) $this->scopeConfig->getValue('payment/rakutenpay_credit_card/customer_interest', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
+        return ($isEnable == 1) ? true : false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getCustomerInterestMinimum()
+    {
+        return $this->scopeConfig->getValue('payment/rakutenpay_credit_card/customer_interest_minimum_installments', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return bool
+     */
+    public function getMaxInstallmentsQuantity()
+    {
+        return $this->scopeConfig->getValue('payment/rakutenpay_credit_card/maximum_installments_quantity', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return bool
+     */
+    public function getMinimumInstallmentsValue()
+    {
+        return $this->scopeConfig->getValue('payment/rakutenpay_credit_card/minimum_installments', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
      * @return string
      */
     public function getPayerIp()

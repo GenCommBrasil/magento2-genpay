@@ -280,10 +280,4 @@ abstract class PaymentMethod
 
         return $street;
     }
-
-    //TODO Implements - CreditCard
-    protected function getTaxesAmount()
-    {
-        return '';
-    }
 }

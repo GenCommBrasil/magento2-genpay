@@ -32,6 +32,14 @@
                                                                         </item>
                                                                     </item>
                                                                 </item>
+                                                                <item name="rakutenpay_credit_card" xsi:type="array">
+                                                                    <item name="component" xsi:type="string">Rakuten_RakutenPay/js/view/payment/rakutenpay-credit-card</item>
+                                                                    <item name="methods" xsi:type="array">
+                                                                        <item name="rakutenpay_credit_card" xsi:type="array">
+                                                                            <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
+                                                                        </item>
+                                                                    </item>
+                                                                </item>
                                                             </item>
                                                         </item>
                                                     </item>
