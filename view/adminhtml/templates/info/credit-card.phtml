@@ -1,0 +1,19 @@
+<?php
+$creditCardNumber = $block->getCreditCardNumber();
+$brand = $block->getBrand();
+$installments = $block->getInstallments();
+$title = $block->escapeHtml($block->getMethod()->getTitle());
+?>
+<dl class="payment-method">
+    <dt class="title"><?php /* @noEscape */ echo $title; ?></dt>
+
+    <?php if ($creditCardNumber):?>
+        <b>Número: </b><?php echo $creditCardNumber; ?><br>
+    <?php endif;?>
+    <?php if ($brand):?>
+        <b>Bandeira: </b><?php echo $brand; ?><br>
+    <?php endif;?>
+    <?php if ($brand):?>
+        <b>Parcelas: </b><?php echo $installments; ?>x<br>
+    <?php endif;?>
+</dl>

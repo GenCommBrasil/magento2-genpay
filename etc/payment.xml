@@ -4,7 +4,7 @@
         <method name="rakutenpay_billet">
             <allow_multiple_address>1</allow_multiple_address>
         </method>
-        <method name="rakutenpay_cc">
+        <method name="rakutenpay_credit_card">
             <allow_multiple_address>1</allow_multiple_address>
         </method>
     </methods>

@@ -65,28 +65,28 @@
                         <config_path>payment/rakutenpay_billet/instruction</config_path>
                     </field>
                 </group>
-                <group id="rakutenpay_cc" translate="label" type="text" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
+                <group id="rakutenpay_credit_card" translate="label" type="text" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Cartão de Crédito</label>
                     <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Enable</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/rakutenpay_cc/active</config_path>
+                        <config_path>payment/rakutenpay_credit_card/active</config_path>
                     </field>
                     <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Title</label>
-                        <config_path>payment/rakutenpay_cc/title</config_path>
+                        <config_path>payment/rakutenpay_credit_card/title</config_path>
                     </field>
                     <group id="installments" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Installment and interest</label>
                         <field id="installments_active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Enable installment</label>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                            <config_path>payment/rakutenpay_cc/installments_active</config_path>
+                            <config_path>payment/rakutenpay_credit_card/installments_active</config_path>
                         </field>
                         <field id="customer_interest" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Enable customer interest</label>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                            <config_path>payment/rakutenpay_cc/customer_interest</config_path>
+                            <config_path>payment/rakutenpay_credit_card/customer_interest</config_path>
                             <depends>
                                 <field id="installments_active">1</field>
                             </depends>
@@ -94,14 +94,14 @@
                         <field id="customer_interest_minimum_installments" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Minimum value of interest installment</label>
                             <source_model>Rakuten\RakutenPay\Model\Config\Source\MinimumInterestInstallment</source_model>
-                            <config_path>payment/rakutenpay_cc/customer_interest_minimum_installments</config_path>
+                            <config_path>payment/rakutenpay_credit_card/customer_interest_minimum_installments</config_path>
                             <depends>
                                 <field id="customer_interest">1</field>
                             </depends>
                         </field>
                         <field id="minimum_installments" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Minimum value of installment</label>
-                            <config_path>payment/rakutenpay_cc/minimum_installments</config_path>
+                            <config_path>payment/rakutenpay_credit_card/minimum_installments</config_path>
                             <depends>
                                 <field id="installments_active">1</field>
                                 <field id="customer_interest">0</field>
@@ -109,7 +109,7 @@
                         </field>
                         <field id="maximum_installments_quantity" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Maximum value of installment quantity</label>
-                            <config_path>payment/rakutenpay_cc/maximum_installments_quantity</config_path>
+                            <config_path>payment/rakutenpay_credit_card/maximum_installments_quantity</config_path>
                             <depends>
                                 <field id="installments_active">1</field>
                                 <field id="customer_interest">0</field>

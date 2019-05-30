@@ -1,0 +1,12 @@
+<?php
+$billetUrl = $block->getBilletUrl();
+$title = $block->escapeHtml($block->getMethod()->getTitle());
+?>
+<dl class="payment-method">
+    <dt class="title"><?php /* @noEscape */ echo $title; ?></dt>
+
+    <?php if ($billetUrl):?>
+        <a class="action primary continue" href="<?php echo $block->getBilletUrl(); ?>"><span>Visualizar Boleto</span></a>
+    <?php endif;?>
+</dl>
+

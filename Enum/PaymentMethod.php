@@ -16,5 +16,5 @@ class PaymentMethod
     /**
      * string
      */
-    const CC_CODE = 'rakutenpay_cc';
+    const CREDIT_CARD_CODE = 'rakutenpay_credit_card';
 }

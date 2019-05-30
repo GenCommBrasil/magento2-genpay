@@ -23,14 +23,12 @@
 /** Generate Fingerprint */
 function generateFingerprint() {
     var rpay = new RPay();
-    console.log("call generateFingerprint");
     var fingerprintFields = document.querySelectorAll(".rakutenFingerprint");
     rpay.fingerprint(function(error, fingerprint) {
         if (error) {
             console.log("Erro ao gerar fingerprint", error);
             return;
         }
-        console.log("complete generateFingerprint");
         for (var i = 0; i < fingerprintFields.length; i++) {
             fingerprintFields[i].value = fingerprint;
         }
@@ -94,8 +92,8 @@ function MaskCPF(event, cpf) {
  * @returns {Boolean}
  */
 function creditCardMask(event, cc) {
-    var creditCardNum = document.getElementById("creditCardNum");
-    creditCardNum.value = cc.value;
+    var creditCardNumber = document.getElementById("rakutenpay_credit_card_creditCardNumber");
+    creditCardNumber.value = cc.value;
     maskInteger(event, cc);
     return formatField(cc, '0000 0000 0000 0000', event);
 }
