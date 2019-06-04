@@ -10,7 +10,8 @@
   "description": "Payment Base Module",
   "require": {
     "php": "7.0.2|7.0.4|~7.0.6|~7.1.0",
-    "magento/magento-composer-installer": "*"
+    "magento/magento-composer-installer": "*",
+    "rakuten/rakuten-sdk-php": "*"
   },
   "type": "magento2-module",
   "version": "1.0.0",
