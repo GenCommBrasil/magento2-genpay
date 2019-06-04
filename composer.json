@@ -1,5 +1,5 @@
 {
-  "name": "rakuten/rakutenpay",
+  "name": "rakuten/magento2-connector",
   "authors": [
     {
       "name": "Rakuten Digital Commerce",
@@ -7,7 +7,7 @@
       "homepage": "https://digitalcommerce.rakuten.com.br/"
     }
   ],
-  "description": "Payment Base Module",
+  "description": "Module Rakuten Connector for Magento 2",
   "require": {
     "php": "7.0.2|7.0.4|~7.0.6|~7.1.0",
     "magento/magento-composer-installer": "*",
