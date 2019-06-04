@@ -5,13 +5,17 @@ namespace Rakuten\RakutenPay\Controller\Payment;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Rakuten\Connector\Exception\RakutenException;
 use Rakuten\RakutenPay\Helper\Data;
+use Magento\Framework\App\CsrfAwareActionInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\Request\InvalidRequestException;
+
 
 use Rakuten\RakutenPay\Helper\Installment as Installments;
 /**
  * Class Installment
  * @package Rakuten\RakutenPay\Controller\Payment
  */
-class Installment extends \Magento\Framework\App\Action\Action
+class Installment extends \Magento\Framework\App\Action\Action implements CsrfAwareActionInterface
 {
     /**
      * @var \Rakuten\RakutenPay\Helper\Data
@@ -45,6 +49,9 @@ class Installment extends \Magento\Framework\App\Action\Action
         $this->installments = new Installments($this->rakutenHelper);
     }
 
+    /**
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\Result\Json|\Magento\Framework\Controller\ResultInterface
+     */
     public function execute()
     {
         $resultJsonFactory = $this->resultJsonFactory->create();
@@ -68,5 +75,23 @@ class Installment extends \Magento\Framework\App\Action\Action
 
             return $resultJsonFactory;
         }
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @return InvalidRequestException|null
+     */
+    public function createCsrfValidationException(RequestInterface $request): ? InvalidRequestException
+    {
+        return null;
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @return bool|null
+     */
+    public function validateForCsrf(RequestInterface $request): ? bool
+    {
+        return true;
     }
 }

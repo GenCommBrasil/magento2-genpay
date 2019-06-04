@@ -3,8 +3,11 @@ namespace Rakuten\RakutenPay\Model\Payment;
 
 use Rakuten\Connector\RakutenPay;
 use Rakuten\RakutenPay\Enum\PaymentMethod;
-use Rakuten\RakutenPay\Helper\Installment;
 
+/**
+ * Class CreditCard
+ * @package Rakuten\RakutenPay\Model\Payment
+ */
 class CreditCard extends \Magento\Payment\Model\Method\Cc
 {
     const DEFAULT_MINIMUM_VALUE = 10.0;
@@ -29,12 +32,7 @@ class CreditCard extends \Magento\Payment\Model\Method\Cc
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-
     protected $scopeConfig;
-    /**
-     * @var Installments
-     */
-    protected $installments;
 
     /**
      * @var \Rakuten\RakutenPay\Helper\Data
@@ -63,6 +61,21 @@ class CreditCard extends \Magento\Payment\Model\Method\Cc
         'credit_card_installment_total_value',
     ];
 
+    /**
+     * CreditCard constructor.
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory
+     * @param \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory
+     * @param \Magento\Payment\Helper\Data $paymentData
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Payment\Model\Method\Logger $logger
+     * @param \Magento\Framework\Module\ModuleListInterface $moduleList
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
+     * @param \Magento\Directory\Model\CountryFactory $countryFactory
+     * @param \Magento\Checkout\Model\Cart $cart
+     * @param \Rakuten\RakutenPay\Helper\Data $rakutenHelper
+     */
     public function __construct(
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
@@ -94,9 +107,13 @@ class CreditCard extends \Magento\Payment\Model\Method\Cc
         $this->scopeConfig = $scopeConfig;
         $this->_cart = $cart;
         $this->rakutenHelper = $rakutenHelper;
-        $this->installments = $this->getInstallment();
     }
 
+    /**
+     * @param \Magento\Framework\DataObject $data
+     * @return $this|\Magento\Payment\Model\Method\Cc
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function assignData(\Magento\Framework\DataObject $data)
     {
         parent::assignData($data);
@@ -129,6 +146,11 @@ class CreditCard extends \Magento\Payment\Model\Method\Cc
         return $this->_cart->getQuote()->getStore()->getUrl("rakutenpay/payment/installment/");
     }
 
+    /**
+     * @return $this|\Magento\Payment\Model\Method\Cc
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Rakuten\Connector\Exception\RakutenException
+     */
     public function validate()
     {
         $this->rakutenPay = $this->rakutenHelper->authorizationValidate();
@@ -136,16 +158,15 @@ class CreditCard extends \Magento\Payment\Model\Method\Cc
         return $this;
     }
 
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface|null $quote
+     * @return bool
+     */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
         if (!$this->isActive($quote ? $quote->getStoreId() : null)) {
             return false;
         }
         return true;
-    }
-
-    public function getInstallmentsValues()
-    {
-        return $this->installments->create(($this->_cart->getQuote()->getBaseGrandTotal()));
     }
 }

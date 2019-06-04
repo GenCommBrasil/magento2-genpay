@@ -4,6 +4,10 @@ namespace Rakuten\RakutenPay\Model\Payment;
 use Rakuten\Connector\RakutenPay;
 use Rakuten\RakutenPay\Enum\PaymentMethod;
 
+/**
+ * Class Billet
+ * @package Rakuten\RakutenPay\Model\Payment
+ */
 class Billet extends \Magento\Payment\Model\Method\Cc
 {
     protected $_canAuthorize = true;
@@ -28,6 +32,21 @@ class Billet extends \Magento\Payment\Model\Method\Cc
      */
     protected $rakutenPay;
 
+    /**
+     * Billet constructor.
+     * @param \Magento\Framework\Model\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory
+     * @param \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory
+     * @param \Magento\Payment\Helper\Data $paymentData
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Payment\Model\Method\Logger $logger
+     * @param \Magento\Framework\Module\ModuleListInterface $moduleList
+     * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
+     * @param \Magento\Directory\Model\CountryFactory $countryFactory
+     * @param \Magento\Checkout\Model\Cart $cart
+     * @param \Rakuten\RakutenPay\Helper\Data $rakutenHelper
+     */
     public function __construct(
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
@@ -61,6 +80,11 @@ class Billet extends \Magento\Payment\Model\Method\Cc
         $this->_rakutenHelper = $rakutenHelper;
     }
 
+    /**
+     * @param \Magento\Framework\DataObject $data
+     * @return $this|\Magento\Payment\Model\Method\Cc
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function assignData(\Magento\Framework\DataObject $data)
     {
         parent::assignData($data);
@@ -85,6 +109,11 @@ class Billet extends \Magento\Payment\Model\Method\Cc
         return $this->_cart->getQuote()->getStore()->getUrl("rakutenpay/payment/request/");
     }
 
+    /**
+     * @return $this|\Magento\Payment\Model\Method\Cc
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Rakuten\Connector\Exception\RakutenException
+     */
     public function validate()
     {
         $this->rakutenPay = $this->_rakutenHelper->authorizationValidate();
@@ -92,6 +121,10 @@ class Billet extends \Magento\Payment\Model\Method\Cc
         return $this;
     }
 
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface|null $quote
+     * @return bool
+     */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
         if (!$this->isActive($quote ? $quote->getStoreId() : null)) {
