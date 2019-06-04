@@ -45,6 +45,7 @@ class Data extends AbstractHelper
      * @var StoreManagerInterface
      */
     protected $storeManager;
+
     /**
      * Data constructor.
      * @param ScopeConfigInterface $scopeConfig
