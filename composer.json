@@ -29,5 +29,6 @@
     "psr-4": {
       "Rakuten\\RakutenPay\\": ""
     }
-  }
+  },
+  "minimum-stability": "dev"
 }
