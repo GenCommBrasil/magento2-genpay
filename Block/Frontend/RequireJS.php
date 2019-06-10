@@ -53,7 +53,7 @@ class RequireJS extends Template
      */
     public function getRPay()
     {
-        $environment = $this->scopeConfig->getValue('payment/rakutenpay/rakutenpay_configuration/environment');
+        $environment = $this->scopeConfig->getValue('payment/rakutenpay_configuration/environment');
         if ($environment == Environment::SANDBOX) {
 
             return Environment::RPAY_SANDBOX;
