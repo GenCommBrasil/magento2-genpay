@@ -81,16 +81,18 @@ define(
                 this.creditCardNumber.subscribe(function (value) {
                     self.$fingerprint = $(self.fingerprintSelector);
 
-                    if (self.$installments === null) {
-                        self.getInstallments();
-                    }
-
                     if (self.$fingerprint.val() === '') {
                         generateFingerprint();
                     }
 
                     if (value.length === 19) {
                         updateCreditCardToken(value, $(self.creditCardExpirationMonthSelector).val(), $(self.creditCardExpirationYearSelector).val());
+                    }
+                });
+
+                this.creditCardCode.subscribe(function (value) {
+                    if (self.$installments === null) {
+                        self.getInstallments();
                     }
                 });
 
