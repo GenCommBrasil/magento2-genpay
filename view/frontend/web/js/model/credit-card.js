@@ -108,7 +108,7 @@ function getBrand(self) {
  * @returns {string}
  */
 function removeLetters(el) {
-    return el.replace(/[a-zA-Z]/g, '');
+    return el.replace(/[a-zA-ZçÇ]/g, '');
 }
 
 /**
