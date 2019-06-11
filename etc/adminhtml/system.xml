@@ -41,6 +41,30 @@
                         <comment>Email registered with Rakuten.</comment>
                         <config_path>payment/rakutenpay_configuration/email</config_path>
                     </field>
+                    <group id="advanced" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Advanced Settings</label>
+                        <comment>List the attributes of your Magento.</comment>
+                        <field id="street" translate="label" type="select" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>The Street attribute is</label>
+                            <source_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\Street</source_model>
+                            <config_path>payment/rakutenpay_configuration/street</config_path>
+                        </field>
+                        <field id="street_number" translate="label" type="select" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>The address number is</label>
+                            <source_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\Street</source_model>
+                            <config_path>payment/rakutenpay_configuration/street_number</config_path>
+                        </field>
+                        <field id="street_complement" translate="label" type="select" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>The address complement is</label>
+                            <source_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\Street</source_model>
+                            <config_path>payment/rakutenpay_configuration/street_complement</config_path>
+                        </field>
+                        <field id="street_district" translate="label" type="select" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>The address district is</label>
+                            <source_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\Street</source_model>
+                            <config_path>payment/rakutenpay_configuration/street_district</config_path>
+                        </field>
+                    </group>
                 </group>
                 <group id="rakutenpay_billet" translate="label" type="text" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Boleto</label>

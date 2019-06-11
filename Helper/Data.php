@@ -151,6 +151,38 @@ class Data extends AbstractHelper
     }
 
     /**
+     * @return string
+     */
+    public function getStreetPosition()
+    {
+        return $this->scopeConfig->getValue('payment/rakutenpay_configuration/street', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return string
+     */
+    public function getStreetNumberPosition()
+    {
+        return $this->scopeConfig->getValue('payment/rakutenpay_configuration/street_number', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return string
+     */
+    public function getStreetComplementPosition()
+    {
+        return $this->scopeConfig->getValue('payment/rakutenpay_configuration/street_complement', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
+     * @return string
+     */
+    public function getStreetDistrictPosition()
+    {
+        return $this->scopeConfig->getValue('payment/rakutenpay_configuration/street_district', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+    }
+
+    /**
      * @return null|string
      */
     public function getBilletExpiresOn()
