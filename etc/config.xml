@@ -11,6 +11,10 @@
                 <signature>signature</signature>
                 <email>email</email>
                 <notification>{{base_url}}rakutenpay/notification/webhook/</notification>
+                <street>0</street>
+                <street_number>1</street_number>
+                <street_complement>3</street_complement>
+                <street_district>2</street_district>
             </rakutenpay_configuration>
             <rakutenpay_billet>
                 <active>0</active>

@@ -138,11 +138,25 @@ abstract class PaymentMethod
     }
 
     /**
-     * @return \Rakuten\Connector\Resource\RakutenPay\Customer
+     * @return Customer
+     * @throws \ReflectionException
      */
     protected function buildCustomer()
     {
         $billingPhone = $this->helper->formatPhone($this->order->getBillingAddress()->getTelephone());
+        $address = $this->order->getBillingAddress()->getStreet();
+        $street = $address[$this->helper->getStreetPosition()];
+        $streetNumber = $address[$this->helper->getStreetNumberPosition()];
+        $streetDistrict = $this->order->getBillingAddress()->getRegion();
+        $streetComplement = "";
+
+        if(count($address) >= 3) {
+            $streetDistrict = $address[$this->helper->getStreetDistrictPosition()];
+        }
+
+        if(count($address) == 4){
+            $streetComplement = $address[$this->helper->getStreetComplementPosition()];
+        }
 
         $customer = $this->rakutenPay->customer()
             ->setName($this->order->getCustomerName())
@@ -154,20 +168,22 @@ abstract class PaymentMethod
             ->addAddress(
                 Address::ADDRESS_BILLING,
                 $this->order->getBillingAddress()->getPostcode(),
-                $this->formatStreet($this->order->getBillingAddress()->getStreet()),
-                "__",
-                $this->order->getBillingAddress()->getRegion(),
+                $street,
+                $streetNumber,
+                $streetDistrict,
                 $this->order->getBillingAddress()->getCity(),
                 $this->order->getBillingAddress()->getRegion(),
-                $this->order->getBillingAddress()->getName())
+                $this->order->getBillingAddress()->getName(),
+                $streetComplement)
             ->addAddress(Address::ADDRESS_SHIPPING,
                 $this->order->getShippingAddress()->getPostcode(),
-                $this->formatStreet($this->order->getShippingAddress()->getStreet()),
-                "__",
-                $this->order->getShippingAddress()->getRegion(),
+                $street,
+                $streetNumber,
+                $streetDistrict,
                 $this->order->getShippingAddress()->getCity(),
                 $this->order->getShippingAddress()->getRegion(),
-                $this->order->getShippingAddress()->getName())
+                $this->order->getShippingAddress()->getName(),
+                $streetComplement)
             ->addAPhones('55',
                 $billingPhone['areaCode'],
                 $billingPhone['number'],
@@ -266,18 +282,5 @@ abstract class PaymentMethod
     protected function getBirthDate($birthDate)
     {
         return empty($birthDate) ? "2000-10-01 00:00:00" : $birthDate;
-    }
-
-    /**
-     * @param $street
-     * @return string
-     */
-    protected function formatStreet($street)
-    {
-        if (is_array($street)) {
-            return implode(", ", $street);
-        }
-
-        return $street;
     }
 }
