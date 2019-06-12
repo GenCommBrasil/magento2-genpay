@@ -6,6 +6,7 @@ use Rakuten\Connector\Exception\RakutenException;
 use Rakuten\Connector\Helper\StringFormat;
 use Rakuten\Connector\Parser\Error;
 use Rakuten\Connector\Parser\RakutenPay\Transaction\CreditCard;
+use Rakuten\RakutenPay\Logger\Logger;
 
 /**
  * Class CreditCardMethod
@@ -14,12 +15,13 @@ use Rakuten\Connector\Parser\RakutenPay\Transaction\CreditCard;
 class CreditCardMethod extends PaymentMethod implements Payment
 {
     /**
-     * Payment constructor.
+     * CreditCardMethod constructor.
      * @param \Magento\Directory\Api\CountryInformationAcquirerInterface $countryInformation
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface
-     * @param \Magento\Sales\Model\Order $order
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
+     * @param \Magento\Sales\Model\Order $order
      * @param \Rakuten\RakutenPay\Helper\Data $helper
+     * @param Logger $logger
      * @param array $customerPaymentData
      * @throws \Exception
      */
@@ -29,6 +31,7 @@ class CreditCardMethod extends PaymentMethod implements Payment
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Sales\Model\Order $order,
         \Rakuten\RakutenPay\Helper\Data $helper,
+        Logger $logger,
         $customerPaymentData = []
     ) {
         parent::__construct(
@@ -37,8 +40,10 @@ class CreditCardMethod extends PaymentMethod implements Payment
             $objectManager,
             $order,
             $helper,
+            $logger,
             $customerPaymentData
         );
+        $this->logger->info("Processing construct in CreditCardMethod.");
     }
 
     /**
@@ -46,6 +51,7 @@ class CreditCardMethod extends PaymentMethod implements Payment
      */
     protected function buildPayment()
     {
+        $this->logger->info("Processing buildPayment.");
         $creditCard = $this->rakutenPay->asCreditCard()
             ->setReference($this->order->getIncrementId())
             ->setAmount($this->order->getGrandTotal())
@@ -77,6 +83,7 @@ class CreditCardMethod extends PaymentMethod implements Payment
      */
     protected function setCreditCardDocument()
     {
+        $this->logger->info("Processing setCreditCardDocument.");
         $this->rakutenPayCustomer->setDocument($this->customerPaymentData['creditCardDocument']);
     }
 
@@ -86,6 +93,7 @@ class CreditCardMethod extends PaymentMethod implements Payment
      */
     public function createOrder()
     {
+        $this->logger->info("Processing createOrder.");
         $this->setCreditCardDocument();
 
         $response = $this->createRakutenPayOrder();
@@ -106,6 +114,7 @@ class CreditCardMethod extends PaymentMethod implements Payment
      */
     protected function setAdditionInformation(CreditCard $creditCard)
     {
+        $this->logger->info("Processing setAdditionInformation.");
         $this->order->getPayment()->setAdditionalInformation('charge_uuid', $creditCard->getChargeId());
         $this->order->getPayment()->setAdditionalInformation('installments', $this->customerPaymentData['creditCardInstallment']);
         $this->order->getPayment()->setCcNumberEnc($creditCard->getCreditCardNum());

@@ -9,6 +9,7 @@ use Magento\Framework\App\Http\Context as HttpContext;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Rakuten\RakutenPay\Enum\Environment;
+use Rakuten\RakutenPay\Logger\Logger;
 
 class RequireJS extends Template
 {
@@ -32,12 +33,18 @@ class RequireJS extends Template
      */
     protected $scopeConfig;
 
+    /**
+     * @var \Rakuten\RakutenPay\Logger\Logger
+     */
+    protected $logger;
+
     public function __construct(
         Context $context,
         Session $checkoutSession,
         Config $orderConfig,
         HttpContext $httpContext,
         ScopeConfigInterface $scopeConfig,
+        Logger $logger,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -46,6 +53,8 @@ class RequireJS extends Template
         $this->_isScopePrivate = true;
         $this->httpContext = $httpContext;
         $this->scopeConfig = $scopeConfig;
+        $this->logger = $logger;
+        $this->logger->info("Processing construct in RequireJS.");
     }
 
     /**
@@ -53,6 +62,7 @@ class RequireJS extends Template
      */
     public function getRPay()
     {
+        $this->logger->info("Processing getRPay.");
         $environment = $this->scopeConfig->getValue('payment/rakutenpay_configuration/environment');
         if ($environment == Environment::SANDBOX) {
 

@@ -61,8 +61,6 @@ class Notification
         \Magento\Sales\Api\OrderRepositoryInterface $order,
         \Magento\Sales\Api\Data\OrderStatusHistoryInterface $history,
         Logger $logger
-
-
     ) {
         $this->order = $order;
         $this->history = $history;

@@ -7,6 +7,7 @@ use Rakuten\Connector\Parser\Error;
 use Rakuten\RakutenPay\Enum\PaymentMethod;
 use Rakuten\RakutenPay\Model\DirectPayment\BilletMethod;
 use Rakuten\RakutenPay\Model\DirectPayment\CreditCardMethod;
+use Rakuten\RakutenPay\Logger\Logger;
 
 /**
  * Class Request
@@ -17,7 +18,7 @@ class Request extends \Magento\Framework\App\Action\Action
     /**
      * @var \Magento\Checkout\Model\Session
      */
-    private $_checkoutSession;
+    private $checkoutSession;
 
     /**
      * @var \Magento\Sales\Model\Order
@@ -41,32 +42,42 @@ class Request extends \Magento\Framework\App\Action\Action
     protected $rakutenHelper;
 
     /**
+     * @var \Rakuten\RakutenPay\Logger\Logger
+     */
+    protected $logger;
+
+    /**
      * Request constructor.
      *
      * @param \Magento\Framework\App\Action\Context $context
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context
+        \Magento\Framework\App\Action\Context $context,
+        \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
+        \Rakuten\RakutenPay\Helper\Data $rakutenHelper,
+        \Magento\Checkout\Model\Session $session,
+        Logger $logger
     ) {
         parent::__construct($context);
-
-        $this->resultJsonFactory = $this->_objectManager->create('\Magento\Framework\Controller\Result\JsonFactory');
+        $this->resultJsonFactory = $resultJsonFactory;
         $this->result = $this->resultJsonFactory->create();
-        $this->rakutenHelper = $this->_objectManager->create('Rakuten\RakutenPay\Helper\Data');
-        $this->_checkoutSession = $this->_objectManager->create('\Magento\Checkout\Model\Session');
+        $this->rakutenHelper = $rakutenHelper;
+        $this->checkoutSession = $session;
+        $this->logger = $logger;
     }
 
     /**
-     * Redirect to payment
-     *
-     * @return \Magento\Framework\Controller\Result\Redirect
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface
+     * @throws \Exception
      */
     public function execute()
     {
-        $lastRealOrder = $this->_checkoutSession->getLastRealOrder();
+        $this->logger->info("Processing execute Action in Request.");
+        $lastRealOrder = $this->checkoutSession->getLastRealOrder();
         $result = null;
         try {
             if (is_null($lastRealOrder->getPayment())) {
+                $this->logger->error("No order associated.");
                 throw new \Magento\Framework\Exception\NotFoundException(__('No order associated.'));
             }
 
@@ -75,6 +86,7 @@ class Request extends \Magento\Framework\App\Action\Action
             $this->order = $this->loadOrder($this->orderId);
             $this->clearAdditionalInformation();
             if (is_null($this->orderId)) {
+                $this->logger->error("There is not order associated with this session.");
                 throw new RakutenException("There is not order associated with this session.");
             }
 
@@ -92,6 +104,7 @@ class Request extends \Magento\Framework\App\Action\Action
                     $this->_objectManager,
                     $this->order,
                     $this->rakutenHelper,
+                    $this->logger,
                     $customerPaymentData
                 );
                 $result = $billet->createOrder();
@@ -120,6 +133,7 @@ class Request extends \Magento\Framework\App\Action\Action
                     $this->_objectManager,
                     $this->order,
                     $this->rakutenHelper,
+                    $this->logger,
                     $customerPaymentData
                 );
 
@@ -127,12 +141,14 @@ class Request extends \Magento\Framework\App\Action\Action
             }
 
             if ($result instanceof Error) {
+                $this->logger->error($result->getMessage());
                 $this->cancelOrder($result->getMessage());
                 $this->whenError($result->getMessage());
             }
 
             return $this->_redirect('checkout/onepage/success');
         } catch (\Exception $exception) {
+            $this->logger->error($exception->getMessage());
             $this->cancelOrder($exception->getMessage());
             $this->whenError($exception->getMessage());
             return $this->_redirect('rakutenpay/payment/failure');
@@ -145,6 +161,7 @@ class Request extends \Magento\Framework\App\Action\Action
      */
     private function cancelOrder($message)
     {
+        $this->logger->info("Processing cancelOrder.");
         $this->order->cancel();
         $this->order->addCommentToStatusHistory($message);
         $this->order->save();
@@ -155,6 +172,7 @@ class Request extends \Magento\Framework\App\Action\Action
      */
     private function clearAdditionalInformation()
     {
+        $this->logger->info("Processing clearAdditionalInformation.");
         $this->order->getPayment()->unsAdditionalInformation()->getAdditionalInformation();
     }
 
@@ -167,6 +185,7 @@ class Request extends \Magento\Framework\App\Action\Action
 
     private function whenError($message)
     {
+        $this->logger->info("Processing whenError.");
         return $this->result->setData([
             'success' => false,
             'payload' => [
@@ -183,6 +202,7 @@ class Request extends \Magento\Framework\App\Action\Action
      */
     private function loadOrder($orderId)
     {
+        $this->logger->info("Processing loadOrder.");
         return $this->_objectManager->create('Magento\Sales\Model\Order')->load($orderId);
     }
 
@@ -193,6 +213,7 @@ class Request extends \Magento\Framework\App\Action\Action
      */
     private function baseUrl()
     {
+        $this->logger->info("Processing baseUrl.");
         return $this->_objectManager->create('Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseUrl();
     }
 }

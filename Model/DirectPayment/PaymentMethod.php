@@ -7,6 +7,7 @@ use Rakuten\Connector\Enum\Category;
 use Rakuten\Connector\Exception\RakutenException;
 use Rakuten\Connector\Resource\RakutenPay\Customer;
 use Rakuten\Connector\Resource\RakutenPay\Order;
+use Rakuten\RakutenPay\Logger\Logger;
 
 /**
  * Class PaymentMethod
@@ -70,12 +71,18 @@ abstract class PaymentMethod
     protected $rakutenPayPayment;
 
     /**
-     * Payment constructor.
+     * @var \Rakuten\RakutenPay\Logger\Logger
+     */
+    protected $logger;
+
+    /**
+     * PaymentMethod constructor.
      * @param \Magento\Directory\Api\CountryInformationAcquirerInterface $countryInformation
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface
-     * @param \Magento\Sales\Model\Order $order
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
+     * @param \Magento\Sales\Model\Order $order
      * @param \Rakuten\RakutenPay\Helper\Data $helper
+     * @param Logger $logger
      * @param array $customerPaymentData
      * @throws \Exception
      */
@@ -85,6 +92,7 @@ abstract class PaymentMethod
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Sales\Model\Order $order,
         \Rakuten\RakutenPay\Helper\Data $helper,
+        Logger $logger,
         $customerPaymentData = []
     ) {
         $this->scopeConfig = $scopeConfigInterface;
@@ -93,7 +101,9 @@ abstract class PaymentMethod
         $this->order = $order;
         $this->helper = $helper;
         $this->rakutenPay = $helper->getRakutenPay();
+        $this->logger = $logger;
         $this->customerPaymentData = $customerPaymentData;
+        $this->logger->info("Processing construct in PaymentMethod.");
         $this->initialize();
     }
 
@@ -109,6 +119,7 @@ abstract class PaymentMethod
      */
     protected function initialize()
     {
+        $this->logger->info("Processing initialize.");
         try {
             $this->rakutenPayCustomer = $this->buildCustomer();
             $this->rakutenPayOrder = $this->buildOrder();
@@ -123,6 +134,7 @@ abstract class PaymentMethod
      */
     protected function createRakutenPayOrder()
     {
+        $this->logger->info("Processing createRakutenPayOrder.");
         try {
             $response = $this->rakutenPay->createOrder(
                 $this->rakutenPayOrder,
@@ -143,6 +155,7 @@ abstract class PaymentMethod
      */
     protected function buildCustomer()
     {
+        $this->logger->info("Processing buildCustomer.");
         $billingPhone = $this->helper->formatPhone($this->order->getBillingAddress()->getTelephone());
         $address = $this->order->getBillingAddress()->getStreet();
         $street = $address[$this->helper->getStreetPosition()];
@@ -204,6 +217,7 @@ abstract class PaymentMethod
      */
     protected function buildOrder()
     {
+        $this->logger->info("Processing buildOrder.");
         $order = $this->rakutenPay->order()
             ->setWebhookUrl($this->helper->getNotificationURL())
             ->setReference($this->order->getIncrementId())
@@ -228,6 +242,7 @@ abstract class PaymentMethod
      */
     protected function setItems(Order $order, array $items)
     {
+        $this->logger->info("Processing setItems.");
         foreach ($items as $item) {
             $order->addItem(
                 $item->getSku(),
@@ -249,6 +264,7 @@ abstract class PaymentMethod
      */
     protected function getCategories($item)
     {
+        $this->logger->info("Processing getCategories.");
         $categories = [];
         $product = $this->objectManager->get('Magento\Catalog\Model\Product')->load($item->getProductId());
         foreach ($product->getCategoryIds() as $id) {
@@ -270,6 +286,7 @@ abstract class PaymentMethod
      */
     protected function formatDiscountAmount($discountAmount)
     {
+        $this->logger->info("Processing formatDiscountAmount.");
         $discountAmount = number_format(abs($discountAmount), 2, ".", "");
 
         return floatval($discountAmount);
@@ -281,6 +298,7 @@ abstract class PaymentMethod
      */
     protected function getBirthDate($birthDate)
     {
+        $this->logger->info("Processing getBirthDate.");
         return empty($birthDate) ? "2000-10-01 00:00:00" : $birthDate;
     }
 }
