@@ -4,6 +4,7 @@ namespace Rakuten\RakutenPay\Helper;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Rakuten\Connector\Exception\RakutenException;
+use Rakuten\RakutenPay\Logger\Logger;
 
 /**
  * Class Installment
@@ -25,12 +26,19 @@ class Installment
     protected $rakutenHelper;
 
     /**
+     * @var \Rakuten\RakutenPay\Logger\Logger
+     */
+    protected $logger;
+
+    /**
      * Installments constructor.
      * @param Data $rakutenHelper
      */
-    public function __construct(Data $rakutenHelper)
+    public function __construct(Data $rakutenHelper, Logger $logger)
     {
         $this->rakutenHelper = $rakutenHelper;
+        $this->logger = $logger;
+        $this->logger->info("Processing Construct in Helper Installment.");
     }
 
     /**
@@ -42,6 +50,7 @@ class Installment
      */
     public function create($amount)
     {
+        $this->logger->info("Processing create.");
         try {
             $minimumValue = $this->rakutenHelper->getMinimumInstallmentsValue();
             $maximumInstallments = $this->rakutenHelper->getMaxInstallmentsQuantity();
@@ -49,7 +58,7 @@ class Installment
 
             return $installments;
         } catch (RakutenException $exception) {
-            //TODO Log Implements
+            $this->logger->error($exception->getMessage());
 
             return false;
         }
@@ -64,6 +73,7 @@ class Installment
      */
     private function getMaxNoInstallments($amount, $minimumValue, $maximumInstallments)
     {
+        $this->logger->info("Processing getMaxNoInstallments.");
         $installments = $this->getInstallmentsByMinimumValue($amount, $minimumValue);
         if (!empty($maximumInstallments) && $maximumInstallments > 0) {
             if ($installments > $maximumInstallments) {
@@ -81,6 +91,7 @@ class Installment
      */
     private function getInstallmentsByMinimumValue($amount, $minimumValue)
     {
+        $this->logger->info("Processing getInstallmentsByMinimumValue.");
         if (is_null($minimumValue) || is_nan($minimumValue) || $minimumValue < 0) {
             $minimumValue = self::DEFAULT_MINIMUM_VALUE;
         }
@@ -101,6 +112,7 @@ class Installment
      */
     private function createInstallments($amount, $minimumValue, $maximumInstallments)
     {
+        $this->logger->info("Processing createInstallments.");
         $installments = [];
         if ($this->rakutenHelper->isCustomerInterest()) {
             $minimumInstallment = (int) $this->rakutenHelper->getCustomerInterestMinimum();
