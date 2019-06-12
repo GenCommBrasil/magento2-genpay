@@ -10,6 +10,7 @@
                 <api_key>api_key</api_key>
                 <signature>signature</signature>
                 <email>email</email>
+                <log>0</log>
                 <notification>{{base_url}}rakutenpay/notification/webhook/</notification>
                 <street>0</street>
                 <street_number>1</street_number>
