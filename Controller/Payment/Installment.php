@@ -2,15 +2,13 @@
 
 namespace Rakuten\RakutenPay\Controller\Payment;
 
-use Magento\Framework\Controller\Result\JsonFactory;
 use Rakuten\Connector\Exception\RakutenException;
-use Rakuten\RakutenPay\Helper\Data;
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
-
-
 use Rakuten\RakutenPay\Helper\Installment as Installments;
+use Rakuten\RakutenPay\Logger\Logger;
+
 /**
  * Class Installment
  * @package Rakuten\RakutenPay\Controller\Payment
@@ -27,7 +25,10 @@ class Installment extends \Magento\Framework\App\Action\Action implements CsrfAw
      */
     protected $installments;
 
-    protected $request;
+    /**
+     * @var \Rakuten\RakutenPay\Logger\Logger
+     */
+    protected $logger;
 
     /**
      * @var \Magento\Framework\Controller\Result\JsonFactory
@@ -37,16 +38,18 @@ class Installment extends \Magento\Framework\App\Action\Action implements CsrfAw
     /**
      * Installment constructor.
      * @param \Magento\Framework\App\Action\Context $context
+     * @param Logger $logger
      */
     public function __construct(
-        \Magento\Framework\App\Action\Context $context
-
+        \Magento\Framework\App\Action\Context $context,
+        Logger $logger
     ) {
         parent::__construct($context);
-
+        $this->logger = $logger;
+        $this->logger->info("Processing Construct in Installment.", ['service' => 'getInstallments']);
         $this->rakutenHelper = $this->_objectManager->create('Rakuten\RakutenPay\Helper\Data');
         $this->resultJsonFactory = $this->_objectManager->create('Magento\Framework\Controller\Result\JsonFactory');
-        $this->installments = new Installments($this->rakutenHelper);
+        $this->installments = new Installments($this->rakutenHelper, $logger);
     }
 
     /**
@@ -55,17 +58,20 @@ class Installment extends \Magento\Framework\App\Action\Action implements CsrfAw
     public function execute()
     {
         $resultJsonFactory = $this->resultJsonFactory->create();
+        $this->logger->info("Processing execute action.", ['service' => 'getInstallments']);
         try {
             $baseGrandTotal = (float) $this->_request->getParam('baseGrandTotal');
             if (empty($baseGrandTotal)) {
+                $this->logger->error("Parameter is missing.", ['service' => 'getInstallments']);
                 throw new RakutenException("Parameter is missing.");
             }
             $installments = $this->installments->create($baseGrandTotal);
             $resultJsonFactory->setData($installments);
-            return $resultJsonFactory;
+            $this->logger->info(sprintf("Result: %s", json_encode($installments)), ['service' => 'getInstallments']);
 
+            return $resultJsonFactory;
         } catch (RakutenException $e) {
-            //TODO Implements Log
+            $this->logger->error($e->getMessage(), ['service' => 'getInstallments']);
             $resultJsonFactory->setData([
                 'error' => [
                     'msg' => $e->getMessage(),

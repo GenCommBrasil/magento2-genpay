@@ -6,6 +6,7 @@ use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Framework\Escaper;
 use Magento\Payment\Helper\Data as PaymentHelper;
 use Rakuten\RakutenPay\Enum\PaymentMethod;
+use Rakuten\RakutenPay\Logger\Logger;
 
 class CreditCard implements ConfigProviderInterface
 {
@@ -30,19 +31,27 @@ class CreditCard implements ConfigProviderInterface
     protected $scopeConfig;
 
     /**
+     * @var \Rakuten\RakutenPay\Logger\Logger
+     */
+    protected $logger;
+
+    /**
      * CreditCard constructor.
      * @param PaymentHelper $paymentHelper
      * @param Escaper $escaper
      * @param ScopeConfigInterface $scopeConfig
+     * @param Logger $logger
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function __construct(
         PaymentHelper $paymentHelper,
         Escaper $escaper,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        Logger $logger
     ) {
         $this->escaper = $escaper;
         $this->scopeConfig = $scopeConfig;
+        $this->logger = $logger;
         $this->creditCardMethod = $paymentHelper->getMethodInstance(PaymentMethod::CREDIT_CARD_CODE);
 
     }
@@ -52,6 +61,7 @@ class CreditCard implements ConfigProviderInterface
      */
     public function getConfig()
     {
+        $this->logger->info("Processing getConfig.", ['service' => 'CreditCardProvider']);
         return [
             'payment' => [
                 'rakutenpay_credit_card' => [
@@ -70,6 +80,7 @@ class CreditCard implements ConfigProviderInterface
      */
     protected function getYearValues()
     {
+        $this->logger->info("Processing getYearValues.", ['service' => 'CreditCardProvider']);
         $data = [];
         $year = idate("Y");
         $maxYear = $year + self::YEARS_RANGE;
@@ -85,6 +96,7 @@ class CreditCard implements ConfigProviderInterface
      */
     protected function getTitle()
     {
+        $this->logger->info("Processing getTitle.", ['service' => 'CreditCardProvider']);
         return $this->scopeConfig->getValue('payment/rakutenpay_billet/title', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 

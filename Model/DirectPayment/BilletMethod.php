@@ -6,6 +6,7 @@ use Rakuten\Connector\Exception\RakutenException;
 use Rakuten\Connector\Helper\StringFormat;
 use Rakuten\Connector\Parser\Error;
 use Rakuten\Connector\Parser\RakutenPay\Transaction\Billet;
+use Rakuten\RakutenPay\Logger\Logger;
 
 /**
  * Class BilletMethod
@@ -14,12 +15,13 @@ use Rakuten\Connector\Parser\RakutenPay\Transaction\Billet;
 class BilletMethod extends PaymentMethod implements Payment
 {
     /**
-     * Payment constructor.
+     * BilletMethod constructor.
      * @param \Magento\Directory\Api\CountryInformationAcquirerInterface $countryInformation
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface
-     * @param \Magento\Sales\Model\Order $order
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
+     * @param \Magento\Sales\Model\Order $order
      * @param \Rakuten\RakutenPay\Helper\Data $helper
+     * @param Logger $logger
      * @param array $customerPaymentData
      * @throws \Exception
      */
@@ -29,6 +31,7 @@ class BilletMethod extends PaymentMethod implements Payment
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Sales\Model\Order $order,
         \Rakuten\RakutenPay\Helper\Data $helper,
+        Logger $logger,
         $customerPaymentData = []
     ) {
         parent::__construct(
@@ -37,8 +40,11 @@ class BilletMethod extends PaymentMethod implements Payment
             $objectManager,
             $order,
             $helper,
+            $logger,
             $customerPaymentData
         );
+        $this->logger = $logger;
+        $this->logger->info("Processing construct in BilletMethod.");
     }
 
     /**
@@ -46,6 +52,7 @@ class BilletMethod extends PaymentMethod implements Payment
      */
     protected function buildPayment()
     {
+        $this->logger->info("Processing buildPayment.");
         $billet = $this->rakutenPay->asBillet()
             ->setAmount($this->order->getGrandTotal())
             ->setExpiresOn($this->helper->getBilletExpiresOn());
@@ -58,6 +65,7 @@ class BilletMethod extends PaymentMethod implements Payment
      */
     protected function setBilletDocument()
     {
+        $this->logger->info("Processing setBilletDocument.");
         $this->rakutenPayCustomer->setDocument(StringFormat::getOnlyNumbers($this->customerPaymentData['billetDocument']));
     }
 
@@ -67,6 +75,7 @@ class BilletMethod extends PaymentMethod implements Payment
      */
     public function createOrder()
     {
+        $this->logger->info("Processing createOrder.");
         $this->setBilletDocument();
 
         $response = $this->createRakutenPayOrder();
@@ -87,6 +96,7 @@ class BilletMethod extends PaymentMethod implements Payment
      */
     protected function setAdditionInformation(Billet $billet)
     {
+        $this->logger->info("Processing setAdditionInformation.");
         $this->order->getPayment()->setAdditionalInformation('charge_uuid', $billet->getChargeId());
         $this->order->getPayment()->setAdditionalInformation('billet_url', $billet->getBilletUrl());
         $this->order->getPayment()->setAdditionalInformation('billet', $billet->getBillet());

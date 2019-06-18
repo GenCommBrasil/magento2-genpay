@@ -6,6 +6,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Escaper;
 use Magento\Payment\Helper\Data as PaymentHelper;
 use Rakuten\RakutenPay\Enum\PaymentMethod;
+use Rakuten\RakutenPay\Logger\Logger;
 
 class Billet implements ConfigProviderInterface
 {
@@ -30,21 +31,29 @@ class Billet implements ConfigProviderInterface
     protected $billetMethod;
 
     /**
+     * @var \Rakuten\RakutenPay\Logger\Logger
+     */
+    protected $logger;
+
+    /**
      * Billet constructor.
      * @param PaymentHelper $paymentHelper
      * @param Escaper $escaper
      * @param ScopeConfigInterface $scopeConfig
+     * @param Logger $logger
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function __construct(
         PaymentHelper $paymentHelper,
         Escaper $escaper,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        Logger $logger
     ) {
         $this->escaper = $escaper;
         $this->method = $paymentHelper->getMethodInstance(PaymentMethod::BILLET_CODE);
         $this->scopeConfig = $scopeConfig;
         $this->billetMethod = $paymentHelper->getMethodInstance(PaymentMethod::BILLET_CODE);
+        $this->logger = $logger;
     }
 
     /**
@@ -52,6 +61,7 @@ class Billet implements ConfigProviderInterface
      */
     public function getConfig()
     {
+        $this->logger->info("Processing getConfig.", ['service' => 'BilletProvider']);
         return $this->method->isAvailable() ? [
             'payment' => [
                 'rakutenpay_billet' => [
@@ -70,6 +80,7 @@ class Billet implements ConfigProviderInterface
      */
     protected function getTitle()
     {
+        $this->logger->info("Processing getTitle.", ['service' => 'BilletProvider']);
         return $this->scopeConfig->getValue('payment/rakutenpay_billet/title', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
@@ -80,6 +91,7 @@ class Billet implements ConfigProviderInterface
      */
     protected function getInstruction()
     {
+        $this->logger->info("Processing getInstruction.", ['service' => 'BilletProvider']);
         return nl2br($this->escaper->escapeHtml($this->scopeConfig->getValue('payment/rakutenpay_billet/instruction', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)));
     }
 
@@ -90,6 +102,7 @@ class Billet implements ConfigProviderInterface
      */
     protected function getDue()
     {
+        $this->logger->info("Processing getDue.", ['service' => 'BilletProvider']);
         $day = (int)$this->scopeConfig->getValue('payment/rakutenpay_billet/expiration', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         if ($day > 1) {
             return nl2br(sprintf(__('Expiration in %s days'), $day));
