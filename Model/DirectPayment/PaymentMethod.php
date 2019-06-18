@@ -5,6 +5,7 @@ namespace Rakuten\RakutenPay\Model\DirectPayment;
 use Rakuten\Connector\Enum\Address;
 use Rakuten\Connector\Enum\Category;
 use Rakuten\Connector\Exception\RakutenException;
+use Rakuten\Connector\Parser\Error;
 use Rakuten\Connector\Resource\RakutenPay\Customer;
 use Rakuten\Connector\Resource\RakutenPay\Order;
 use Rakuten\RakutenPay\Logger\Logger;
@@ -135,16 +136,27 @@ abstract class PaymentMethod
     protected function createRakutenPayOrder()
     {
         $this->logger->info("Processing createRakutenPayOrder.");
+        $this->logger->info("Payload: ", [
+            json_encode($this->rakutenPayOrder->getData(), JSON_PRESERVE_ZERO_FRACTION),
+            json_encode($this->rakutenPayCustomer->getData(), JSON_PRESERVE_ZERO_FRACTION),
+            json_encode($this->rakutenPayPayment->getData(), JSON_PRESERVE_ZERO_FRACTION),
+        ]);
         try {
             $response = $this->rakutenPay->createOrder(
                 $this->rakutenPayOrder,
                 $this->rakutenPayCustomer,
                 $this->rakutenPayPayment
             );
+            if ($response instanceof Error) {
+                $this->logger->info("HTTP_STATUS: ", [$response->getResponse()->getStatus()]);
+                $this->logger->info("HTTP_RESPONSE: ", [$response->getResponse()->getResult()]);
+            }
+            $this->logger->info("HTTP_STATUS: ", [$response->getResponse()->getStatus()]);
+            $this->logger->info("HTTP_RESPONSE: ", [$response->getResponse()->getResult()]);
 
             return $response;
         } catch (RakutenException $e) {
-
+            $this->logger->error($e->getMessage(), ['service' => 'Create Order']);
             return false;
         }
     }
