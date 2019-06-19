@@ -21,7 +21,6 @@
     "magento/magento-composer-installer": "*",
     "rakuten/rakuten-sdk-php": "*"
   },
-  "version": "0.0.1",
   "autoload": {
     "files": [
       "registration.php"
