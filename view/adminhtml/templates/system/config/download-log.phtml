@@ -1,0 +1,24 @@
+<script>
+    require([
+        'jquery',
+        'prototype'
+    ], function(jQuery){
+
+        jQuery('#download_button').click(function () {
+            var params = {};
+            new Ajax.Request('<?php echo $block->getAjaxUrl() ?>', {
+               parameters:     params,
+               loaderArea:     false,
+               asynchronous:   true,
+               onSuccess: function(response) {
+                   window.location = '<?php echo $block->getAjaxUrl() ?>';
+                },
+                onFailure: function() {
+                   console.log("File Not Exists.")
+               }
+            });
+        });
+
+    });
+</script>
+<?php echo $block->getButtonHtml() ?>
