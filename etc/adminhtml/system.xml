@@ -47,6 +47,11 @@
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>payment/rakutenpay_configuration/log</config_path>
                     </field>
+                    <field id="download_log" translate="label comment" type="button" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <frontend_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\DownloadLog</frontend_model>
+                        <label>Download Log</label>
+                        <comment>Download Log File</comment>
+                    </field>
                     <group id="advanced" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Advanced Settings</label>
                         <comment>List the attributes of your Magento.</comment>
