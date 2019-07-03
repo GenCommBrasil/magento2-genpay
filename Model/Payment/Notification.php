@@ -32,11 +32,6 @@ class Notification
     private $approvedDate;
 
     /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
-     */
-    private $order;
-
-    /**
      * @var \Magento\Sales\Api\Data\OrderStatusHistoryInterface
      */
     private $history;
@@ -53,16 +48,13 @@ class Notification
 
     /**
      * Notification constructor.
-     * @param \Magento\Sales\Api\OrderRepositoryInterface $order
      * @param \Magento\Sales\Api\Data\OrderStatusHistoryInterface $history
      * @param Logger $logger
      */
     public function __construct(
-        \Magento\Sales\Api\OrderRepositoryInterface $order,
         \Magento\Sales\Api\Data\OrderStatusHistoryInterface $history,
         Logger $logger
     ) {
-        $this->order = $order;
         $this->history = $history;
         $this->logger = $logger;
     }
@@ -95,7 +87,7 @@ class Notification
                 $this->logger->info("Cannot process webhook", ['service' => 'WEBHOOK']);
                 return false;
             }
-            $order = $this->order->get($incrementId);
+            $order = $this->getOrderByIncrementId($incrementId);
 
             if ($order->getState() != $this->webhookStatus) {
                 $history = [
@@ -149,5 +141,18 @@ class Notification
         }
 
         $this->approvedDate = $status['created_at'];
+    }
+
+    /**
+     * @param $incrementId
+     * @return mixed
+     */
+    private function getOrderByIncrementId($incrementId)
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $collection = $objectManager->create('Magento\Sales\Model\Order');
+        $order = $collection->loadByIncrementId($incrementId);
+
+        return $order;
     }
 }

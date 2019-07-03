@@ -98,6 +98,7 @@ class BilletMethod extends PaymentMethod implements Payment
     {
         $this->logger->info("Processing setAdditionInformation.");
         $this->order->getPayment()->setAdditionalInformation('charge_uuid', $billet->getChargeId());
+        $this->order->getPayment()->setAdditionalInformation('payment_id', $billet->getPaymentId());
         $this->order->getPayment()->setAdditionalInformation('billet_url', $billet->getBilletUrl());
         $this->order->getPayment()->setAdditionalInformation('billet', $billet->getBillet());
         $this->order->save();

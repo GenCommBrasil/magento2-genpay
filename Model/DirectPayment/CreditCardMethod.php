@@ -116,6 +116,7 @@ class CreditCardMethod extends PaymentMethod implements Payment
     {
         $this->logger->info("Processing setAdditionInformation.");
         $this->order->getPayment()->setAdditionalInformation('charge_uuid', $creditCard->getChargeId());
+        $this->order->getPayment()->setAdditionalInformation('payment_id', $creditCard->getPaymentId());
         $this->order->getPayment()->setAdditionalInformation('installments', $this->customerPaymentData['creditCardInstallment']);
         $this->order->getPayment()->setCcNumberEnc($creditCard->getCreditCardNum());
         $this->order->getPayment()->setCcType($this->customerPaymentData['creditCardBrand']);
