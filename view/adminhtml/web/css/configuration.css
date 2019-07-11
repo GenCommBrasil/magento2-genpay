@@ -1,4 +1,4 @@
-.complex.rakutenpay-payment-section .rakutenpay-payment-logo { display:inline-block; vertical-align: middle; margin: 0 20px 0 0px; width: 30%; height:60px; max-width: 100%; background-repeat: no-repeat, no-repeat, no-repeat; background-image: url('images/rakutenpay-logo.png'); }
+.complex.rakutenpay-payment-section .rakutenpay-payment-logo { display:inline-block; vertical-align: middle; margin: 0 20px 0 0px; width: 30%; height:60px; max-width: 100%; background-repeat: no-repeat, no-repeat, no-repeat; background-image: url('../images/rakutenpay-logo.png'); }
 .section-config.with-button.rakutenpay-payment-section .config-heading strong { font-weight: normal; }
 .complex.rakutenpay-payment-section .button-container { float:right; }
 .complex.rakutenpay-payment-section .rakutenpay-payment-byline { display: inline-block; vertical-align: middle; width: 50%; }

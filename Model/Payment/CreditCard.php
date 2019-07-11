@@ -28,6 +28,8 @@ class CreditCard extends \Magento\Payment\Model\Method\Cc
     protected $_supportedCurrencyCodes = ['BRL'];
     protected $_cart;
     protected $_infoBlockType = '\Rakuten\RakutenPay\Block\Info\CreditCard';
+    protected $_canUseInternal          		= false;
+    protected $_canFetchTransactionInfo 		= true;
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
