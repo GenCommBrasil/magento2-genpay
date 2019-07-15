@@ -6,6 +6,7 @@ use Rakuten\Connector\Enum\Address;
 use Rakuten\Connector\Enum\Category;
 use Rakuten\Connector\Exception\RakutenException;
 use Rakuten\Connector\Parser\Error;
+use Rakuten\Connector\Parser\Transaction;
 use Rakuten\Connector\Resource\RakutenPay\Customer;
 use Rakuten\Connector\Resource\RakutenPay\Order;
 use Rakuten\RakutenPay\Logger\Logger;
@@ -16,6 +17,11 @@ use Rakuten\RakutenPay\Logger\Logger;
  */
 abstract class PaymentMethod
 {
+    /**
+     * RakutenPay Table Name
+     */
+    const RAKUTENPAY_ORDER = 'rakutenpay_order';
+
     /**
      * @var \Magento\Checkout\Model\Session
      */
@@ -147,12 +153,14 @@ abstract class PaymentMethod
                 $this->rakutenPayCustomer,
                 $this->rakutenPayPayment
             );
-            if ($response instanceof Error) {
-                $this->logger->info("HTTP_STATUS: ", [$response->getResponse()->getStatus()]);
-                $this->logger->info("HTTP_RESPONSE: ", [$response->getResponse()->getResult()]);
-            }
             $this->logger->info("HTTP_STATUS: ", [$response->getResponse()->getStatus()]);
             $this->logger->info("HTTP_RESPONSE: ", [$response->getResponse()->getResult()]);
+
+            if ($response instanceof Error) {
+
+                return $response;
+            }
+            $this->saveRakutenPayOrder($response);
 
             return $response;
         } catch (RakutenException $e) {
@@ -290,6 +298,32 @@ abstract class PaymentMethod
         }
 
         return Category::getDefaultCategory();
+    }
+
+    /**
+     * @param Transaction $transaction
+     */
+    protected function saveRakutenPayOrder(Transaction $transaction)
+    {
+        $this->logger->info('Processing saveRakutenPayOrder.');
+        /** @var \Magento\Framework\App\ResourceConnection $resource */
+        $resource = $this->objectManager->create('Magento\Framework\App\ResourceConnection');
+        $connection = $resource->getConnection();
+        try {
+            $tableName = $resource->getTableName(self::RAKUTENPAY_ORDER);
+            $connection->beginTransaction();
+            $connection->insert($tableName, [
+                'entity_id' => $this->order->getEntityId(),
+                'increment_id' => $this->order->getIncrementId(),
+                'charge_uuid' => $transaction->getChargeId(),
+                'status' => $transaction->getStatus(),
+                'environment' => $this->helper->getEnvironment(),
+            ]);
+            $connection->commit();
+        } catch(\Exception $e) {
+            $this->logger->error($e->getMessage(), ['service' => 'Save RakutenPay Order']);
+            $connection->rollBack();
+        }
     }
 
     /**

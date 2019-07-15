@@ -4,6 +4,12 @@ namespace Rakuten\RakutenPay\Controller\Payment;
 
 use Rakuten\Connector\Exception\RakutenException;
 use Rakuten\Connector\Parser\Error;
+use Rakuten\Connector\Parser\RakutenPay\Transaction\Billet;
+use Rakuten\Connector\Parser\RakutenPay\Transaction\CreditCard;
+use Rakuten\Connector\Parser\Transaction;
+use Rakuten\RakutenPay\Enum\DirectPayment\CodeError;
+use Rakuten\RakutenPay\Enum\DirectPayment\Message;
+use Rakuten\RakutenPay\Enum\DirectPayment\Status;
 use Rakuten\RakutenPay\Enum\PaymentMethod;
 use Rakuten\RakutenPay\Model\DirectPayment\BilletMethod;
 use Rakuten\RakutenPay\Model\DirectPayment\CreditCardMethod;
@@ -64,6 +70,82 @@ class Request extends \Magento\Framework\App\Action\Action
         $this->rakutenHelper = $rakutenHelper;
         $this->checkoutSession = $session;
         $this->logger = $logger;
+    }
+
+    /**
+     * @param $message
+     * @throws \Exception
+     */
+    private function cancelOrder($message)
+    {
+        $this->logger->info("Processing cancelOrder.");
+        $this->order->cancel();
+        $this->order->addCommentToStatusHistory($message);
+        $this->order->save();
+    }
+
+    /**
+     * @void
+     */
+    private function clearAdditionalInformation()
+    {
+        $this->logger->info("Processing clearAdditionalInformation.");
+        $this->order->getPayment()->unsAdditionalInformation()->getAdditionalInformation();
+    }
+
+    /**
+     * Return when fails
+     *
+     * @param $message
+     * @return $this
+     */
+
+    private function whenError($message)
+    {
+        $this->logger->info("Processing whenError.");
+        return $this->result->setData([
+            'success' => false,
+            'payload' => [
+                'error'    => $message,
+                'redirect' => sprintf('%s%s', $this->baseUrl(), 'rakutenpay/payment/failure')
+            ]
+        ]);
+    }
+
+    /**
+     * Load a order by id
+     * @param $orderId
+     * @return \Magento\Sales\Model\Order
+     */
+    private function loadOrder($orderId)
+    {
+        $this->logger->info("Processing loadOrder.");
+        return $this->_objectManager->create('Magento\Sales\Model\Order')->load($orderId);
+    }
+
+    /**
+     * Get base url
+     *
+     * @return string url
+     */
+    private function baseUrl()
+    {
+        $this->logger->info("Processing baseUrl.");
+        return $this->_objectManager->create('Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseUrl();
+    }
+
+    /**
+     * @param Error $response
+     * @return bool
+     */
+    private function isError(Error $response)
+    {
+        if (CodeError::CODE_CHARGE_ALREADY_EXISTS == (int) $response->getCode()) {
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -140,80 +222,34 @@ class Request extends \Magento\Framework\App\Action\Action
                 $result = $creditCard->createOrder();
             }
 
+            /** If error return true - Generate Order with Status Cancelled
+             * Case return false - Generate Order with default status
+             */
             if ($result instanceof Error) {
-                $this->logger->error($result->getMessage());
+                if (true === $this->isError($result)) {
+                    $this->logger->error($result->getMessage());
+                    $this->cancelOrder($result->getMessage());
+                    $this->whenError($result->getMessage());
+                }
+
+                return $this->_redirect('checkout/onepage/success');
+            }
+
+            if ($result->getResult() == Message::DECLINED ||
+                $result->getResult() == Status::CANCELLED
+            ) {
+                $this->logger->info(sprintf("Order has Canceled with Status: %s", $result->getResult()));
                 $this->cancelOrder($result->getMessage());
                 $this->whenError($result->getMessage());
             }
 
             return $this->_redirect('checkout/onepage/success');
         } catch (\Exception $exception) {
+
             $this->logger->error($exception->getMessage());
             $this->cancelOrder($exception->getMessage());
             $this->whenError($exception->getMessage());
             return $this->_redirect('rakutenpay/payment/failure');
         }
-    }
-
-    /**
-     * @param $message
-     * @throws \Exception
-     */
-    private function cancelOrder($message)
-    {
-        $this->logger->info("Processing cancelOrder.");
-        $this->order->cancel();
-        $this->order->addCommentToStatusHistory($message);
-        $this->order->save();
-    }
-
-    /**
-     * @void
-     */
-    private function clearAdditionalInformation()
-    {
-        $this->logger->info("Processing clearAdditionalInformation.");
-        $this->order->getPayment()->unsAdditionalInformation()->getAdditionalInformation();
-    }
-
-    /**
-     * Return when fails
-     *
-     * @param $message
-     * @return $this
-     */
-
-    private function whenError($message)
-    {
-        $this->logger->info("Processing whenError.");
-        return $this->result->setData([
-            'success' => false,
-            'payload' => [
-                'error'    => $message,
-                'redirect' => sprintf('%s%s', $this->baseUrl(), 'rakutenpay/payment/failure')
-            ]
-        ]);
-    }
-
-    /**
-     * Load a order by id
-     * @param $orderId
-     * @return \Magento\Sales\Model\Order
-     */
-    private function loadOrder($orderId)
-    {
-        $this->logger->info("Processing loadOrder.");
-        return $this->_objectManager->create('Magento\Sales\Model\Order')->load($orderId);
-    }
-
-    /**
-     * Get base url
-     *
-     * @return string url
-     */
-    private function baseUrl()
-    {
-        $this->logger->info("Processing baseUrl.");
-        return $this->_objectManager->create('Magento\Store\Model\StoreManagerInterface')->getStore()->getBaseUrl();
     }
 }

@@ -13,129 +13,91 @@ class InstallSchema implements InstallSchemaInterface
      * RakutenPay orders table name
      */
     const RAKUTENPAY_ORDER = 'rakutenpay_order';
-    
-    public function install(SchemaSetupInterface $setup, ModuleContextInterface $context)
-    {
-        $setup->startSetup();
-        $conn = $setup->getConnection();
-        $tableName = $setup->getTable(self::RAKUTENPAY_ORDER);
-        if ($conn->isTableExists($tableName) != true) {
-            $table = $conn->newTable($tableName)
-                ->addColumn(
-                    'entity_id',
-                    Table::TYPE_INTEGER,
-                    11,
-                    [
-                        'identity' => true,
-                        'unsigned' => true,
-                        'nullable' => false,
-                        'primary' => true
-                    ],
-                    'Entity ID'
-                )
-                ->addColumn(
-                    'order_id',
-                    TABLE::TYPE_INTEGER,
-                    11,
-                    [],
-                    'Order id'
-                )
-                ->addColumn(
-                    'charge_uuid',
-                    Table::TYPE_TEXT,
-                    80,
-                    [],
-                    'Charge Uuid'
-                )
-                ->addColumn(
-                    'environment',
-                    Table::TYPE_TEXT,
-                    40,
-                    [],
-                    'Environment'
-                )
-                ->addColumn(
-                    'created_at',
-                    Table::TYPE_TIMESTAMP,
-                    null,
-                    ['nullable' => false, 'default' => Table::TIMESTAMP_INIT],
-                    'Created At'
-                )
-                ->addColumn(
-                    'updated_at',
-                    Table::TYPE_TIMESTAMP,
-                    null,
-                    ['nullable' => false, 'default' => Table::TIMESTAMP_INIT_UPDATE],
-                    'Updated At'
-                )
-                ->setComment('RakutenPay Orders Table')
-                ->setOption('type', 'InnoDB')
-                ->setOption('charset', 'utf8');
-            $conn->createTable($table);
-        }
-        $setup->endSetup();
-        
-    }
 
     /**
-     * @param $setup
+     * @param SchemaSetupInterface   $setup
+     * @param ModuleContextInterface $context
+     * @throws \Zend_Db_Exception
+     * @SuppressWarnings(PMD.UnusedFormalParameter)
      */
-    private function createRakutenPayOrderTable($setup)
+    public function install(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
-        $tableName = $setup->getTable(self::RAKUTENPAY_ORDER);
-        if ($setup->getConnection()->isTableExists($tableName) != true) {
-            $table = $setup->getConnection()
-                ->newTable($tableName)
-                ->addColumn(
-                    'entity_id',
-                    Table::TYPE_INTEGER,
-                    11,
-                    [
-                        'identity' => true,
-                        'unsigned' => true,
-                        'nullable' => false,
-                        'primary' => true
-                    ],
-                    'Entity ID'
-                )
-                ->addColumn(
-                    'order_id',
-                    TABLE::TYPE_INTEGER,
-                    11,
-                    [],
-                    'Order id'
-                )
-                ->addColumn(
-                    'charge_uuid',
-                    Table::TYPE_TEXT,
-                    80,
-                    [],
-                    'Charge Uuid'
-                )
-                ->addColumn(
-                    'environment',
-                    Table::TYPE_TEXT,
-                    40,
-                    [],
-                    'Environment'
-                )
-                ->addColumn(
-                    'created_at',
-                    Table::TYPE_TIMESTAMP,
-                    null,
-                    ['nullable' => false, 'default' => Table::TIMESTAMP_INIT],
-                    'Created At'
-                )->addColumn(
-                    'updated_at',
-                    Table::TYPE_TIMESTAMP,
-                    null,
-                    ['nullable' => false, 'default' => Table::TIMESTAMP_INIT_UPDATE],
-                    'Updated At'
-                )
-                ->setComment('RakutenPay Orders Table')
-                ->setOption('type', 'InnoDB')
-                ->setOption('charset', 'utf8');
-            $setup->getConnection()->createTable($table);
+        $installer = $setup;
+
+        if ($installer->tableExists(self::RAKUTENPAY_ORDER)) {
+
+            return;
         }
+
+        $installer->startSetup();
+        $table = $installer->getConnection()
+            ->newTable($installer->getTable(self::RAKUTENPAY_ORDER))
+            ->addColumn(
+                'id',
+                Table::TYPE_INTEGER,
+                11,
+                [
+                    'identity' => true,
+                    'unsigned' => true,
+                    'nullable' => false,
+                    'primary' => true
+                ],
+                'ID'
+            )
+            ->addColumn(
+                'entity_id',
+                TABLE::TYPE_INTEGER,
+                11,
+                [
+                    'nullable' => false,
+                ],
+                'Entity ID'
+            )
+            ->addColumn(
+                'charge_uuid',
+                Table::TYPE_TEXT,
+                80,
+                [],
+                'Charge Uuid'
+            )
+            ->addColumn(
+                'increment_id',
+                Table::TYPE_TEXT,
+                80,
+                [],
+                'Increment ID'
+            )
+            ->addColumn(
+                'status',
+                Table::TYPE_TEXT,
+                80,
+                [],
+                'Status'
+            )
+            ->addColumn(
+                'environment',
+                Table::TYPE_TEXT,
+                40,
+                [],
+                'Environment'
+            )
+            ->addColumn(
+                'created_at',
+                Table::TYPE_TIMESTAMP,
+                null,
+                ['nullable' => false, 'default' => Table::TIMESTAMP_INIT],
+                'Created At'
+            )
+            ->addColumn(
+                'updated_at',
+                Table::TYPE_TIMESTAMP,
+                null,
+                ['nullable' => false, 'default' => Table::TIMESTAMP_INIT_UPDATE],
+                'Updated At'
+            )
+            ->setComment('RakutenPay Order')
+            ->setOption('charset', 'utf8');
+        $installer->getConnection()->createTable($table);
+        $installer->endSetup();
     }
 }

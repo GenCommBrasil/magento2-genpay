@@ -4,6 +4,7 @@ namespace Rakuten\RakutenPay\Model\Payment;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Rakuten\RakutenPay\Enum\DirectPayment\Status;
 use Rakuten\RakutenPay\Logger\Logger;
+use Rakuten\RakutenPay\Model\DirectPayment\PaymentMethod;
 
 /**
  * Class Notification
@@ -37,6 +38,11 @@ class Notification
     private $history;
 
     /**
+     * @var \Magento\Framework\App\ResourceConnection
+     */
+    private $resource;
+
+    /**
      * @var array
      */
     private $post;
@@ -49,13 +55,16 @@ class Notification
     /**
      * Notification constructor.
      * @param \Magento\Sales\Api\Data\OrderStatusHistoryInterface $history
+     * @param \Magento\Framework\App\ResourceConnection $resource,
      * @param Logger $logger
      */
     public function __construct(
         \Magento\Sales\Api\Data\OrderStatusHistoryInterface $history,
+        \Magento\Framework\App\ResourceConnection $resource,
         Logger $logger
     ) {
         $this->history = $history;
+        $this->resource = $resource;
         $this->logger = $logger;
     }
 
@@ -79,26 +88,28 @@ class Notification
         $this->logger->info("Processing setNotificationUpdateOrder.", ['service' => 'WEBHOOK']);
         try {
             $incrementId = $this->webhookReference;
+            $status = Status::getStatusMapping($this->webhookStatus);
             $this->logger->info("Processing webhook with transaction: " . $incrementId
-                . "; State: ". $this->webhookStatus . "; Amount: " . $this->amount,
+                . "; State: ". $status . "; Amount: " . $this->amount,
                 ['service' => 'WEBHOOK']);
 
-            if (false === $this->webhookStatus) {
+            if (false === $status) {
                 $this->logger->info("Cannot process webhook", ['service' => 'WEBHOOK']);
                 return false;
             }
             $order = $this->getOrderByIncrementId($incrementId);
 
-            if ($order->getState() != $this->webhookStatus) {
+            if ($order->getState() != $status) {
                 $history = [
-                    'status' => $this->history->setStatus($this->webhookStatus),
+                    'status' => $this->history->setStatus($status),
                     'comment' => $this->history->setComment(__('RakutenPay Notification')),
                 ];
-                $order->setStatus($this->webhookStatus);
-                $order->setState($this->webhookStatus);
+                $order->setStatus($status);
+                $order->setState($status);
                 $order->setStatusHistories($history);
                 $order->save();
                 $this->logger->info("Update Status Success.", ['service' => 'WEBHOOK']);
+                $this->updateRakutenPayOrder($order);
             }
 
             return true;
@@ -109,14 +120,33 @@ class Notification
     }
 
     /**
+     * @param $order
+     */
+    private function updateRakutenPayOrder($order)
+    {
+        $this->logger->info('Processing updateRakutenPayOrder.');
+        $connection = $this->resource->getConnection();
+        try {
+            $tableName = $this->resource->getTableName(PaymentMethod::RAKUTENPAY_ORDER);
+            $connection->beginTransaction();
+            $where = ['entity_id' => $order->getEntityId()];
+            $connection->update($tableName, ['status' => $this->webhookStatus], $where);
+            $connection->commit();
+        } catch(\Exception $e) {
+            $this->logger->error($e->getMessage(), ['service' => 'Update RakutenPay Order']);
+            $connection->rollBack();
+        }
+    }
+
+    /**
      * @return void
      */
     private function getNotificationPost()
     {
         $this->logger->info("Processing getNotificationPost.", ['service' => 'WEBHOOK']);
-        $this->webhookStatus = Status::getStatusMapping($this->post['status']);
+        $this->webhookStatus = $this->post['status'];
         $this->webhookReference = $this->post['reference'];
-        if ($this->webhookStatus == 'approved') {
+        if ($this->webhookStatus == Status::APPROVED) {
             $this->amount = floatval($this->post['amount']);
         } else if (
             $this->webhookStatus == Status::PARTIAL_REFUNDED ||
