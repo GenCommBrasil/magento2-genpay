@@ -43,6 +43,16 @@ class Notification
     private $resource;
 
     /**
+     * @var \Magento\Sales\Model\Service\InvoiceService
+     */
+    private $invoiceService;
+
+    /**
+     * @var \Magento\Framework\DB\TransactionFactory
+     */
+    private $transactionFactory;
+
+    /**
      * @var array
      */
     private $post;
@@ -55,16 +65,22 @@ class Notification
     /**
      * Notification constructor.
      * @param \Magento\Sales\Api\Data\OrderStatusHistoryInterface $history
-     * @param \Magento\Framework\App\ResourceConnection $resource,
+     * @param \Magento\Framework\App\ResourceConnection $resource
+     * @param \Magento\Sales\Model\Service\InvoiceService $invoiceService
+     * @param \Magento\Framework\DB\TransactionFactory $transactionFactory
      * @param Logger $logger
      */
     public function __construct(
         \Magento\Sales\Api\Data\OrderStatusHistoryInterface $history,
         \Magento\Framework\App\ResourceConnection $resource,
+        \Magento\Sales\Model\Service\InvoiceService $invoiceService,
+        \Magento\Framework\DB\TransactionFactory $transactionFactory,
         Logger $logger
     ) {
         $this->history = $history;
         $this->resource = $resource;
+        $this->invoiceService = $invoiceService;
+        $this->transactionFactory = $transactionFactory;
         $this->logger = $logger;
     }
 
@@ -99,6 +115,10 @@ class Notification
             }
             $order = $this->getOrderByIncrementId($incrementId);
 
+            if ($order->canInvoice()) {
+                $this->createInvoice($order);
+            }
+
             if ($order->getState() != $status) {
                 $history = [
                     'status' => $this->history->setStatus($status),
@@ -116,6 +136,28 @@ class Notification
         } catch (NoSuchEntityException $e) {
             $this->logger->error($e->getMessage(), ['service' => 'WEBHOOK']);
             return false;
+        }
+    }
+
+    /**
+     * @param $order
+     */
+    private function createInvoice($order)
+    {
+        $this->logger->info("Processing createInvoice.", ['service' => 'WEBHOOK']);
+        try {
+            $invoice = $this->invoiceService->prepareInvoice($order);
+            $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_OFFLINE);
+            $invoice->register();
+
+            $transaction = $this->transactionFactory->create()
+                ->addObject($invoice)
+                ->addObject($invoice->getOrder());
+
+            $transaction->save();
+        } catch (\Exception $e) {
+            $order->addStatusHistoryComment('Exception Create Invoice: '.$e->getMessage(), false);
+            $order->save();
         }
     }
 

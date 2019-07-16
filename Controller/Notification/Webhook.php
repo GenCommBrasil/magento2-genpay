@@ -108,7 +108,9 @@ class Webhook extends \Magento\Framework\App\Action\Action implements CsrfAwareA
     {
         return new Notification(
             $this->_objectManager->create('\Magento\Sales\Api\Data\OrderStatusHistoryInterface'),
-            $resource = $this->_objectManager->create('Magento\Framework\App\ResourceConnection'),
+            $this->_objectManager->create('Magento\Framework\App\ResourceConnection'),
+            $this->_objectManager->create('\Magento\Sales\Model\Service\InvoiceService'),
+            $this->_objectManager->create('\Magento\Framework\DB\TransactionFactory'),
             $this->logger
         );
     }
