@@ -3,8 +3,8 @@ namespace Rakuten\RakutenPay\Model\Payment;
 
 use Magento\Framework\Exception\NoSuchEntityException;
 use Rakuten\RakutenPay\Enum\DirectPayment\Status;
+use Rakuten\RakutenPay\Helper\Data;
 use Rakuten\RakutenPay\Logger\Logger;
-use Rakuten\RakutenPay\Model\DirectPayment\PaymentMethod;
 
 /**
  * Class Notification
@@ -38,11 +38,6 @@ class Notification
     private $history;
 
     /**
-     * @var \Magento\Framework\App\ResourceConnection
-     */
-    private $resource;
-
-    /**
      * @var \Magento\Sales\Model\Service\InvoiceService
      */
     private $invoiceService;
@@ -58,6 +53,11 @@ class Notification
     private $post;
 
     /**
+     * @var Data
+     */
+    private $helper;
+
+    /**
      * @var \Rakuten\RakutenPay\Logger\Logger
      */
     protected $logger;
@@ -65,22 +65,22 @@ class Notification
     /**
      * Notification constructor.
      * @param \Magento\Sales\Api\Data\OrderStatusHistoryInterface $history
-     * @param \Magento\Framework\App\ResourceConnection $resource
      * @param \Magento\Sales\Model\Service\InvoiceService $invoiceService
      * @param \Magento\Framework\DB\TransactionFactory $transactionFactory
+     * @param Data $helper
      * @param Logger $logger
      */
     public function __construct(
         \Magento\Sales\Api\Data\OrderStatusHistoryInterface $history,
-        \Magento\Framework\App\ResourceConnection $resource,
         \Magento\Sales\Model\Service\InvoiceService $invoiceService,
         \Magento\Framework\DB\TransactionFactory $transactionFactory,
+        Data $helper,
         Logger $logger
     ) {
         $this->history = $history;
-        $this->resource = $resource;
         $this->invoiceService = $invoiceService;
         $this->transactionFactory = $transactionFactory;
+        $this->helper = $helper;
         $this->logger = $logger;
     }
 
@@ -129,7 +129,7 @@ class Notification
                 $order->setStatusHistories($history);
                 $order->save();
                 $this->logger->info("Update Status Success.", ['service' => 'WEBHOOK']);
-                $this->updateRakutenPayOrder($order);
+                $this->helper->updateStatusRakutenPayOrder($order, $this->webhookStatus);
             }
 
             return true;
@@ -158,25 +158,6 @@ class Notification
         } catch (\Exception $e) {
             $order->addStatusHistoryComment('Exception Create Invoice: '.$e->getMessage(), false);
             $order->save();
-        }
-    }
-
-    /**
-     * @param $order
-     */
-    private function updateRakutenPayOrder($order)
-    {
-        $this->logger->info('Processing updateRakutenPayOrder.');
-        $connection = $this->resource->getConnection();
-        try {
-            $tableName = $this->resource->getTableName(PaymentMethod::RAKUTENPAY_ORDER);
-            $connection->beginTransaction();
-            $where = ['entity_id' => $order->getEntityId()];
-            $connection->update($tableName, ['status' => $this->webhookStatus], $where);
-            $connection->commit();
-        } catch(\Exception $e) {
-            $this->logger->error($e->getMessage(), ['service' => 'Update RakutenPay Order']);
-            $connection->rollBack();
         }
     }
 

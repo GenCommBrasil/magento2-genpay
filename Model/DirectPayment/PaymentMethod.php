@@ -9,6 +9,7 @@ use Rakuten\Connector\Parser\Error;
 use Rakuten\Connector\Parser\Transaction;
 use Rakuten\Connector\Resource\RakutenPay\Customer;
 use Rakuten\Connector\Resource\RakutenPay\Order;
+use Rakuten\RakutenPay\Helper\Data;
 use Rakuten\RakutenPay\Logger\Logger;
 
 /**
@@ -17,11 +18,6 @@ use Rakuten\RakutenPay\Logger\Logger;
  */
 abstract class PaymentMethod
 {
-    /**
-     * RakutenPay Table Name
-     */
-    const RAKUTENPAY_ORDER = 'rakutenpay_order';
-
     /**
      * @var \Magento\Checkout\Model\Session
      */
@@ -310,7 +306,7 @@ abstract class PaymentMethod
         $resource = $this->objectManager->create('Magento\Framework\App\ResourceConnection');
         $connection = $resource->getConnection();
         try {
-            $tableName = $resource->getTableName(self::RAKUTENPAY_ORDER);
+            $tableName = $resource->getTableName(Data::RAKUTENPAY_ORDER);
             $connection->beginTransaction();
             $connection->insert($tableName, [
                 'entity_id' => $this->order->getEntityId(),
