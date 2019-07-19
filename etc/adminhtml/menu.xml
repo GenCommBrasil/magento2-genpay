@@ -1,6 +1,0 @@
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
-    <menu>
-        <add id="Rakuten_RakutenPay::RakutenPay" title="RakutenPay" module="Rakuten_RakutenPay" sortOrder="70" resource="Rakuten_RakutenPay::RakutenPay"/>
-        <add id="Rakuten_RakutenPay::Refund" title="Estorno" module="Rakuten_RakutenPay" sortOrder="40" action="rakutenpay/refund/index" resource="Rakuten_RakutenPay::Refund" parent="Rakuten_RakutenPay::RakutenPay"/>
-    </menu>
-</config>
