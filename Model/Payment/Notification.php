@@ -3,6 +3,7 @@ namespace Rakuten\RakutenPay\Model\Payment;
 
 use Magento\Framework\Exception\NoSuchEntityException;
 use Rakuten\RakutenPay\Enum\DirectPayment\Status;
+use Rakuten\RakutenPay\Helper\Data;
 use Rakuten\RakutenPay\Logger\Logger;
 
 /**
@@ -32,19 +33,29 @@ class Notification
     private $approvedDate;
 
     /**
-     * @var \Magento\Sales\Api\OrderRepositoryInterface
-     */
-    private $order;
-
-    /**
      * @var \Magento\Sales\Api\Data\OrderStatusHistoryInterface
      */
     private $history;
 
     /**
+     * @var \Magento\Sales\Model\Service\InvoiceService
+     */
+    private $invoiceService;
+
+    /**
+     * @var \Magento\Framework\DB\TransactionFactory
+     */
+    private $transactionFactory;
+
+    /**
      * @var array
      */
     private $post;
+
+    /**
+     * @var Data
+     */
+    private $helper;
 
     /**
      * @var \Rakuten\RakutenPay\Logger\Logger
@@ -53,17 +64,23 @@ class Notification
 
     /**
      * Notification constructor.
-     * @param \Magento\Sales\Api\OrderRepositoryInterface $order
      * @param \Magento\Sales\Api\Data\OrderStatusHistoryInterface $history
+     * @param \Magento\Sales\Model\Service\InvoiceService $invoiceService
+     * @param \Magento\Framework\DB\TransactionFactory $transactionFactory
+     * @param Data $helper
      * @param Logger $logger
      */
     public function __construct(
-        \Magento\Sales\Api\OrderRepositoryInterface $order,
         \Magento\Sales\Api\Data\OrderStatusHistoryInterface $history,
+        \Magento\Sales\Model\Service\InvoiceService $invoiceService,
+        \Magento\Framework\DB\TransactionFactory $transactionFactory,
+        Data $helper,
         Logger $logger
     ) {
-        $this->order = $order;
         $this->history = $history;
+        $this->invoiceService = $invoiceService;
+        $this->transactionFactory = $transactionFactory;
+        $this->helper = $helper;
         $this->logger = $logger;
     }
 
@@ -87,26 +104,32 @@ class Notification
         $this->logger->info("Processing setNotificationUpdateOrder.", ['service' => 'WEBHOOK']);
         try {
             $incrementId = $this->webhookReference;
+            $status = Status::getStatusMapping($this->webhookStatus);
             $this->logger->info("Processing webhook with transaction: " . $incrementId
-                . "; State: ". $this->webhookStatus . "; Amount: " . $this->amount,
+                . "; State: ". $status . "; Amount: " . $this->amount,
                 ['service' => 'WEBHOOK']);
 
-            if (false === $this->webhookStatus) {
+            if (false === $status) {
                 $this->logger->info("Cannot process webhook", ['service' => 'WEBHOOK']);
                 return false;
             }
-            $order = $this->order->get($incrementId);
+            $order = $this->getOrderByIncrementId($incrementId);
 
-            if ($order->getState() != $this->webhookStatus) {
+            if ($order->canInvoice()) {
+                $this->createInvoice($order);
+            }
+
+            if ($order->getState() != $status) {
                 $history = [
-                    'status' => $this->history->setStatus($this->webhookStatus),
+                    'status' => $this->history->setStatus($status),
                     'comment' => $this->history->setComment(__('RakutenPay Notification')),
                 ];
-                $order->setStatus($this->webhookStatus);
-                $order->setState($this->webhookStatus);
+                $order->setStatus($status);
+                $order->setState($status);
                 $order->setStatusHistories($history);
                 $order->save();
                 $this->logger->info("Update Status Success.", ['service' => 'WEBHOOK']);
+                $this->helper->updateStatusRakutenPayOrder($order, $this->webhookStatus);
             }
 
             return true;
@@ -117,14 +140,36 @@ class Notification
     }
 
     /**
+     * @param $order
+     */
+    private function createInvoice($order)
+    {
+        $this->logger->info("Processing createInvoice.", ['service' => 'WEBHOOK']);
+        try {
+            $invoice = $this->invoiceService->prepareInvoice($order);
+            $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_OFFLINE);
+            $invoice->register();
+
+            $transaction = $this->transactionFactory->create()
+                ->addObject($invoice)
+                ->addObject($invoice->getOrder());
+
+            $transaction->save();
+        } catch (\Exception $e) {
+            $order->addStatusHistoryComment('Exception Create Invoice: '.$e->getMessage(), false);
+            $order->save();
+        }
+    }
+
+    /**
      * @return void
      */
     private function getNotificationPost()
     {
         $this->logger->info("Processing getNotificationPost.", ['service' => 'WEBHOOK']);
-        $this->webhookStatus = Status::getStatusMapping($this->post['status']);
+        $this->webhookStatus = $this->post['status'];
         $this->webhookReference = $this->post['reference'];
-        if ($this->webhookStatus == 'approved') {
+        if ($this->webhookStatus == Status::APPROVED) {
             $this->amount = floatval($this->post['amount']);
         } else if (
             $this->webhookStatus == Status::PARTIAL_REFUNDED ||
@@ -149,5 +194,18 @@ class Notification
         }
 
         $this->approvedDate = $status['created_at'];
+    }
+
+    /**
+     * @param $incrementId
+     * @return mixed
+     */
+    private function getOrderByIncrementId($incrementId)
+    {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $collection = $objectManager->create('Magento\Sales\Model\Order');
+        $order = $collection->loadByIncrementId($incrementId);
+
+        return $order;
     }
 }

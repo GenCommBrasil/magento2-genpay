@@ -26,6 +26,8 @@ class Billet extends \Magento\Payment\Model\Method\Cc
     protected $_cart;
     protected $_rakutenHelper;
     protected $_infoBlockType = '\Rakuten\RakutenPay\Block\Info\Billet';
+    protected $_canUseInternal = false;
+    protected $_canFetchTransactionInfo = true;
 
     /**
      * @var RakutenPay

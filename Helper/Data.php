@@ -11,6 +11,7 @@ use Rakuten\Connector\Exception\RakutenException;
 use Rakuten\Connector\RakutenPay;
 use Magento\Framework\Message\ManagerInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Rakuten\RakutenPay\Logger\Logger;
 
 /**
  * Class Data
@@ -18,6 +19,11 @@ use Magento\Store\Model\StoreManagerInterface;
  */
 class Data extends AbstractHelper
 {
+    /**
+     * RakutenPay Table Name
+     */
+    const RAKUTENPAY_ORDER = 'rakutenpay_order';
+
     /**
      * @var ModuleListInterface
      */
@@ -47,10 +53,25 @@ class Data extends AbstractHelper
     protected $storeManager;
 
     /**
+     * @var \Magento\Framework\App\ResourceConnection
+     */
+    private $resource;
+
+    /**
+     * @var Logger
+     */
+    protected $logger;
+
+    /**
      * Data constructor.
      * @param ScopeConfigInterface $scopeConfig
      * @param ModuleListInterface $moduleList
      * @param Context $context
+     * @param ManagerInterface $messageManager
+     * @param RemoteAddress $remoteAddress
+     * @param StoreManagerInterface $storeManager
+     * @param \Magento\Framework\App\ResourceConnection $resource
+     * @param Logger $logger
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
@@ -58,7 +79,9 @@ class Data extends AbstractHelper
         Context $context,
         ManagerInterface $messageManager,
         RemoteAddress $remoteAddress,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        \Magento\Framework\App\ResourceConnection $resource,
+        Logger $logger
     ) {
         parent::__construct($context);
         $this->moduleList = $moduleList;
@@ -66,12 +89,51 @@ class Data extends AbstractHelper
         $this->messageManager = $messageManager;
         $this->remoteAddress = $remoteAddress;
         $this->storeManager = $storeManager;
+        $this->resource = $resource;
+        $this->logger = $logger;
         $this->rakutenPay = new RakutenPay(
             $this->getDocument(),
             $this->getApiKey(),
             $this->getSignature(),
             $this->getEnvironment()
         );
+    }
+
+    /**
+     * @param $order
+     * @param $status
+     */
+    public function updateStatusRakutenPayOrder($order, $status)
+    {
+        $this->logger->info('Processing updateStatusRakutenPayOrder in Data.');
+        $connection = $this->resource->getConnection();
+        try {
+            $tableName = $this->resource->getTableName(Data::RAKUTENPAY_ORDER);
+            $connection->beginTransaction();
+            $where = ['entity_id = ?' => $order->getEntityId()];
+            $connection->update($tableName, ['status' => $status], $where);
+            $connection->commit();
+        } catch(\Exception $e) {
+            $this->logger->error($e->getMessage(), ['service' => 'Update Status in RakutenPay Order']);
+            $connection->rollBack();
+        }
+    }
+
+    /**
+     * @param $order
+     * @return array
+     */
+    public function getRakutenPayOrder($order)
+    {
+        $this->logger->info('Processing getRakutenPayOrder in Data.');
+        $connection = $this->resource->getConnection();
+        $tableName = $this->resource->getTableName(Data::RAKUTENPAY_ORDER);
+        $select = $connection
+            ->select()
+            ->from($tableName,['entity_id', 'charge_uuid', 'increment_id', 'status', 'environment'])
+            ->where('entity_id = ?', $order->getEntityId());
+
+        return $connection->fetchAssoc($select);
     }
 
     /**
