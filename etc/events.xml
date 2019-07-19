@@ -3,4 +3,7 @@
     <event name="order_cancel_after">
         <observer name="rakutenpay_order_cancel" instance="Rakuten\RakutenPay\Observer\Cancel" />
     </event>
+    <event name="sales_order_creditmemo_save_after">
+        <observer name="rakutenpay_order_creditmemo_refund" instance="Rakuten\RakutenPay\Observer\Refund" />
+    </event>
 </config>

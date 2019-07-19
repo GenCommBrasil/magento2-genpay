@@ -32,6 +32,12 @@ class Cancel implements \Magento\Framework\Event\ObserverInterface
      */
     private $resource;
 
+    /**
+     * Cancel constructor.
+     * @param Data $helper
+     * @param \Magento\Framework\App\ResourceConnection $resource
+     * @param Logger $logger
+     */
     public function __construct(
         Data $helper,
         \Magento\Framework\App\ResourceConnection $resource,
@@ -44,15 +50,18 @@ class Cancel implements \Magento\Framework\Event\ObserverInterface
 
     /**
      * @param $rakutenOrder
-     * @return bool
+     * @throws CouldNotSaveException
      */
-    private function isEnvironment($rakutenOrder)
+    private function validateEnvironment($rakutenOrder)
     {
-        return $rakutenOrder['environment'] == $this->helper->getEnvironment();
+        if ($rakutenOrder['environment'] != $this->helper->getEnvironment()) {
+            $this->logger->error("Error: Order was created in the environment " . $rakutenOrder['environment'], ['service' => 'Observer']);
+            throw new CouldNotSaveException(__("Error: Order was created in the environment " . $rakutenOrder['environment']));
+        }
     }
 
     /**
-     * @return bool
+     * @return $this
      * @throws CouldNotSaveException
      * @throws \Rakuten\Connector\Exception\RakutenException
      */
@@ -62,21 +71,20 @@ class Cancel implements \Magento\Framework\Event\ObserverInterface
         $rakutenOrder = $this->helper->getRakutenPayOrder($this->order);
         if (count($rakutenOrder)) {
             $rakutenOrder = array_shift($rakutenOrder);
-            if (!$this->isEnvironment($rakutenOrder)) {
-                $this->logger->error("Error: Order was created in the environment " . $rakutenOrder['environment'], ['service' => 'Observer']);
-                throw new CouldNotSaveException(__("Error: Order was created in the environment " . $rakutenOrder['environment']));
-            }
+            $this->validateEnvironment($rakutenOrder);
             $rakutenPay = $this->helper->getRakutenPay();
             $result = $rakutenPay->cancel($rakutenOrder['charge_uuid'], Requester::MERCHANT, 'Cancel by admin');
             $this->logger->info("Payload: " . $result->getResponse()->getResult(), ['service' => 'Observer']);
+
             if ($result instanceof Refund) {
                 $this->order->cancel();
                 $this->order->addCommentToStatusHistory('Cancel by Admin');
                 $this->order->save();
                 $this->helper->updateStatusRakutenPayOrder($this->order, $result->getStatus());
 
-                return true;
+                return $this;
             }
+
             if ($result instanceof Error) {
                 $this->logger->error("HTTP_STATUS: " . $result->getResponse()->getStatus(), ['service' => 'Observer']);
                 $this->logger->error("HTTP_RESPONSE: " . $result->getResponse()->getResult(), ['service' => 'Observer']);
