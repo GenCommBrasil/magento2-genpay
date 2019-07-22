@@ -27,7 +27,7 @@ class Status
         self::CHARGEBACK => Order::STATE_CANCELED,
         self::CANCELLED => Order::STATE_CANCELED,
         self::REFUNDED => Order::STATE_CLOSED,
-        self::PARTIAL_REFUNDED => Order::STATE_CLOSED,
+        self::PARTIAL_REFUNDED => Order::STATE_PROCESSING,
     ];
 
     /**

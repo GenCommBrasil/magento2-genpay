@@ -48,6 +48,16 @@ class Notification
     private $transactionFactory;
 
     /**
+     * @var \Magento\Sales\Model\Order\CreditmemoFactory
+     */
+    private $creditmemoFactory;
+
+    /**
+     * @var \Magento\Sales\Model\Service\CreditmemoService
+     */
+    private $creditmemoService;
+
+    /**
      * @var array
      */
     private $post;
@@ -67,6 +77,8 @@ class Notification
      * @param \Magento\Sales\Api\Data\OrderStatusHistoryInterface $history
      * @param \Magento\Sales\Model\Service\InvoiceService $invoiceService
      * @param \Magento\Framework\DB\TransactionFactory $transactionFactory
+     * @param \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory
+     * @param \Magento\Sales\Model\Service\CreditmemoService $creditmemoService
      * @param Data $helper
      * @param Logger $logger
      */
@@ -74,12 +86,16 @@ class Notification
         \Magento\Sales\Api\Data\OrderStatusHistoryInterface $history,
         \Magento\Sales\Model\Service\InvoiceService $invoiceService,
         \Magento\Framework\DB\TransactionFactory $transactionFactory,
+        \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory,
+        \Magento\Sales\Model\Service\CreditmemoService $creditmemoService,
         Data $helper,
         Logger $logger
     ) {
         $this->history = $history;
         $this->invoiceService = $invoiceService;
         $this->transactionFactory = $transactionFactory;
+        $this->creditmemoFactory = $creditmemoFactory;
+        $this->creditmemoService = $creditmemoService;
         $this->helper = $helper;
         $this->logger = $logger;
     }
@@ -102,11 +118,13 @@ class Notification
     private function setNotificationUpdateOrder()
     {
         $this->logger->info("Processing setNotificationUpdateOrder.", ['service' => 'WEBHOOK']);
+        $this->logger->info($this->amount, ['service' => 'WEBHOOK']);
+
         try {
             $incrementId = $this->webhookReference;
             $status = Status::getStatusMapping($this->webhookStatus);
             $this->logger->info("Processing webhook with transaction: " . $incrementId
-                . "; State: ". $status . "; Amount: " . $this->amount,
+                . "; State: ". $this->webhookStatus . "; Amount: " . $this->amount,
                 ['service' => 'WEBHOOK']);
 
             if (false === $status) {
@@ -114,6 +132,12 @@ class Notification
                 return false;
             }
             $order = $this->getOrderByIncrementId($incrementId);
+
+            if ($this->webhookStatus == Status::REFUNDED || $this->webhookStatus == Status::PARTIAL_REFUNDED) {
+                $this->helper->updateStatusRakutenPayOrder($order, $this->webhookStatus);
+
+                return $this->createCreditmemo($order);
+            }
 
             if ($order->canInvoice()) {
                 $this->createInvoice($order);
@@ -174,7 +198,7 @@ class Notification
         } else if (
             $this->webhookStatus == Status::PARTIAL_REFUNDED ||
             $this->webhookStatus == Status::REFUNDED) {
-            $this->amount = -array_sum(array_column($this->post['refunds'], 'amount'));
+            $this->amount = array_sum(array_column($this->post['refunds'], 'amount'));
         } else {
             $this->amount = false;
         }
@@ -202,10 +226,29 @@ class Notification
      */
     private function getOrderByIncrementId($incrementId)
     {
+        $this->logger->info("Processing getOrderByIncrementId.", ['service' => 'WEBHOOK']);
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $collection = $objectManager->create('Magento\Sales\Model\Order');
         $order = $collection->loadByIncrementId($incrementId);
 
         return $order;
+    }
+
+    /**
+     * @param $order
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    private function createCreditmemo($order)
+    {
+        $this->logger->info("Processing createCreditmemo.", ['service' => 'WEBHOOK']);
+        $creditmemo = $this->creditmemoFactory->createByOrder($order);
+        $creditmemo->setBaseGrandTotal($this->amount);
+        $creditmemo->setBaseSubtotal($this->amount);
+        $creditmemo->setSubtotal($this->amount);
+        $creditmemo->setGrandTotal($this->amount);
+        $this->creditmemoService->refund($creditmemo, true);
+
+        return true;
     }
 }

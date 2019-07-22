@@ -110,6 +110,8 @@ class Webhook extends \Magento\Framework\App\Action\Action implements CsrfAwareA
             $this->_objectManager->create('\Magento\Sales\Api\Data\OrderStatusHistoryInterface'),
             $this->_objectManager->create('\Magento\Sales\Model\Service\InvoiceService'),
             $this->_objectManager->create('\Magento\Framework\DB\TransactionFactory'),
+            $this->_objectManager->create('\Magento\Sales\Model\Order\CreditmemoFactory'),
+            $this->_objectManager->create('\Magento\Sales\Model\Service\CreditmemoService'),
             $this->_objectManager->create('\Rakuten\RakutenPay\Helper\Data'),
             $this->logger
         );
