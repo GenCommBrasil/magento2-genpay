@@ -6,6 +6,7 @@ use Magento\Sales\Model\Order;
 use Rakuten\Connector\Enum\Refund\Requester;
 use Rakuten\Connector\Parser\Error;
 use Rakuten\Connector\Parser\RakutenPay\Transaction\Refund as TransationRefund;
+use Rakuten\RakutenPay\Enum\DirectPayment\Status;
 use Rakuten\RakutenPay\Enum\PaymentMethod;
 use Rakuten\Connector\Resource\RakutenPay\Refund as ResourceRefund;
 use Rakuten\RakutenPay\Helper\Data;
@@ -72,6 +73,29 @@ class Refund implements \Magento\Framework\Event\ObserverInterface
     }
 
     /**
+     * Where Billet redirect for Dashboard - Settings Bank Account
+     *
+     * @throws CouldNotSaveException
+     */
+    private function validateBillet()
+    {
+        if ($this->creditmemo->getOrder()->getPayment()->getMethod() == PaymentMethod::BILLET_CODE) {
+            $this->logger->error('Refund of the billet is only available on the RakutenPay Dashboard');
+            throw new CouldNotSaveException(__('Refund of the billet is only available on the RakutenPay Dashboard'));
+        }
+    }
+
+    /**
+     * @param $rakutenOrder
+     * @return bool
+     */
+    private function isNotification($rakutenOrder)
+    {
+        $this->logger->info('Processing isNotification', ['service' => 'Observer']);
+        return $rakutenOrder['status'] == Status::PARTIAL_REFUNDED || $rakutenOrder['status'] == Status::REFUNDED;
+    }
+
+    /**
      * @param ResourceRefund $refund
      * @param $chargeId
      * @param $amount
@@ -104,8 +128,15 @@ class Refund implements \Magento\Framework\Event\ObserverInterface
         $rakutenOrder = $this->helper->getRakutenPayOrder($this->creditmemo->getOrder());
         if (count($rakutenOrder)) {
             $rakutenOrder = array_shift($rakutenOrder);
-            $this->validateEnvironment($rakutenOrder);
 
+            if ($this->isNotification($rakutenOrder)) {
+                $this->logger->info('isNotification - true', ['service' => 'Observer']);
+
+                return $this;
+            }
+
+            $this->validateBillet();
+            $this->validateEnvironment($rakutenOrder);
             $refund = $this->rakutenPay->asRefund()
                 ->setReason("Refund by Admin")
                 ->setRequester(Requester::MERCHANT)
@@ -131,7 +162,7 @@ class Refund implements \Magento\Framework\Event\ObserverInterface
 
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $this->logger->info('Processing execute sales_order_creditmemo_save_afterin Cancel.', ['service' => 'Observer']);
+        $this->logger->info('Processing execute sales_order_creditmemo_save_after in Refund.', ['service' => 'Observer']);
         $this->creditmemo = $observer->getEvent()->getCreditmemo();
         $refundAmount = (float) $this->creditmemo->getOrder()->getBaseTotalRefunded();
         $amount = (float) $this->creditmemo->getOrder()->getBaseGrandTotal();
