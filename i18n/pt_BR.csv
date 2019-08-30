@@ -47,3 +47,4 @@
 "Error: Order was created in the environment sandbox", "Erro: O pedido foi criado no ambiente de Sandbox"
 "Error: Order was created in the environment production", "Erro: O pedido foi criado no ambiente de Produção"
 "You will be redirected to RakutenPay Dashboard click OK to continue","Você será redirecionado para o Dashboard do RakutenPay clique em OK para continuar"
+"Validate Credential Rakuten","Validar Credenciais no Rakuten Connector"
