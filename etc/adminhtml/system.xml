@@ -35,19 +35,23 @@
                         <comment>Signature generated on Rakuten.</comment>
                         <config_path>payment/rakutenpay_configuration/signature</config_path>
                     </field>
-                    <field id="email" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="validation_credencial" translate="button_label" type="button" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <button_label>Validate Credential in Rakuten</button_label>
+                        <frontend_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\ValidateCredential</frontend_model>
+                    </field>
+                    <field id="email" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Email</label>
                         <validate>required-entry validate-email</validate>
                         <comment>Email registered with Rakuten.</comment>
                         <config_path>payment/rakutenpay_configuration/email</config_path>
                     </field>
-                    <field id="log" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="log" translate="label" type="select" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Enable Log</label>
                         <comment>Enable Log for Debug Module.</comment>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>payment/rakutenpay_configuration/log</config_path>
                     </field>
-                    <field id="download_log" translate="label comment" type="button" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <field id="download_log" translate="label comment" type="button" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="0">
                         <frontend_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\DownloadLog</frontend_model>
                         <label>Download Log</label>
                         <comment>Download Log File</comment>
