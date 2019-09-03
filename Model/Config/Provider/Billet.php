@@ -61,7 +61,6 @@ class Billet implements ConfigProviderInterface
      */
     public function getConfig()
     {
-        $this->logger->info("Processing getConfig.", ['service' => 'BilletProvider']);
         return $this->method->isAvailable() ? [
             'payment' => [
                 'rakutenpay_billet' => [
@@ -80,7 +79,6 @@ class Billet implements ConfigProviderInterface
      */
     protected function getTitle()
     {
-        $this->logger->info("Processing getTitle.", ['service' => 'BilletProvider']);
         return $this->scopeConfig->getValue('payment/rakutenpay_billet/title', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
@@ -91,7 +89,6 @@ class Billet implements ConfigProviderInterface
      */
     protected function getInstruction()
     {
-        $this->logger->info("Processing getInstruction.", ['service' => 'BilletProvider']);
         return nl2br($this->escaper->escapeHtml($this->scopeConfig->getValue('payment/rakutenpay_billet/instruction', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)));
     }
 
@@ -102,7 +99,6 @@ class Billet implements ConfigProviderInterface
      */
     protected function getDue()
     {
-        $this->logger->info("Processing getDue.", ['service' => 'BilletProvider']);
         $day = (int)$this->scopeConfig->getValue('payment/rakutenpay_billet/expiration', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         if ($day > 1) {
             return nl2br(sprintf(__('Expiration in %s days'), $day));

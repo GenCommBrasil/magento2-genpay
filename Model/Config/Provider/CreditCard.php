@@ -53,7 +53,6 @@ class CreditCard implements ConfigProviderInterface
         $this->scopeConfig = $scopeConfig;
         $this->logger = $logger;
         $this->creditCardMethod = $paymentHelper->getMethodInstance(PaymentMethod::CREDIT_CARD_CODE);
-
     }
 
     /**
@@ -61,7 +60,6 @@ class CreditCard implements ConfigProviderInterface
      */
     public function getConfig()
     {
-        $this->logger->info("Processing getConfig.", ['service' => 'CreditCardProvider']);
         return [
             'payment' => [
                 'rakutenpay_credit_card' => [
@@ -80,7 +78,6 @@ class CreditCard implements ConfigProviderInterface
      */
     protected function getYearValues()
     {
-        $this->logger->info("Processing getYearValues.", ['service' => 'CreditCardProvider']);
         $data = [];
         $year = idate("Y");
         $maxYear = $year + self::YEARS_RANGE;
@@ -96,7 +93,6 @@ class CreditCard implements ConfigProviderInterface
      */
     protected function getTitle()
     {
-        $this->logger->info("Processing getTitle.", ['service' => 'CreditCardProvider']);
         return $this->scopeConfig->getValue('payment/rakutenpay_billet/title', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
