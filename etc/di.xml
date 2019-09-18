@@ -14,4 +14,7 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Checkout\Block\Checkout\AttributeMerger">
+        <plugin name="shippingAddress" type="Rakuten\RakutenPay\Block\Checkout\AttributeMerger"/>
+    </type>
 </config>
