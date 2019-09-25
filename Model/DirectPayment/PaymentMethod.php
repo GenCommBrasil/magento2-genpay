@@ -11,6 +11,7 @@ use Rakuten\Connector\Resource\RakutenPay\Customer;
 use Rakuten\Connector\Resource\RakutenPay\Order;
 use Rakuten\RakutenPay\Helper\Data;
 use Rakuten\RakutenPay\Logger\Logger;
+use Rakuten\Connector\Helper\StringFormat;
 
 /**
  * Class PaymentMethod
@@ -261,8 +262,8 @@ abstract class PaymentMethod
         $this->logger->info("Processing setItems.");
         foreach ($items as $item) {
             $order->addItem(
-                $item->getSku(),
-                $item->getName(),
+                StringFormat::removeAccents($item->getSku()),
+                StringFormat::removeAccents($item->getName()),
                 (int) $item->getQtyOrdered(),
                 (float) $item->getPrice(),
                 $item->getRowTotalInclTax(),
