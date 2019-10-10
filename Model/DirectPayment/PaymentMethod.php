@@ -5,13 +5,13 @@ namespace Rakuten\RakutenPay\Model\DirectPayment;
 use Rakuten\Connector\Enum\Address;
 use Rakuten\Connector\Enum\Category;
 use Rakuten\Connector\Exception\RakutenException;
+use Rakuten\Connector\Helper\StringFormat;
 use Rakuten\Connector\Parser\Error;
 use Rakuten\Connector\Parser\Transaction;
 use Rakuten\Connector\Resource\RakutenPay\Customer;
 use Rakuten\Connector\Resource\RakutenPay\Order;
 use Rakuten\RakutenPay\Helper\Data;
 use Rakuten\RakutenPay\Logger\Logger;
-use Rakuten\Connector\Helper\StringFormat;
 
 /**
  * Class PaymentMethod
@@ -154,7 +154,6 @@ abstract class PaymentMethod
             $this->logger->info("HTTP_RESPONSE: ", [$response->getResponse()->getResult()]);
 
             if ($response instanceof Error) {
-
                 return $response;
             }
             $this->saveRakutenPayOrder($response);
@@ -180,11 +179,11 @@ abstract class PaymentMethod
         $streetDistrict = $this->order->getBillingAddress()->getRegion();
         $streetComplement = "";
 
-        if(count($address) >= 3) {
+        if (count($address) >= 3) {
             $streetDistrict = $address[$this->helper->getStreetDistrictPosition()];
         }
 
-        if(count($address) == 4){
+        if (count($address) == 4) {
             $streetComplement = $address[$this->helper->getStreetComplementPosition()];
         }
 
@@ -204,8 +203,10 @@ abstract class PaymentMethod
                 $this->order->getBillingAddress()->getCity(),
                 $this->order->getBillingAddress()->getRegion(),
                 $this->order->getBillingAddress()->getName(),
-                $streetComplement)
-            ->addAddress(Address::ADDRESS_SHIPPING,
+                $streetComplement
+            )
+            ->addAddress(
+                Address::ADDRESS_SHIPPING,
                 $this->order->getShippingAddress()->getPostcode(),
                 $street,
                 $streetNumber,
@@ -213,17 +214,22 @@ abstract class PaymentMethod
                 $this->order->getShippingAddress()->getCity(),
                 $this->order->getShippingAddress()->getRegion(),
                 $this->order->getShippingAddress()->getName(),
-                $streetComplement)
-            ->addAPhones('55',
+                $streetComplement
+            )
+            ->addAPhones(
+                '55',
                 $billingPhone['areaCode'],
                 $billingPhone['number'],
                 'others',
-                Address::ADDRESS_BILLING)
-            ->addAPhones('55',
+                Address::ADDRESS_BILLING
+            )
+            ->addAPhones(
+                '55',
                 $billingPhone['areaCode'],
                 $billingPhone['number'],
                 'others',
-                Address::ADDRESS_SHIPPING);
+                Address::ADDRESS_SHIPPING
+            );
 
         return $customer;
     }
@@ -290,7 +296,6 @@ abstract class PaymentMethod
         }
 
         if (count($categories)) {
-
             return $categories;
         }
 
@@ -317,7 +322,7 @@ abstract class PaymentMethod
                 'environment' => $this->helper->getEnvironment(),
             ]);
             $connection->commit();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), ['service' => 'Save RakutenPay Order']);
             $connection->rollBack();
         }
