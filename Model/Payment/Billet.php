@@ -113,13 +113,9 @@ class Billet extends \Magento\Payment\Model\Method\Cc
 
     /**
      * @return $this|\Magento\Payment\Model\Method\Cc
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Rakuten\Connector\Exception\RakutenException
      */
     public function validate()
     {
-        $this->rakutenPay = $this->_rakutenHelper->authorizationValidate();
-
         return $this;
     }
 

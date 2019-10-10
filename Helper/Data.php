@@ -6,11 +6,11 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\HTTP\PhpEnvironment\RemoteAddress;
+use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\Module\ModuleListInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Rakuten\Connector\Exception\RakutenException;
 use Rakuten\Connector\RakutenPay;
-use Magento\Framework\Message\ManagerInterface;
-use Magento\Store\Model\StoreManagerInterface;
 use Rakuten\RakutenPay\Logger\Logger;
 
 /**
@@ -113,7 +113,7 @@ class Data extends AbstractHelper
             $where = ['entity_id = ?' => $order->getEntityId()];
             $connection->update($tableName, ['status' => $status], $where);
             $connection->commit();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), ['service' => 'Update Status in RakutenPay Order']);
             $connection->rollBack();
         }
@@ -130,7 +130,7 @@ class Data extends AbstractHelper
         $tableName = $this->resource->getTableName(Data::RAKUTENPAY_ORDER);
         $select = $connection
             ->select()
-            ->from($tableName,['entity_id', 'charge_uuid', 'increment_id', 'status', 'environment'])
+            ->from($tableName, ['entity_id', 'charge_uuid', 'increment_id', 'status', 'environment'])
             ->where('entity_id = ?', $order->getEntityId());
 
         return $connection->fetchAssoc($select);
@@ -147,21 +147,6 @@ class Data extends AbstractHelper
         } else {
             return null;
         }
-    }
-
-    /**
-     * @throws RakutenException
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function authorizationValidate()
-    {
-        $response = $this->rakutenPay->authorizationValidate();
-        if ($response->getMessage() !== true) {
-            $errorMsg = __('An error has occurred, please contact us.');
-            throw new \Magento\Framework\Exception\LocalizedException(__($errorMsg));
-        }
-
-        return $this->rakutenPay;
     }
 
     /**
@@ -206,10 +191,14 @@ class Data extends AbstractHelper
 
     /**
      * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getNotificationURL()
     {
-        return $this->scopeConfig->getValue('payment/rakutenpay_configuration/notification', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $baseUrl = $this->storeManager->getStore()->getBaseUrl();
+        $notificationUrl = $this->scopeConfig->getValue('payment/rakutenpay_configuration/notification', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
+        return $baseUrl . $notificationUrl;
     }
 
     /**
@@ -332,6 +321,6 @@ class Data extends AbstractHelper
             $phone = substr($phone, 2);
         }
 
-        return array('areaCode' => $ddd, 'number' => $phone);
+        return ['areaCode' => $ddd, 'number' => $phone];
     }
 }
