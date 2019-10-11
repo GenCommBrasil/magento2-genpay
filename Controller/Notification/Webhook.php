@@ -2,10 +2,10 @@
 
 namespace Rakuten\RakutenPay\Controller\Notification;
 
-use Rakuten\Connector\Enum\Status;
 use Magento\Framework\App\CsrfAwareActionInterface;
-use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
+use Magento\Framework\App\RequestInterface;
+use Rakuten\Connector\Enum\Status;
 use Rakuten\RakutenPay\Helper\Data;
 use Rakuten\RakutenPay\Logger\Logger;
 use Rakuten\RakutenPay\Model\Payment\Notification;
@@ -19,7 +19,7 @@ class Webhook extends \Magento\Framework\App\Action\Action implements CsrfAwareA
     /**
      * @var Data
      */
-    protected $rakutenHelper;
+    protected $helper;
 
     /**
      * @var \Magento\Framework\Controller\Result\JsonFactory
@@ -44,7 +44,7 @@ class Webhook extends \Magento\Framework\App\Action\Action implements CsrfAwareA
         parent::__construct($context);
         $this->logger = $logger;
         $this->resultJsonFactory = $this->_objectManager->create('Magento\Framework\Controller\Result\JsonFactory');
-        $this->rakutenHelper = $this->_objectManager->create('Rakuten\RakutenPay\Helper\Data');
+        $this->helper = $this->_objectManager->create('Rakuten\RakutenPay\Helper\Data');
     }
 
     public function execute()
@@ -62,7 +62,10 @@ class Webhook extends \Magento\Framework\App\Action\Action implements CsrfAwareA
                 return $result;
             }
 
-            $signature = hash_hmac('sha256', $entityBody, $this->rakutenHelper->getSignature(), true);
+            $post = json_decode($entityBody, true);
+            $order = $this->getOrderByIncrementId($post['reference']);
+            $signature = $this->getSignature($order);
+            $signature = hash_hmac('sha256', $entityBody, $signature, true);
             $signatureBase64 = base64_encode($signature);
 
             if (empty($signatureHeader) || $signatureHeader !== $signatureBase64) {
@@ -73,7 +76,9 @@ class Webhook extends \Magento\Framework\App\Action\Action implements CsrfAwareA
 
                 return $result;
             }
-            $this->getNotification()->initialize($entityBody);
+            $this->getNotification()->initialize($order, $post);
+            $this->logger->info(sprintf("Signature Local: %s | Signature Header: %s", $signatureBase64, $signatureHeader), ['service' => 'WEBHOOK']);
+            $this->logger->info("Successfully processed.", ['service' => 'WEBHOOK']);
 
             return $result;
         } catch (\Magento\Framework\Webapi\Exception $e) {
@@ -112,8 +117,53 @@ class Webhook extends \Magento\Framework\App\Action\Action implements CsrfAwareA
             $this->_objectManager->create('\Magento\Framework\DB\TransactionFactory'),
             $this->_objectManager->create('\Magento\Sales\Model\Order\CreditmemoFactory'),
             $this->_objectManager->create('\Magento\Sales\Model\Service\CreditmemoService'),
-            $this->_objectManager->create('\Rakuten\RakutenPay\Helper\Data'),
+            $this->helper,
             $this->logger
         );
+    }
+
+    /**
+     * @param $incrementId
+     * @return \Magento\Sales\Model\Order
+     */
+    private function getOrderByIncrementId($incrementId)
+    {
+        $this->logger->info("Processing getOrderByIncrementId.", ['service' => 'WEBHOOK']);
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $collection = $objectManager->create('Magento\Sales\Model\Order');
+        /** @var \Magento\Sales\Model\Order $order */
+        $order = $collection->loadByIncrementId($incrementId);
+
+        return $order;
+    }
+
+    /**
+     * @param \Magento\Sales\Model\Order $order
+     * @return string
+     */
+    private function getSignature(\Magento\Sales\Model\Order $order)
+    {
+        $this->logger->info("Processing getSignature.", ['service' => 'WEBHOOK']);
+        $additionalInformation = $order->getPayment()->getAdditionalInformation();
+        $document = isset($additionalInformation['document']) ? $additionalInformation['document'] : null;
+        $apiKey = isset($additionalInformation['api_key']) ? $additionalInformation['api_key'] : null;
+        $signature = isset($additionalInformation['signature']) ? $additionalInformation['signature'] : null;
+        $this->logger->info(sprintf(
+            "Credentials in Order - document: %s - api_key: %s - signature: %s",
+            $document,
+            $apiKey,
+            $signature
+        ), ['service' => 'WEBHOOK']);
+        $this->logger->info(sprintf(
+            "Credentials in Configuration - document: %s - api_key: %s - signature: %s",
+            $this->helper->getDocument(),
+            $this->helper->getApiKey(),
+            $this->helper->getSignature()
+        ), ['service' => 'WEBHOOK']);
+
+        if (!is_null($signature)) {
+            return $signature;
+        }
+        return $this->helper->getSignature();
     }
 }

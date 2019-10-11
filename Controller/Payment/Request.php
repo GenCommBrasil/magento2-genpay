@@ -4,16 +4,13 @@ namespace Rakuten\RakutenPay\Controller\Payment;
 
 use Rakuten\Connector\Exception\RakutenException;
 use Rakuten\Connector\Parser\Error;
-use Rakuten\Connector\Parser\RakutenPay\Transaction\Billet;
-use Rakuten\Connector\Parser\RakutenPay\Transaction\CreditCard;
-use Rakuten\Connector\Parser\Transaction;
 use Rakuten\RakutenPay\Enum\DirectPayment\CodeError;
 use Rakuten\RakutenPay\Enum\DirectPayment\Message;
 use Rakuten\RakutenPay\Enum\DirectPayment\Status;
 use Rakuten\RakutenPay\Enum\PaymentMethod;
+use Rakuten\RakutenPay\Logger\Logger;
 use Rakuten\RakutenPay\Model\DirectPayment\BilletMethod;
 use Rakuten\RakutenPay\Model\DirectPayment\CreditCardMethod;
-use Rakuten\RakutenPay\Logger\Logger;
 
 /**
  * Class Request
@@ -43,7 +40,7 @@ class Request extends \Magento\Framework\App\Action\Action
     protected $resultJsonFactory;
 
     /**
-     * @var \Rakuten\RakutenPay\Helper\Data 
+     * @var \Rakuten\RakutenPay\Helper\Data
      */
     protected $rakutenHelper;
 
@@ -141,7 +138,6 @@ class Request extends \Magento\Framework\App\Action\Action
     private function isError(Error $response)
     {
         if (CodeError::CODE_CHARGE_ALREADY_EXISTS == (int) $response->getCode()) {
-
             return false;
         }
 
@@ -171,66 +167,62 @@ class Request extends \Magento\Framework\App\Action\Action
                 $this->logger->error("There is not order associated with this session.");
                 throw new RakutenException("There is not order associated with this session.");
             }
-
-            if ($lastRealOrder->getPayment()->getMethod() === PaymentMethod::BILLET_CODE) {
-
-                $customerPaymentData = [
-                    'billetDocument' => $paymentData['additional_information']['billet_document'],
-                    'fingerprint' => $paymentData['additional_information']['fingerprint'],
-                    'orderId' => $this->orderId
-                ];
-
-                $billet = new BilletMethod(
-                    $this->_objectManager->create('Magento\Directory\Api\CountryInformationAcquirerInterface'),
-                    $this->_objectManager->create('Magento\Framework\App\Config\ScopeConfigInterface'),
-                    $this->_objectManager,
-                    $this->order,
-                    $this->rakutenHelper,
-                    $this->logger,
-                    $customerPaymentData
-                );
-                $result = $billet->createOrder();
-            }
-
-            if ($lastRealOrder->getPayment()->getMethod() === PaymentMethod::CREDIT_CARD_CODE) {
-
-                $customerPaymentData = [
-                    'fingerprint' => $paymentData['additional_information']['fingerprint'],
-                    'creditCardCode' => $paymentData['additional_information']['credit_card_code'],
-                    'creditCardHolder' => $paymentData['additional_information']['credit_card_holder'],
-                    'creditCardDocument' => $paymentData['additional_information']['credit_card_document'],
-                    'creditCardToken' => $paymentData['additional_information']['credit_card_token'],
-                    'creditCardBrand' => $paymentData['additional_information']['credit_card_brand'],
-                    'creditCardInstallment' => $paymentData['additional_information']['credit_card_installment'],
-                    'creditCardInstallmentValue' => $paymentData['additional_information']['credit_card_installment_value'],
-                    'creditCardInterestPercent' => $paymentData['additional_information']['creditCard_interest_percent'],
-                    'creditCardInterestAmount' => $paymentData['additional_information']['credit_card_interest_amount'],
-                    'creditCardInstallmentTotalValue' => $paymentData['additional_information']['credit_card_installment_total_value'],
-                    'orderId' => $this->orderId
-                ];
-
-                $creditCard = new CreditCardMethod(
-                    $this->_objectManager->create('Magento\Directory\Api\CountryInformationAcquirerInterface'),
-                    $this->_objectManager->create('Magento\Framework\App\Config\ScopeConfigInterface'),
-                    $this->_objectManager,
-                    $this->order,
-                    $this->rakutenHelper,
-                    $this->logger,
-                    $customerPaymentData
-                );
-
-                $result = $creditCard->createOrder();
+            $paymentMethod = $lastRealOrder->getPayment()->getMethod();
+            switch ($paymentMethod) {
+                case PaymentMethod::BILLET_CODE:
+                    $customerPaymentData = [
+                        'billetDocument' => $paymentData['additional_information']['billet_document'],
+                        'fingerprint' => $paymentData['additional_information']['fingerprint'],
+                        'orderId' => $this->orderId
+                    ];
+                    $billet = new BilletMethod(
+                        $this->_objectManager->create('Magento\Directory\Api\CountryInformationAcquirerInterface'),
+                        $this->_objectManager->create('Magento\Framework\App\Config\ScopeConfigInterface'),
+                        $this->_objectManager,
+                        $this->order,
+                        $this->rakutenHelper,
+                        $this->logger,
+                        $customerPaymentData
+                    );
+                    $result = $billet->createOrder();
+                    break;
+                case PaymentMethod::CREDIT_CARD_CODE:
+                    $customerPaymentData = [
+                        'fingerprint' => $paymentData['additional_information']['fingerprint'],
+                        'creditCardCode' => $paymentData['additional_information']['credit_card_code'],
+                        'creditCardHolder' => $paymentData['additional_information']['credit_card_holder'],
+                        'creditCardDocument' => $paymentData['additional_information']['credit_card_document'],
+                        'creditCardToken' => $paymentData['additional_information']['credit_card_token'],
+                        'creditCardBrand' => $paymentData['additional_information']['credit_card_brand'],
+                        'creditCardInstallment' => $paymentData['additional_information']['credit_card_installment'],
+                        'creditCardInstallmentValue' => $paymentData['additional_information']['credit_card_installment_value'],
+                        'creditCardInterestPercent' => $paymentData['additional_information']['creditCard_interest_percent'],
+                        'creditCardInterestAmount' => $paymentData['additional_information']['credit_card_interest_amount'],
+                        'creditCardInstallmentTotalValue' => $paymentData['additional_information']['credit_card_installment_total_value'],
+                        'orderId' => $this->orderId
+                    ];
+                    $creditCard = new CreditCardMethod(
+                        $this->_objectManager->create('Magento\Directory\Api\CountryInformationAcquirerInterface'),
+                        $this->_objectManager->create('Magento\Framework\App\Config\ScopeConfigInterface'),
+                        $this->_objectManager,
+                        $this->order,
+                        $this->rakutenHelper,
+                        $this->logger,
+                        $customerPaymentData
+                    );
+                    $result = $creditCard->createOrder();
+                    break;
+                default:
+                    throw new RakutenException(sprintf("Payment Method invalid. PaymentMethod: %s", $paymentMethod));
             }
 
             /** If error return true - Generate Order with Status Cancelled
              * Case return false - Generate Order with default status
              */
-            if ($result instanceof Error) {
-                if (true === $this->isError($result)) {
-                    $this->logger->error($result->getMessage());
-                    $this->cancelOrder($result->getMessage());
-                    $this->whenError($result->getMessage());
-                }
+            if ($result->isError() === true && $this->isError($result) === true) {
+                $this->logger->error($result->getMessage());
+                $this->cancelOrder($result->getMessage());
+                $this->whenError($result->getMessage());
 
                 return $this->_redirect('checkout/onepage/success');
             }
@@ -245,7 +237,6 @@ class Request extends \Magento\Framework\App\Action\Action
 
             return $this->_redirect('checkout/onepage/success');
         } catch (\Exception $exception) {
-
             $this->logger->error($exception->getMessage());
             $this->cancelOrder($exception->getMessage());
             $this->whenError($exception->getMessage());

@@ -6,9 +6,9 @@ use Magento\Sales\Model\Order;
 use Rakuten\Connector\Enum\Refund\Requester;
 use Rakuten\Connector\Parser\Error;
 use Rakuten\Connector\Parser\RakutenPay\Transaction\Refund as TransationRefund;
+use Rakuten\Connector\Resource\RakutenPay\Refund as ResourceRefund;
 use Rakuten\RakutenPay\Enum\DirectPayment\Status;
 use Rakuten\RakutenPay\Enum\PaymentMethod;
-use Rakuten\Connector\Resource\RakutenPay\Refund as ResourceRefund;
 use Rakuten\RakutenPay\Helper\Data;
 use Rakuten\RakutenPay\Logger\Logger;
 
@@ -103,7 +103,7 @@ class Refund implements \Magento\Framework\Event\ObserverInterface
      * @return mixed
      * @throws \Rakuten\Connector\Exception\RakutenException
      */
-    private function executeRefund(ResourceRefund $refund, $chargeId, $amount, $refundAmount)
+    private function runRefundRakutenPay(ResourceRefund $refund, $chargeId, $amount, $refundAmount)
     {
         if ($amount == $refundAmount) {
             $this->logger->info('CURL Refund.', ['service' => 'Observer']);
@@ -142,7 +142,7 @@ class Refund implements \Magento\Framework\Event\ObserverInterface
                 ->setRequester(Requester::MERCHANT)
                 ->addPayment($paymentId, $refundAmount);
 
-            $result = $this->executeRefund($refund, $rakutenOrder['charge_uuid'], $amount, $refundAmount);
+            $result = $this->runRefundRakutenPay($refund, $rakutenOrder['charge_uuid'], $amount, $refundAmount);
             $this->logger->info("Payload: " . $result->getResponse()->getResult(), ['service' => 'Observer']);
             if ($result instanceof TransationRefund) {
                 $this->helper->updateStatusRakutenPayOrder($this->creditmemo->getOrder(), $result->getStatus());
@@ -179,5 +179,4 @@ class Refund implements \Magento\Framework\Event\ObserverInterface
 
         return $this;
     }
-
 }
