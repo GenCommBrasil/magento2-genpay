@@ -216,13 +216,12 @@ class Request extends \Magento\Framework\App\Action\Action
                     throw new RakutenException(sprintf("Payment Method invalid. PaymentMethod: %s", $paymentMethod));
             }
 
-            /** If error return true - Generate Order with Status Cancelled
-             * Case return false - Generate Order with default status
-             */
-            if ($result->isError() === true && $this->isError($result) === true) {
-                $this->logger->error($result->getMessage());
-                $this->cancelOrder($result->getMessage());
-                $this->whenError($result->getMessage());
+            if ($result instanceof Error) {
+                if (true === $this->isError($result)) {
+                    $this->logger->error($result->getMessage());
+                    $this->cancelOrder($result->getMessage());
+                    $this->whenError($result->getMessage());
+                }
 
                 return $this->_redirect('checkout/onepage/success');
             }
