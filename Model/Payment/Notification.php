@@ -58,6 +58,11 @@ class Notification
     private $creditmemoService;
 
     /**
+     * @var \Magento\Sales\Model\Order
+     */
+    private $order;
+
+    /**
      * @var array
      */
     private $post;
@@ -101,12 +106,15 @@ class Notification
     }
 
     /**
-     * @param $post
+     * @param \Magento\Sales\Model\Order $order
+     * @param array $post
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function initialize($post)
+    public function initialize(\Magento\Sales\Model\Order $order, array $post)
     {
         $this->logger->info("Processing initialize in Notification", ['service' => 'WEBHOOK']);
-        $this->post = json_decode($post, true);
+        $this->order = $order;
+        $this->post = $post;
         $this->getNotificationPost();
         $this->getApprovedDate();
         $this->setNotificationUpdateOrder();
@@ -114,46 +122,48 @@ class Notification
 
     /**
      * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     private function setNotificationUpdateOrder()
     {
         $this->logger->info("Processing setNotificationUpdateOrder.", ['service' => 'WEBHOOK']);
-        $this->logger->info($this->amount, ['service' => 'WEBHOOK']);
+        $this->logger->info(sprintf("Payload Amount: %s", $this->amount), ['service' => 'WEBHOOK']);
 
         try {
             $incrementId = $this->webhookReference;
             $status = Status::getStatusMapping($this->webhookStatus);
-            $this->logger->info("Processing webhook with transaction: " . $incrementId
-                . "; State: ". $this->webhookStatus . "; Amount: " . $this->amount,
-                ['service' => 'WEBHOOK']);
+            $this->logger->info(
+                "Processing webhook with transaction: " . $incrementId
+                . "; State: " . $this->webhookStatus . "; Amount: " . $this->amount,
+                ['service' => 'WEBHOOK']
+            );
 
             if (false === $status) {
                 $this->logger->info("Cannot process webhook", ['service' => 'WEBHOOK']);
                 return false;
             }
-            $order = $this->getOrderByIncrementId($incrementId);
 
             if ($this->webhookStatus == Status::REFUNDED || $this->webhookStatus == Status::PARTIAL_REFUNDED) {
-                $this->helper->updateStatusRakutenPayOrder($order, $this->webhookStatus);
+                $this->helper->updateStatusRakutenPayOrder($this->order, $this->webhookStatus);
 
-                return $this->createCreditmemo($order);
+                return $this->createCreditmemo();
             }
 
-            if ($order->canInvoice()) {
-                $this->createInvoice($order);
+            if ($this->order->canInvoice()) {
+                $this->createInvoice();
             }
 
-            if ($order->getState() != $status) {
+            if ($this->order->getState() != $status) {
                 $history = [
                     'status' => $this->history->setStatus($status),
                     'comment' => $this->history->setComment(__('RakutenPay Notification')),
                 ];
-                $order->setStatus($status);
-                $order->setState($status);
-                $order->setStatusHistories($history);
-                $order->save();
+                $this->order->setStatus($status);
+                $this->order->setState($status);
+                $this->order->setStatusHistories($history);
+                $this->order->save();
                 $this->logger->info("Update Status Success.", ['service' => 'WEBHOOK']);
-                $this->helper->updateStatusRakutenPayOrder($order, $this->webhookStatus);
+                $this->helper->updateStatusRakutenPayOrder($this->order, $this->webhookStatus);
             }
 
             return true;
@@ -164,13 +174,13 @@ class Notification
     }
 
     /**
-     * @param $order
+     * @throws \Exception
      */
-    private function createInvoice($order)
+    private function createInvoice()
     {
         $this->logger->info("Processing createInvoice.", ['service' => 'WEBHOOK']);
         try {
-            $invoice = $this->invoiceService->prepareInvoice($order);
+            $invoice = $this->invoiceService->prepareInvoice($this->order);
             $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_OFFLINE);
             $invoice->register();
 
@@ -180,8 +190,8 @@ class Notification
 
             $transaction->save();
         } catch (\Exception $e) {
-            $order->addStatusHistoryComment('Exception Create Invoice: '.$e->getMessage(), false);
-            $order->save();
+            $this->order->addStatusHistoryComment('Exception Create Invoice: ' . $e->getMessage(), false);
+            $this->order->save();
         }
     }
 
@@ -195,7 +205,7 @@ class Notification
         $this->webhookReference = $this->post['reference'];
         if ($this->webhookStatus == Status::APPROVED) {
             $this->amount = floatval($this->post['amount']);
-        } else if (
+        } elseif (
             $this->webhookStatus == Status::PARTIAL_REFUNDED ||
             $this->webhookStatus == Status::REFUNDED) {
             $this->amount = array_sum(array_column($this->post['refunds'], 'amount'));
@@ -213,7 +223,6 @@ class Notification
         $status = false;
         $key = array_search(Status::APPROVED, array_column($this->post['status_history'], 'status'));
         if (false !== $key) {
-
             $status = $this->post['status_history'][$key];
         }
 
@@ -221,28 +230,13 @@ class Notification
     }
 
     /**
-     * @param $incrementId
-     * @return mixed
-     */
-    private function getOrderByIncrementId($incrementId)
-    {
-        $this->logger->info("Processing getOrderByIncrementId.", ['service' => 'WEBHOOK']);
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $collection = $objectManager->create('Magento\Sales\Model\Order');
-        $order = $collection->loadByIncrementId($incrementId);
-
-        return $order;
-    }
-
-    /**
-     * @param $order
      * @return bool
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    private function createCreditmemo($order)
+    private function createCreditmemo()
     {
         $this->logger->info("Processing createCreditmemo.", ['service' => 'WEBHOOK']);
-        $creditmemo = $this->creditmemoFactory->createByOrder($order);
+        $creditmemo = $this->creditmemoFactory->createByOrder($this->order);
         $creditmemo->setBaseGrandTotal($this->amount);
         $creditmemo->setBaseSubtotal($this->amount);
         $creditmemo->setSubtotal($this->amount);

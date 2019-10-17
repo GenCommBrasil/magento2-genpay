@@ -101,6 +101,9 @@ class BilletMethod extends PaymentMethod implements Payment
         $this->order->getPayment()->setAdditionalInformation('payment_id', $billet->getPaymentId());
         $this->order->getPayment()->setAdditionalInformation('billet_url', $billet->getBilletUrl());
         $this->order->getPayment()->setAdditionalInformation('billet', $billet->getBillet());
+        $this->order->getPayment()->setAdditionalInformation('document', $this->helper->getDocument());
+        $this->order->getPayment()->setAdditionalInformation('api_key', $this->helper->getApiKey());
+        $this->order->getPayment()->setAdditionalInformation('signature', $this->helper->getSignature());
         $this->order->save();
     }
 }

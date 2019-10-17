@@ -10,6 +10,7 @@ use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Rakuten\Connector\Exception\RakutenException;
+use Rakuten\Connector\Helper\StringFormat;
 use Rakuten\Connector\RakutenPay;
 use Rakuten\RakutenPay\Logger\Logger;
 
@@ -311,16 +312,26 @@ class Data extends AbstractHelper
      */
     public function formatPhone($phone)
     {
-        $phone = preg_replace('/[^0-9]/', '', $phone);
-        $ddd = '';
-        if (strlen($phone) > 9) {
-            if (substr($phone, 0, 1) == 0) {
-                $phone = substr($phone, 1);
-            }
-            $ddd = substr($phone, 0, 2);
-            $phone = substr($phone, 2);
-        }
+        $this->logger->info('Processing formatPhone in HelperData. ', ['service' => 'HelperData']);
+        try {
+            if (!empty($phone)) {
+                $phone = trim(StringFormat::getOnlyNumbers($phone));
+                $ddd = substr($phone, 0, 2);
+                $number = substr($phone, 2);
 
-        return ['areaCode' => $ddd, 'number' => $phone];
+                $this->logger->info(sprintf('DDD: %s - Number: %s', $ddd, $number), ['service' => 'HelperData']);
+                return [
+                    'areaCode' => $ddd,
+                    'number' => $number,
+                ];
+            }
+            $this->logger->info(sprintf('Telephone invalid: %s - Setting default: 11 999999999', $phone), ['service' => 'HelperData']);
+            return [
+                'areaCode' => '11',
+                'number' => '999999999',
+            ];
+        } catch (RakutenException $e) {
+            $this->logger->error($e->getMessage(), ['service' => 'HelperData']);
+        }
     }
 }
