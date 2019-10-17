@@ -95,7 +95,7 @@ class Installment
         if (is_null($minimumValue) || is_nan($minimumValue) || $minimumValue < 0) {
             $minimumValue = self::DEFAULT_MINIMUM_VALUE;
         }
-        $installments = floor($amount / (float) $minimumValue);
+        $installments = $amount / (float) $minimumValue;
         if ($amount <= (float) $minimumValue || false === $this->rakutenHelper->isInstallments()) {
             return self::DEFAULT_INSTALLMENTS;
         }
