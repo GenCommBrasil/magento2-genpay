@@ -95,7 +95,7 @@ class Installment
         if (is_null($minimumValue) || is_nan($minimumValue) || $minimumValue < 0) {
             $minimumValue = self::DEFAULT_MINIMUM_VALUE;
         }
-        $installments = floor ($amount / (float) $minimumValue);
+        $installments = floor($amount / (float) $minimumValue);
         if ($amount <= (float) $minimumValue || false === $this->rakutenHelper->isInstallments()) {
             return self::DEFAULT_INSTALLMENTS;
         }
@@ -119,8 +119,7 @@ class Installment
             $rakutenPay = $this->rakutenHelper->getRakutenPay();
             $customerInterestInstallments = $rakutenPay->checkout($amount);
 
-            foreach($customerInterestInstallments->getInstallments() as $installment) {
-
+            foreach ($customerInterestInstallments->getInstallments() as $installment) {
                 $quantity = $installment['quantity'];
                 if ($quantity >= $minimumInstallment) {
                     $installments[$quantity]['quantity'] = $quantity;
@@ -128,23 +127,34 @@ class Installment
                     $installments[$quantity]['total_amount'] = $installment['total'];
                     $installments[$quantity]['interest_amount'] = $installment['interest_amount'];
                     $installments[$quantity]['interest_percent'] = $installment['interest_percent'];
-                    $installments[$quantity]['text'] = str_replace('.', ',', $this->getInstallmentText
-                    (
-                        $installment['installment_amount'], $quantity, $installment['total'], false)
+                    $installments[$quantity]['text'] = str_replace(
+                        '.',
+                        ',',
+                        $this->getInstallmentText(
+                        $installment['installment_amount'],
+                        $quantity,
+                        $installment['total'],
+                        false
+                    )
                     );
                 } else {
                     $value = $amount / $quantity;
-                    $value = ceil($value * 100) / 100;// rounds up to the nearest cent
+                    $value = ($value * 100) / 100;// rounds up to the nearest cent
                     $total = $value * $quantity;
-                    $total = ceil($total * 100) / 100;
                     $installments[$quantity]['quantity'] = $quantity;
                     $installments[$quantity]['amount'] = $value;
-                    $installments[$quantity]['total_amount'] = $total;
+                    $installments[$quantity]['total_amount'] = number_format($total, 2, '.', '.');
                     $installments[$quantity]['interest_amount'] = 0.0;
                     $installments[$quantity]['interest_percent'] = 0.0;
-                    $installments[$quantity]['text'] = str_replace('.', ',', $this->getInstallmentText
-                    (
-                        $value, $quantity, $amount, true)
+                    $installments[$quantity]['text'] = str_replace(
+                        '.',
+                        ',',
+                        $this->getInstallmentText(
+                        $value,
+                        $quantity,
+                        $amount,
+                        true
+                    )
                     );
                 }
             }
@@ -152,17 +162,22 @@ class Installment
             $maxNoInstallments = $this->getMaxNoInstallments($amount, $minimumValue, $maximumInstallments);
             for ($quantity = 1; $quantity <= $maxNoInstallments; $quantity++) {
                 $value = $amount / $quantity;
-                $value = ceil($value * 100) / 100;// rounds up to the nearest cent
+                $value = ($value * 100) / 100;// rounds up to the nearest cent
                 $total = $value * $quantity;
-                $total = ceil($total * 100) / 100;
                 $installments[$quantity]['quantity'] = $quantity;
                 $installments[$quantity]['amount'] = $value;
-                $installments[$quantity]['total_amount'] = $total;
+                $installments[$quantity]['total_amount'] = number_format($total, 2, '.', '.');
                 $installments[$quantity]['interest_amount'] = 0.0;
                 $installments[$quantity]['interest_percent'] = 0.0;
-                $installments[$quantity]['text'] = str_replace('.', ',', $this->getInstallmentText
-                (
-                    $value, $quantity, $amount,true)
+                $installments[$quantity]['text'] = str_replace(
+                    '.',
+                    ',',
+                    $this->getInstallmentText(
+                    $value,
+                    $quantity,
+                    $amount,
+                    true
+                )
                 );
             }
         }
