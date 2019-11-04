@@ -7,7 +7,7 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 
 class DownloadLog extends Action
 {
-    CONST FILENAME = 'rakuten.log';
+    const FILENAME = 'genpay.log';
 
     /**
      * @var \Magento\Framework\Filesystem\DirectoryList

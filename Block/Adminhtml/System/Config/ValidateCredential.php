@@ -61,7 +61,7 @@ class ValidateCredential extends Field
         )->setData(
             [
                 'id' => 'validate-credential',
-                'label' => __('Validate Credential Rakuten'),
+                'label' => __('Validate Credential GenPay'),
             ]
         );
 

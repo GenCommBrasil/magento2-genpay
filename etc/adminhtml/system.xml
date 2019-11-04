@@ -3,8 +3,8 @@
     <system>
         <section id="payment">
             <group id="rakutenpay" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label><![CDATA[<div class="rakutenpay-payment-logo"></div><div class="rakutenpay-payment-byline"><b>RakutenPay Payment Method</b><br/>Express payment method.<br/>Configure using your credentials created on RakutenPay to use the service.</div>]]></label>
-                <fieldset_css>complex rakutenpay-payment-section</fieldset_css>
+                <label><![CDATA[<div class="genpay-payment-logo"></div><div class="genpay-payment-byline"><b>GenPay Payment Method</b><br/>Express payment method.<br/>Configure using your credentials created on GenPay to use the service.</div>]]></label>
+                <fieldset_css>complex genpay-payment-section</fieldset_css>
                 <frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
                 <field id="version" type="text" translate="label comment" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
                     <frontend_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\Form\Version</frontend_model>
@@ -26,23 +26,23 @@
                     <field id="api_key" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>API Key</label>
                         <validate>required-entry</validate>
-                        <comment>API generated on Rakuten.</comment>
+                        <comment>API generated on GenPay.</comment>
                         <config_path>payment/rakutenpay_configuration/api_key</config_path>
                     </field>
                     <field id="signature" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Signature Key</label>
                         <validate>required-entry</validate>
-                        <comment>Signature generated on Rakuten.</comment>
+                        <comment>Signature generated on GenPay.</comment>
                         <config_path>payment/rakutenpay_configuration/signature</config_path>
                     </field>
                     <field id="validation_credencial" translate="button_label" type="button" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
-                        <button_label>Validate Credential in Rakuten</button_label>
+                        <button_label>Validate Credential in GenPay</button_label>
                         <frontend_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\ValidateCredential</frontend_model>
                     </field>
                     <field id="email" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Email</label>
                         <validate>required-entry validate-email</validate>
-                        <comment>Email registered with Rakuten.</comment>
+                        <comment>Email registered with GenPay.</comment>
                         <config_path>payment/rakutenpay_configuration/email</config_path>
                     </field>
                     <field id="log" translate="label" type="select" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="0">
