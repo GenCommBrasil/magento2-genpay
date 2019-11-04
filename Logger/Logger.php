@@ -26,7 +26,6 @@ class Logger extends \Monolog\Logger
     public function info($message, array $context = [])
     {
         if ($this->isActive()) {
-
             return $this->addRecord(static::INFO, $message, $context);
         }
 
