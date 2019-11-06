@@ -1,14 +1,14 @@
 <?php
 
-namespace Rakuten\RakutenPay\Block\Info;
+namespace GenComm\GenPay\Block\Info;
 
 /**
  * Class Billet
- * @package Rakuten\RakutenPay\Block\Info
+ * @package GenComm\GenPay\Block\Info
  */
 class Billet extends \Magento\Payment\Block\Info
 {
-    protected $_template = 'Rakuten_RakutenPay::info/billet.phtml';
+    protected $_template = 'GenComm_GenPay::info/billet.phtml';
 
     /**
      * @return mixed

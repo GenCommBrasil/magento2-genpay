@@ -1,5 +1,5 @@
 <?php
-namespace Rakuten\RakutenPay\Logger;
+namespace GenComm\GenPay\Logger;
 
 use Monolog\Logger;
 
@@ -15,5 +15,5 @@ class Handler extends \Magento\Framework\Logger\Handler\Base
      * File name
      * @var string
      */
-    protected $fileName = '/var/log/rakuten.log';
+    protected $fileName = '/var/log/genpay.log';
 }

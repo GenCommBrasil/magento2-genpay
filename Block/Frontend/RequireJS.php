@@ -1,6 +1,6 @@
 <?php
 
-namespace Rakuten\RakutenPay\Block\Frontend;
+namespace GenComm\GenPay\Block\Frontend;
 
 use Magento\Framework\View\Element\Template\Context;
 use Magento\Checkout\Model\Session;
@@ -8,8 +8,8 @@ use Magento\Sales\Model\Order\Config;
 use Magento\Framework\App\Http\Context as HttpContext;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Rakuten\RakutenPay\Enum\Environment;
-use Rakuten\RakutenPay\Logger\Logger;
+use GenComm\GenPay\Enum\Environment;
+use GenComm\GenPay\Logger\Logger;
 
 class RequireJS extends Template
 {
@@ -34,7 +34,7 @@ class RequireJS extends Template
     protected $scopeConfig;
 
     /**
-     * @var \Rakuten\RakutenPay\Logger\Logger
+     * @var \GenComm\GenPay\Logger\Logger
      */
     protected $logger;
 

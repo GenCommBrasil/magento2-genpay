@@ -1,22 +1,22 @@
 <?php
-namespace Rakuten\RakutenPay\Model\Config\Provider;
+namespace GenComm\GenPay\Model\Config\Provider;
 
-use Magento\Framework\App\Config\ScopeConfigInterface;
+use GenComm\GenPay\Enum\PaymentMethod;
+use GenComm\GenPay\Logger\Logger;
 use Magento\Checkout\Model\ConfigProviderInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Escaper;
 use Magento\Payment\Helper\Data as PaymentHelper;
-use Rakuten\RakutenPay\Enum\PaymentMethod;
-use Rakuten\RakutenPay\Logger\Logger;
 
 class CreditCard implements ConfigProviderInterface
 {
-	/**
+    /**
      * Years range
      */
     const YEARS_RANGE = 20;
 
     /**
-     * @var \Rakuten\RakutenPay\Model\Payment\CreditCard\
+     * @var
      */
     protected $creditCardMethod;
 
@@ -31,7 +31,7 @@ class CreditCard implements ConfigProviderInterface
     protected $scopeConfig;
 
     /**
-     * @var \Rakuten\RakutenPay\Logger\Logger
+     * @var Logger
      */
     protected $logger;
 
@@ -62,7 +62,7 @@ class CreditCard implements ConfigProviderInterface
     {
         return [
             'payment' => [
-                'rakutenpay_credit_card' => [
+                'genpay_credit_card' => [
                     'installment_url' => $this->creditCardMethod->getInstallmentUrl(),
                     'year_values' =>  $this->getYearValues(),
                     'url' => $this->creditCardMethod->getCheckoutPaymentUrl(),
@@ -93,7 +93,6 @@ class CreditCard implements ConfigProviderInterface
      */
     protected function getTitle()
     {
-        return $this->scopeConfig->getValue('payment/rakutenpay_billet/title', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue('payment/genpay_billet/title', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
-
 }

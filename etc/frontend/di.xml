@@ -3,8 +3,8 @@
     <type name="Magento\Checkout\Model\CompositeConfigProvider">
         <arguments>
             <argument name="configProviders" xsi:type="array">
-                <item name="rakutenpay_billet_config_provider" xsi:type="object">Rakuten\RakutenPay\Model\Config\Provider\Billet</item>
-                <item name="rakutenpay_credit_card_config_provider" xsi:type="object">Rakuten\RakutenPay\Model\Config\Provider\CreditCard</item>
+                <item name="genpay_billet_config_provider" xsi:type="object">GenComm\GenPay\Model\Config\Provider\Billet</item>
+                <item name="genpay_credit_card_config_provider" xsi:type="object">GenComm\GenPay\Model\Config\Provider\CreditCard</item>
             </argument>
         </arguments>
     </type>

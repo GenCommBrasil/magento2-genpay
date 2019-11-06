@@ -10,8 +10,8 @@ define(
         'use strict';
         rendererList.push(
             {
-                type: 'rakutenpay_credit_card',
-                component: 'Rakuten_RakutenPay/js/view/payment/method-renderer/rakutenpay-credit-card'
+                type: 'genpay_credit_card',
+                component: 'GenComm_GenPay/js/view/payment/method-renderer/genpay-credit-card'
             }
         );
         return Component.extend({});

@@ -119,7 +119,7 @@ function validateCnpj(value) {
 }
 
 function isFingerprint() {
-    var fingerprint = document.getElementById("rakutenpay_billet_fingerprint");
+    var fingerprint = document.getElementById("genpay_billet_fingerprint");
     if (fingerprint.value !== "") {
         return true;
     }

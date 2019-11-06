@@ -2,6 +2,6 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
     <type name="Magento\Sales\Block\Adminhtml\Order\View">
-        <plugin name="adminhtmlOrderView" type="Rakuten\RakutenPay\Block\Adminhtml\Order\View"/>
+        <plugin name="adminhtmlOrderView" type="GenComm\GenPay\Block\Adminhtml\Order\View"/>
     </type>
 </config>

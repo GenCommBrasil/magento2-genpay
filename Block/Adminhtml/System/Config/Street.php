@@ -1,11 +1,11 @@
 <?php
-namespace Rakuten\RakutenPay\Block\Adminhtml\System\Config;
+namespace GenComm\GenPay\Block\Adminhtml\System\Config;
 
 use Magento\Framework\Option\ArrayInterface;
 
 /**
  * Class Street
- * @package Rakuten\RakutenPay\Block\Adminhtml\System\Config
+ * @package GenComm\GenPay\Block\Adminhtml\System\Config
  */
 class Street implements ArrayInterface
 {

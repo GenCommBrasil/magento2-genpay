@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <body>
     <referenceContainer name="order.success.additional.info">
-        <block class="Rakuten\RakutenPay\Block\Frontend\Success"
-               name="rakutenpay.order.success"
-               template="Rakuten_RakutenPay::order/success/additional.phtml"
+        <block class="GenComm\GenPay\Block\Frontend\Success"
+               name="genpay.order.success"
+               template="GenComm_GenPay::order/success/additional.phtml"
                after="-">
         </block>
     </referenceContainer>

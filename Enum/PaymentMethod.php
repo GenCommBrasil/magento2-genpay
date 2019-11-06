@@ -1,10 +1,10 @@
 <?php
 
-namespace Rakuten\RakutenPay\Enum;
+namespace GenComm\GenPay\Enum;
 
 /**
  * Class Environment
- * @package Rakuten\RakutenPay\Helper
+ * @package GenComm\GenPay\Helper
  */
 class PaymentMethod
 {

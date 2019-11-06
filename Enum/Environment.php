@@ -1,10 +1,10 @@
 <?php
 
-namespace Rakuten\RakutenPay\Enum;
+namespace GenComm\GenPay\Enum;
 
 /**
  * Class Environment
- * @package Rakuten\RakutenPay\Enum
+ * @package GenComm\GenPay\Enum
  */
 class Environment
 {
@@ -21,10 +21,10 @@ class Environment
     /**
      * string
      */
-    const RPAY_SANDBOX = "https://static.rakutenpay.com.br/rpayjs/rpay-latest.dev.min.js";
+    const RPAY_SANDBOX = "https://static.genpay.com.br/rpayjs/rpay-latest.dev.min.js";
 
     /**
      * string
      */
-    const RPAY_PRODUCTION = "https://static.rakutenpay.com.br/rpayjs/rpay-latest.min.js";
+    const RPAY_PRODUCTION = "https://static.genpay.com.br/rpayjs/rpay-latest.min.js";
 }

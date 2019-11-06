@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <event name="sales_order_creditmemo_save_after">
-        <observer name="rakutenpay_order_creditmemo_refund" instance="Rakuten\RakutenPay\Observer\Refund" />
+        <observer name="genpay_order_creditmemo_refund" instance="GenComm\GenPay\Observer\Refund" />
     </event>
 </config>

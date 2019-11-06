@@ -1,12 +1,12 @@
 <?php
 
-namespace Rakuten\RakutenPay\Block\Checkout;
+namespace GenComm\GenPay\Block\Checkout;
 
-use Rakuten\RakutenPay\Helper\Data;
-use Rakuten\RakutenPay\Logger\Logger;
+use GenComm\GenPay\Helper\Data;
+use GenComm\GenPay\Logger\Logger;
 /**
  * Class AttributeMerger
- * @package Rakuten\RakutenPay\Block\Checkout
+ * @package GenComm\GenPay\Block\Checkout
  */
 class AttributeMerger extends \Magento\Payment\Block\Info
 {

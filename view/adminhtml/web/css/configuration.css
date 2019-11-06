@@ -1,5 +1,25 @@
-.complex.rakutenpay-payment-section .rakutenpay-payment-logo { display:inline-block; vertical-align: middle; margin: 0 20px 0 0px; width: 30%; height:60px; max-width: 100%; background-repeat: no-repeat, no-repeat, no-repeat; background-image: url('../images/rakutenpay-logo.png'); }
-.section-config.with-button.rakutenpay-payment-section .config-heading strong { font-weight: normal; }
-.complex.rakutenpay-payment-section .button-container { float:right; }
-.complex.rakutenpay-payment-section .rakutenpay-payment-byline { display: inline-block; vertical-align: middle; width: 50%; }
-.rakutenpay-payment-section.section-config.active > .admin__collapsible-block + input + fieldset { margin-left: 40px; }
+.complex.genpay-payment-section .genpay-payment-logo {
+    display:inline-block;
+    vertical-align: middle;
+    margin: 0 20px 0 0px;
+    width: 30%;
+    height:60px;
+    max-width: 100%;
+    background-repeat: no-repeat;
+    background-image: url('../images/genpay-logo.png');
+    background-size: 200px;
+}
+.section-config.with-button.genpay-payment-section .config-heading strong {
+    font-weight: normal;
+}
+.complex.genpay-payment-section .button-container {
+    float:right;
+}
+.complex.genpay-payment-section .genpay-payment-byline {
+    display: inline-block;
+    vertical-align: middle;
+    width: 50%;
+}
+.genpay-payment-section.section-config.active > .admin__collapsible-block + input + fieldset {
+    margin-left: 40px;
+}

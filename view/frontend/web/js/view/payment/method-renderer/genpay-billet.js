@@ -12,7 +12,7 @@ define(
         'Magento_Checkout/js/model/full-screen-loader',
         'Magento_Checkout/js/action/set-payment-information',
         'Magento_Checkout/js/action/place-order',
-        'Rakuten_RakutenPay/js/model/custom',
+        'GenComm_GenPay/js/model/custom',
         'Magento_Checkout/js/model/payment/additional-validators',
         'mage/translate'
     ],
@@ -31,10 +31,10 @@ define(
 
         return Component.extend({
             defaults: {
-                template: 'Rakuten_RakutenPay/payment/billet',
+                template: 'GenComm_GenPay/payment/billet',
                 taxNumber: '',
                 $fingerprint: null,
-                fingerprintSelector: '#rakutenpay_billet_fingerprint'
+                fingerprintSelector: '#genpay_billet_fingerprint'
             },
 
             initObservable: function () {
@@ -67,21 +67,21 @@ define(
 
             /** Returns send check to info */
             getInstruction: function() {
-                return window.checkoutConfig.payment.rakutenpay_billet.instruction;
+                return window.checkoutConfig.payment.genpay_billet.instruction;
             },
 
             /** Returns payable to info */
             getDue: function() {
-                return window.checkoutConfig.payment.rakutenpay_billet.due;
+                return window.checkoutConfig.payment.genpay_billet.due;
             },
 
             getCode: function() {
-                return window.checkoutConfig.payment.rakutenpay_billet.code;
+                return window.checkoutConfig.payment.genpay_billet.code;
             },
 
             /** Return Title */
             getTitle: function() {
-                return window.checkoutConfig.payment.rakutenpay_billet.title;
+                return window.checkoutConfig.payment.genpay_billet.title;
             },
 
             /**
@@ -108,7 +108,7 @@ define(
                 })).done(function () {
                     delete paymentData['title'];
                     $.when(placeOrder(paymentData, messageContainer)).done(function () {
-                        $.mage.redirect(window.checkoutConfig.payment.rakutenpay_billet.url);
+                        $.mage.redirect(window.checkoutConfig.payment.genpay_billet.url);
                     });
                 }).fail(function () {
                     self.isPlaceOrderActionAllowed(true);

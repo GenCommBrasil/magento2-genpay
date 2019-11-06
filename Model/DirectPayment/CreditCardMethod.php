@@ -1,36 +1,41 @@
 <?php
 
-namespace Rakuten\RakutenPay\Model\DirectPayment;
+namespace GenComm\GenPay\Model\DirectPayment;
 
-use Rakuten\Connector\Exception\RakutenException;
-use Rakuten\Connector\Helper\StringFormat;
-use Rakuten\Connector\Parser\Error;
-use Rakuten\Connector\Parser\RakutenPay\Transaction\CreditCard;
-use Rakuten\RakutenPay\Logger\Logger;
+use Exception;
+use GenComm\GenPay\Helper\Data;
+use GenComm\Helper\StringFormat;
+use GenComm\Parser\Error;
+use GenComm\Parser\GenPay\Transaction\CreditCard;
+use GenComm\GenPay\Logger\Logger;
+use Magento\Directory\Api\CountryInformationAcquirerInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\ObjectManagerInterface;
+use Magento\Sales\Model\Order;
 
 /**
  * Class CreditCardMethod
- * @package Rakuten\RakutenPay\Model\DirectPayment
+ * @package GenComm\GenPay\Model\DirectPayment
  */
 class CreditCardMethod extends PaymentMethod implements Payment
 {
     /**
      * CreditCardMethod constructor.
-     * @param \Magento\Directory\Api\CountryInformationAcquirerInterface $countryInformation
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface
-     * @param \Magento\Framework\ObjectManagerInterface $objectManager
-     * @param \Magento\Sales\Model\Order $order
-     * @param \Rakuten\RakutenPay\Helper\Data $helper
+     * @param CountryInformationAcquirerInterface $countryInformation
+     * @param ScopeConfigInterface $scopeConfigInterface
+     * @param ObjectManagerInterface $objectManager
+     * @param Order $order
+     * @param Data $helper
      * @param Logger $logger
      * @param array $customerPaymentData
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(
-        \Magento\Directory\Api\CountryInformationAcquirerInterface $countryInformation,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
-        \Magento\Sales\Model\Order $order,
-        \Rakuten\RakutenPay\Helper\Data $helper,
+        CountryInformationAcquirerInterface $countryInformation,
+        ScopeConfigInterface $scopeConfigInterface,
+        ObjectManagerInterface $objectManager,
+        Order $order,
+        Data $helper,
         Logger $logger,
         $customerPaymentData = []
     ) {
@@ -47,7 +52,7 @@ class CreditCardMethod extends PaymentMethod implements Payment
     }
 
     /**
-     * @return \Rakuten\Connector\Resource\RakutenPay\PaymentMethod
+     * @return \GenComm\Resource\GenPay\CreditCard|\GenComm\Resource\GenPay\PaymentMethod
      */
     protected function buildPayment()
     {
@@ -89,7 +94,7 @@ class CreditCardMethod extends PaymentMethod implements Payment
 
     /**
      * @return false|Error|CreditCard
-     * @throws \Exception
+     * @throws Exception
      */
     public function createOrder()
     {
@@ -110,7 +115,7 @@ class CreditCardMethod extends PaymentMethod implements Payment
 
     /**
      * @param CreditCard $creditCard
-     * @throws \Exception
+     * @throws Exception
      */
     protected function setAdditionInformation(CreditCard $creditCard)
     {

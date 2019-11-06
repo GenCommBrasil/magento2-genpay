@@ -1,12 +1,12 @@
 <?php
 
-namespace Rakuten\RakutenPay\Block\Frontend;
+namespace GenComm\GenPay\Block\Frontend;
 
-use Rakuten\RakutenPay\Logger\Logger;
+use GenComm\GenPay\Logger\Logger;
 
 /**
  * Class Success
- * @package Rakuten\RakutenPay\Block
+ * @package GenComm\GenPay\Block
  */
 class Success extends \Magento\Framework\View\Element\Template
 {
@@ -21,7 +21,7 @@ class Success extends \Magento\Framework\View\Element\Template
     protected $order;
 
     /**
-     * @var \Rakuten\RakutenPay\Logger\Logger
+     * @var \GenComm\GenPay\Logger\Logger
      */
     protected $logger;
 

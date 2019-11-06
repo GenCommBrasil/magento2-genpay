@@ -1,6 +1,6 @@
 <?php
 
-namespace Rakuten\RakutenPay\Block\Adminhtml\System\Config;
+namespace GenComm\GenPay\Block\Adminhtml\System\Config;
 
 use Magento\Backend\Block\Template\Context;
 use Magento\Config\Block\System\Config\Form\Field;
@@ -11,7 +11,7 @@ class DownloadLog extends Field
     /**
      * @var string
      */
-    protected $_template = 'Rakuten_RakutenPay::system/config/download-log.phtml';
+    protected $_template = 'GenComm_GenPay::system/config/download-log.phtml';
 
     /**
      * @param Context $context

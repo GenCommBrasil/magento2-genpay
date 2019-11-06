@@ -1,25 +1,8 @@
-/**
- ************************************************************************
- * Copyright [2018] [RakutenConnector]
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ************************************************************************
- */
 function updateCreditCardToken(creditCardNumber, creditCardMonth, creditCardYear) {
     var rpay = new RPay();
     if (creditCardNumber.length === 19 && creditCardMonth !== "" && creditCardYear !== "") {
 
-        var container = document.getElementById("rakutenpay-cc-method-div");
+        var container = document.getElementById("genpay-cc-method-div");
         while (container.hasChildNodes()) {
             container.removeChild(container.lastChild);
         }
@@ -33,15 +16,15 @@ function updateCreditCardToken(creditCardNumber, creditCardMonth, creditCardYear
         var form = rpay_method.form;
 
         //Generates the token
-        var creditCardTokenField = document.getElementById("rakutenpay_credit_card_creditCardToken");
-        var creditCardBrandField = document.getElementById('rakutenpay_credit_card_creditCardBrand');
+        var creditCardTokenField = document.getElementById("genpay_credit_card_creditCardToken");
+        var creditCardBrandField = document.getElementById('genpay_credit_card_creditCardBrand');
 
         var elements = {
             "form": form,
-            "card-number": document.querySelector("#rakutenpay_credit_card_creditCardNumber"),
-            "card-cvv": document.querySelector("#rakutenpay_credit_card_creditCardCode"),
-            "expiration-month": document.querySelector('#rakutenpay_credit_card_creditCardExpirationMonth'),
-            "expiration-year": document.querySelector('#rakutenpay_credit_card_creditCardExpirationYear')
+            "card-number": document.querySelector("#genpay_credit_card_creditCardNumber"),
+            "card-cvv": document.querySelector("#genpay_credit_card_creditCardCode"),
+            "expiration-month": document.querySelector('#genpay_credit_card_creditCardExpirationMonth'),
+            "expiration-year": document.querySelector('#genpay_credit_card_creditCardExpirationYear')
         };
 
         rpay.tokenize(elements, function(error, data) {
@@ -72,8 +55,8 @@ function validateCreditCardNumber(value) {
 }
 
 function validateCardDate() {
-    var monthField = document.getElementById('rakutenpay_credit_card_creditCardExpirationMonth');
-    var yearField = document.getElementById('rakutenpay_credit_card_creditCardExpirationYear');
+    var monthField = document.getElementById('genpay_credit_card_creditCardExpirationMonth');
+    var yearField = document.getElementById('genpay_credit_card_creditCardExpirationYear');
 
     if (!monthField.validity.valid) {
         return false;
@@ -98,7 +81,7 @@ function getBrand(self) {
     if (validateCreditCardNumber(self.value)) {
         var rpay = new RPay();
         brand = rpay.cardBrand(unmask(self.value));
-        document.getElementById('rakutenpay_credit_card_creditCardBrand').value = brand;
+        document.getElementById('genpay_credit_card_creditCardBrand').value = brand;
     }
 }
 

@@ -1,6 +1,6 @@
 <?php
 \Magento\Framework\Component\ComponentRegistrar::register(
     \Magento\Framework\Component\ComponentRegistrar::MODULE,
-    'Rakuten_RakutenPay',
+    'GenComm_GenPay',
     __DIR__
 );

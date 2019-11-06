@@ -1,7 +1,10 @@
 <?php
 
-namespace Rakuten\RakutenPay\Helper;
+namespace GenComm\GenPay\Helper;
 
+use GenComm\Exception\GenCommException;
+use GenComm\GenPay;
+use GenComm\Helper\StringFormat;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
@@ -9,21 +12,18 @@ use Magento\Framework\HTTP\PhpEnvironment\RemoteAddress;
 use Magento\Framework\Message\ManagerInterface;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Rakuten\Connector\Exception\RakutenException;
-use Rakuten\Connector\Helper\StringFormat;
-use Rakuten\Connector\RakutenPay;
-use Rakuten\RakutenPay\Logger\Logger;
+use GenComm\GenPay\Logger\Logger;
 
 /**
  * Class Data
- * @package Rakuten\RakutenPay\Helper
+ * @package GenComm\GenPay\Helper
  */
 class Data extends AbstractHelper
 {
     /**
-     * RakutenPay Table Name
+     * GenPay Table Name
      */
-    const RAKUTENPAY_ORDER = 'rakutenpay_order';
+    const GENPAY_ORDER = 'genpay_order';
 
     /**
      * @var ModuleListInterface
@@ -40,7 +40,9 @@ class Data extends AbstractHelper
      */
     protected $remoteAddress;
 
-    /** @var RakutenPay */
+    /**
+     * @var GenPay
+     */
     protected $rakutenPay;
 
     /**
@@ -92,7 +94,7 @@ class Data extends AbstractHelper
         $this->storeManager = $storeManager;
         $this->resource = $resource;
         $this->logger = $logger;
-        $this->rakutenPay = new RakutenPay(
+        $this->rakutenPay = new GenPay(
             $this->getDocument(),
             $this->getApiKey(),
             $this->getSignature(),
@@ -109,13 +111,13 @@ class Data extends AbstractHelper
         $this->logger->info('Processing updateStatusRakutenPayOrder in Data.');
         $connection = $this->resource->getConnection();
         try {
-            $tableName = $this->resource->getTableName(Data::RAKUTENPAY_ORDER);
+            $tableName = $this->resource->getTableName(Data::GENPAY_ORDER);
             $connection->beginTransaction();
             $where = ['entity_id = ?' => $order->getEntityId()];
             $connection->update($tableName, ['status' => $status], $where);
             $connection->commit();
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['service' => 'Update Status in RakutenPay Order']);
+            $this->logger->error($e->getMessage(), ['service' => 'Update Status in GenPay Order']);
             $connection->rollBack();
         }
     }
@@ -128,7 +130,7 @@ class Data extends AbstractHelper
     {
         $this->logger->info('Processing getRakutenPayOrder in Data.');
         $connection = $this->resource->getConnection();
-        $tableName = $this->resource->getTableName(Data::RAKUTENPAY_ORDER);
+        $tableName = $this->resource->getTableName(Data::GENPAY_ORDER);
         $select = $connection
             ->select()
             ->from($tableName, ['entity_id', 'charge_uuid', 'increment_id', 'status', 'environment'])
@@ -142,7 +144,7 @@ class Data extends AbstractHelper
      */
     public function getVersion()
     {
-        $version = $this->moduleList->getOne('Rakuten_RakutenPay');
+        $version = $this->moduleList->getOne('GenComm_GenPay');
         if ($version && isset($version['setup_version'])) {
             return $version['setup_version'];
         } else {
@@ -155,7 +157,7 @@ class Data extends AbstractHelper
      */
     public function getEnvironment()
     {
-        $environment = $this->scopeConfig->getValue('payment/rakutenpay_configuration/environment', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $environment = $this->scopeConfig->getValue('payment/genpay_configuration/environment', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
         return $environment;
     }
@@ -165,7 +167,7 @@ class Data extends AbstractHelper
      */
     public function getDocument()
     {
-        $document = $this->scopeConfig->getValue('payment/rakutenpay_configuration/document', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $document = $this->scopeConfig->getValue('payment/genpay_configuration/document', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
         return $document;
     }
@@ -175,7 +177,7 @@ class Data extends AbstractHelper
      */
     public function getApiKey()
     {
-        $apiKey = $this->scopeConfig->getValue('payment/rakutenpay_configuration/api_key', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $apiKey = $this->scopeConfig->getValue('payment/genpay_configuration/api_key', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
         return $apiKey;
     }
@@ -185,7 +187,7 @@ class Data extends AbstractHelper
      */
     public function getSignature()
     {
-        $signature = $this->scopeConfig->getValue('payment/rakutenpay_configuration/signature', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $signature = $this->scopeConfig->getValue('payment/genpay_configuration/signature', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
         return $signature;
     }
@@ -197,7 +199,7 @@ class Data extends AbstractHelper
     public function getNotificationURL()
     {
         $baseUrl = $this->storeManager->getStore()->getBaseUrl();
-        $notificationUrl = $this->scopeConfig->getValue('payment/rakutenpay_configuration/notification', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $notificationUrl = $this->scopeConfig->getValue('payment/genpay_configuration/notification', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
         return $baseUrl . $notificationUrl;
     }
@@ -207,7 +209,7 @@ class Data extends AbstractHelper
      */
     public function getStreetPosition()
     {
-        return $this->scopeConfig->getValue('payment/rakutenpay_configuration/street', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue('payment/genpay_configuration/street', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -215,7 +217,7 @@ class Data extends AbstractHelper
      */
     public function getStreetNumberPosition()
     {
-        return $this->scopeConfig->getValue('payment/rakutenpay_configuration/street_number', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue('payment/genpay_configuration/street_number', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -223,7 +225,7 @@ class Data extends AbstractHelper
      */
     public function getStreetComplementPosition()
     {
-        return $this->scopeConfig->getValue('payment/rakutenpay_configuration/street_complement', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue('payment/genpay_configuration/street_complement', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -231,7 +233,7 @@ class Data extends AbstractHelper
      */
     public function getStreetDistrictPosition()
     {
-        return $this->scopeConfig->getValue('payment/rakutenpay_configuration/street_district', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue('payment/genpay_configuration/street_district', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -239,7 +241,7 @@ class Data extends AbstractHelper
      */
     public function getBilletExpiresOn()
     {
-        $expiresOn = $this->scopeConfig->getValue('payment/rakutenpay_billet/expiration', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $expiresOn = $this->scopeConfig->getValue('payment/genpay_billet/expiration', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
         return $expiresOn;
     }
@@ -250,7 +252,7 @@ class Data extends AbstractHelper
      */
     public function isInstallments()
     {
-        $isEnable = (int) $this->scopeConfig->getValue('payment/rakutenpay_credit_card/installments_active', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $isEnable = (int) $this->scopeConfig->getValue('payment/genpay_credit_card/installments_active', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
         return ($isEnable == 1) ? true : false;
     }
@@ -261,7 +263,7 @@ class Data extends AbstractHelper
      */
     public function isCustomerInterest()
     {
-        $isEnable = (int) $this->scopeConfig->getValue('payment/rakutenpay_credit_card/customer_interest', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $isEnable = (int) $this->scopeConfig->getValue('payment/genpay_credit_card/customer_interest', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
 
         return ($isEnable == 1) ? true : false;
     }
@@ -271,7 +273,7 @@ class Data extends AbstractHelper
      */
     public function getCustomerInterestMinimum()
     {
-        return $this->scopeConfig->getValue('payment/rakutenpay_credit_card/customer_interest_minimum_installments', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue('payment/genpay_credit_card/customer_interest_minimum_installments', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -279,7 +281,7 @@ class Data extends AbstractHelper
      */
     public function getMaxInstallmentsQuantity()
     {
-        return $this->scopeConfig->getValue('payment/rakutenpay_credit_card/maximum_installments_quantity', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue('payment/genpay_credit_card/maximum_installments_quantity', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -287,7 +289,7 @@ class Data extends AbstractHelper
      */
     public function getMinimumInstallmentsValue()
     {
-        return $this->scopeConfig->getValue('payment/rakutenpay_credit_card/minimum_installments', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue('payment/genpay_credit_card/minimum_installments', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -299,7 +301,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @return RakutenPay
+     * @return GenPay
      */
     public function getRakutenPay()
     {
@@ -330,7 +332,7 @@ class Data extends AbstractHelper
                 'areaCode' => '11',
                 'number' => '999999999',
             ];
-        } catch (RakutenException $e) {
+        } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), ['service' => 'HelperData']);
         }
     }

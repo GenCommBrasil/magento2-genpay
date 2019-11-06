@@ -1,18 +1,18 @@
 <?php
 
-namespace Rakuten\RakutenPay\Setup;
- 
+namespace GenComm\GenPay\Setup;
+
+use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
-use Magento\Framework\DB\Ddl\Table;
- 
+
 class InstallSchema implements InstallSchemaInterface
 {
     /**
-     * RakutenPay orders table name
+     * GenPay orders table name
      */
-    const RAKUTENPAY_ORDER = 'rakutenpay_order';
+    const GENPAY_ORDER = 'genpay_order';
 
     /**
      * @param SchemaSetupInterface   $setup
@@ -24,14 +24,13 @@ class InstallSchema implements InstallSchemaInterface
     {
         $installer = $setup;
 
-        if ($installer->tableExists(self::RAKUTENPAY_ORDER)) {
-
+        if ($installer->tableExists(self::GENPAY_ORDER)) {
             return;
         }
 
         $installer->startSetup();
         $table = $installer->getConnection()
-            ->newTable($installer->getTable(self::RAKUTENPAY_ORDER))
+            ->newTable($installer->getTable(self::GENPAY_ORDER))
             ->addColumn(
                 'id',
                 Table::TYPE_INTEGER,
@@ -95,7 +94,7 @@ class InstallSchema implements InstallSchemaInterface
                 ['nullable' => false, 'default' => Table::TIMESTAMP_INIT_UPDATE],
                 'Updated At'
             )
-            ->setComment('RakutenPay Order')
+            ->setComment('GenPay Order')
             ->setOption('charset', 'utf8');
         $installer->getConnection()->createTable($table);
         $installer->endSetup();

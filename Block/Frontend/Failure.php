@@ -1,6 +1,6 @@
 <?php
 
-namespace Rakuten\RakutenPay\Block\Frontend;
+namespace GenComm\GenPay\Block\Frontend;
 
 class Failure extends \Magento\Framework\View\Element\Template
 {

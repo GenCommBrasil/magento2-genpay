@@ -1,10 +1,10 @@
 <?php
 
-namespace Rakuten\RakutenPay\Enum\DirectPayment;
+namespace GenComm\GenPay\Enum\DirectPayment;
 
 /**
  * Class CodeError
- * @package Rakuten\RakutenPay\Enum\DirectPayment
+ * @package GenComm\GenPay\Enum\DirectPayment
  */
 class CodeError
 {

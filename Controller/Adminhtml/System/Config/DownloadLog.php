@@ -1,13 +1,13 @@
 <?php
 
-namespace Rakuten\RakutenPay\Controller\Adminhtml\System\Config;
+namespace GenComm\GenPay\Controller\Adminhtml\System\Config;
 
 use Magento\Backend\App\Action;
 use Magento\Framework\App\Filesystem\DirectoryList;
 
 class DownloadLog extends Action
 {
-    CONST FILENAME = 'rakuten.log';
+    const FILENAME = 'genpay.log';
 
     /**
      * @var \Magento\Framework\Filesystem\DirectoryList

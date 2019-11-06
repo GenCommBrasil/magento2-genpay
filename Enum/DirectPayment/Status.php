@@ -1,12 +1,12 @@
 <?php
 
-namespace Rakuten\RakutenPay\Enum\DirectPayment;
+namespace GenComm\GenPay\Enum\DirectPayment;
 
 use Magento\Sales\Model\Order;
 
 /**
  * Class State
- * @package Rakuten\RakutenPay\Enum\DirectPayment
+ * @package GenComm\GenPay\Enum\DirectPayment
  */
 class Status
 {

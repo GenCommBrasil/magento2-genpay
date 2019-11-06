@@ -1,14 +1,14 @@
 <?php
 
-namespace Rakuten\RakutenPay\Helper;
+namespace GenComm\GenPay\Helper;
 
+use GenComm\Exception\GenCommException;
+use GenComm\GenPay\Logger\Logger;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Rakuten\Connector\Exception\RakutenException;
-use Rakuten\RakutenPay\Logger\Logger;
 
 /**
  * Class Installment
- * @package Rakuten\RakutenPay\Helper
+ * @package GenComm\GenPay\Helper
  */
 class Installment
 {
@@ -26,13 +26,14 @@ class Installment
     protected $rakutenHelper;
 
     /**
-     * @var \Rakuten\RakutenPay\Logger\Logger
+     * @var Logger
      */
     protected $logger;
 
     /**
      * Installments constructor.
      * @param Data $rakutenHelper
+     * @param Logger $logger
      */
     public function __construct(Data $rakutenHelper, Logger $logger)
     {
@@ -46,7 +47,6 @@ class Installment
      *
      * @param $amount
      * @return bool|mixed
-     * @throws RakutenException
      */
     public function create($amount)
     {
@@ -57,7 +57,7 @@ class Installment
             $installments = $this->createInstallments($amount, $minimumValue, $maximumInstallments);
 
             return $installments;
-        } catch (RakutenException $exception) {
+        } catch (GenCommException $exception) {
             $this->logger->error($exception->getMessage());
 
             return false;
@@ -108,7 +108,7 @@ class Installment
      * @param $minimumValue
      * @param $maximumInstallments
      * @return array
-     * @throws RakutenException
+     * @throws GenCommException
      */
     private function createInstallments($amount, $minimumValue, $maximumInstallments)
     {

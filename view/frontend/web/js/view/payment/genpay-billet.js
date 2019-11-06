@@ -10,8 +10,8 @@ define(
         'use strict';
         rendererList.push(
             {
-                type: 'rakutenpay_billet',
-                component: 'Rakuten_RakutenPay/js/view/payment/method-renderer/rakutenpay-billet'
+                type: 'genpay_billet',
+                component: 'GenComm_GenPay/js/view/payment/method-renderer/genpay-billet'
             }
         );
         return Component.extend({});

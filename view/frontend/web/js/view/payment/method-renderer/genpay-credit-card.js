@@ -10,8 +10,8 @@ define(
         'Magento_Checkout/js/action/set-payment-information',
         'Magento_Checkout/js/action/place-order',
         'Magento_Checkout/js/checkout-data',
-        'Rakuten_RakutenPay/js/model/custom',
-        'Rakuten_RakutenPay/js/model/credit-card',
+        'GenComm_GenPay/js/model/custom',
+        'GenComm_GenPay/js/model/credit-card',
         'Magento_Checkout/js/model/payment/additional-validators',
         'mage/translate'
     ],
@@ -33,7 +33,7 @@ define(
 
         return Component.extend({
             defaults: {
-                template: 'Rakuten_RakutenPay/payment/credit-card',
+                template: 'GenComm_GenPay/payment/credit-card',
                 creditCardNumber: '',
                 creditCardCode: '',
                 creditCardExpirationMonth: '',
@@ -43,20 +43,20 @@ define(
                 creditCardInstallments: '',
                 $fingerprint: null,
                 $installments: null,
-                fingerprintSelector: '#rakutenpay_credit_card_fingerprint',
-                creditCardTokenSelector: '#rakutenpay_credit_card_creditCardToken',
-                creditCardNumberSelector: '#rakutenpay_credit_card_creditCardNumber',
-                creditCardExpirationMonthSelector: '#rakutenpay_credit_card_creditCardExpirationMonth',
-                creditCardExpirationYearSelector: '#rakutenpay_credit_card_creditCardExpirationYear',
-                creditCardInstallmentSelector: '#rakutenpay_credit_card_creditCardInstallment',
-                creditCardInstallmentValueSelector: '#rakutenpay_credit_card_creditCardInstallmentValue',
-                creditCardInterestPercentSelector: '#rakutenpay_credit_card_creditCardInterestPercent',
-                creditCardInterestAmountSelector: '#rakutenpay_credit_card_creditCardInterestAmount',
-                creditCardInstallmentTotalValueSelector: '#rakutenpay_credit_card_creditCardInstallmentTotalValue',
+                fingerprintSelector: '#genpay_credit_card_fingerprint',
+                creditCardTokenSelector: '#genpay_credit_card_creditCardToken',
+                creditCardNumberSelector: '#genpay_credit_card_creditCardNumber',
+                creditCardExpirationMonthSelector: '#genpay_credit_card_creditCardExpirationMonth',
+                creditCardExpirationYearSelector: '#genpay_credit_card_creditCardExpirationYear',
+                creditCardInstallmentSelector: '#genpay_credit_card_creditCardInstallment',
+                creditCardInstallmentValueSelector: '#genpay_credit_card_creditCardInstallmentValue',
+                creditCardInterestPercentSelector: '#genpay_credit_card_creditCardInterestPercent',
+                creditCardInterestAmountSelector: '#genpay_credit_card_creditCardInterestAmount',
+                creditCardInstallmentTotalValueSelector: '#genpay_credit_card_creditCardInstallmentTotalValue',
             },
 
             getCode: function() {
-                return 'rakutenpay_credit_card';
+                return 'genpay_credit_card';
             },
 
             initObservable: function () {
@@ -126,7 +126,7 @@ define(
             },
 
             getYearValues: function () {
-                return _.map(window.checkoutConfig.payment.rakutenpay_credit_card.year_values, function (value, key) {
+                return _.map(window.checkoutConfig.payment.genpay_credit_card.year_values, function (value, key) {
                     return {
                         'value': key,
                         'year': value
@@ -137,7 +137,7 @@ define(
             getInstallments: function() {
                 var self = this;
                 var baseGrandTotal = quote.totals().base_grand_total;
-                var url = window.checkoutConfig.payment.rakutenpay_credit_card.installment_url;
+                var url = window.checkoutConfig.payment.genpay_credit_card.installment_url;
                 var data = {'baseGrandTotal' : baseGrandTotal};
                 $.ajax({
                     url: url,
@@ -195,7 +195,7 @@ define(
                 })).done(function () {
                     delete paymentData['title'];
                     $.when(placeOrder(paymentData, messageContainer)).done(function () {
-                        $.mage.redirect(window.checkoutConfig.payment.rakutenpay_credit_card.url);
+                        $.mage.redirect(window.checkoutConfig.payment.genpay_credit_card.url);
                     });
                 }).fail(function () {
                     self.isPlaceOrderActionAllowed(true);
