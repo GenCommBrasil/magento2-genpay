@@ -2,9 +2,9 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceBlock name="after.body.start">
-            <block  class="Rakuten\RakutenPay\Block\Frontend\RequireJS"
+            <block  class="GenComm\GenPay\Block\Frontend\RequireJS"
                     before="-"
-                    name="checkout.rakutenpay.rpay"
+                    name="checkout.genpay.pay"
                     template="page/js/require-js.phtml"
                     cacheable="false" />
         </referenceBlock>
@@ -24,18 +24,18 @@
                                                         <item name="renders" xsi:type="array">
                                                             <!-- merge payment method renders here -->
                                                             <item name="children" xsi:type="array">
-                                                                <item name="rakutenpay_billet" xsi:type="array">
-                                                                    <item name="component" xsi:type="string">Rakuten_RakutenPay/js/view/payment/rakutenpay-billet</item>
+                                                                <item name="genpay_billet" xsi:type="array">
+                                                                    <item name="component" xsi:type="string">GenComm_GenPay/js/view/payment/genpay-billet</item>
                                                                     <item name="methods" xsi:type="array">
-                                                                        <item name="rakutenpay_billet" xsi:type="array">
+                                                                        <item name="genpay_billet" xsi:type="array">
                                                                             <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
                                                                         </item>
                                                                     </item>
                                                                 </item>
-                                                                <item name="rakutenpay_credit_card" xsi:type="array">
-                                                                    <item name="component" xsi:type="string">Rakuten_RakutenPay/js/view/payment/rakutenpay-credit-card</item>
+                                                                <item name="genpay_credit_card" xsi:type="array">
+                                                                    <item name="component" xsi:type="string">GenComm_GenPay/js/view/payment/genpay-credit-card</item>
                                                                     <item name="methods" xsi:type="array">
-                                                                        <item name="rakutenpay_credit_card" xsi:type="array">
+                                                                        <item name="genpay_credit_card" xsi:type="array">
                                                                             <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
                                                                         </item>
                                                                     </item>

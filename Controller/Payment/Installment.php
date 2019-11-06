@@ -1,32 +1,32 @@
 <?php
 
-namespace Rakuten\RakutenPay\Controller\Payment;
+namespace GenComm\GenPay\Controller\Payment;
 
-use Rakuten\Connector\Exception\RakutenException;
+use GenComm\Exception\GenCommException;
 use Magento\Framework\App\CsrfAwareActionInterface;
-use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
-use Rakuten\RakutenPay\Helper\Installment as Installments;
-use Rakuten\RakutenPay\Logger\Logger;
+use Magento\Framework\App\RequestInterface;
+use GenComm\GenPay\Helper\Installment as Installments;
+use GenComm\GenPay\Logger\Logger;
 
 /**
  * Class Installment
- * @package Rakuten\RakutenPay\Controller\Payment
+ * @package GenComm\GenPay\Controller\Payment
  */
 class Installment extends \Magento\Framework\App\Action\Action implements CsrfAwareActionInterface
 {
     /**
-     * @var \Rakuten\RakutenPay\Helper\Data
+     * @var \GenComm\GenPay\Helper\Data
      */
     protected $rakutenHelper;
 
     /**
-     * @var \Rakuten\RakutenPay\Helper\Installment
+     * @var \GenComm\GenPay\Helper\Installment
      */
     protected $installments;
 
     /**
-     * @var \Rakuten\RakutenPay\Logger\Logger
+     * @var \GenComm\GenPay\Logger\Logger
      */
     protected $logger;
 
@@ -47,7 +47,7 @@ class Installment extends \Magento\Framework\App\Action\Action implements CsrfAw
         parent::__construct($context);
         $this->logger = $logger;
         $this->logger->info("Processing Construct in Installment.", ['service' => 'getInstallments']);
-        $this->rakutenHelper = $this->_objectManager->create('Rakuten\RakutenPay\Helper\Data');
+        $this->rakutenHelper = $this->_objectManager->create('GenComm\GenPay\Helper\Data');
         $this->resultJsonFactory = $this->_objectManager->create('Magento\Framework\Controller\Result\JsonFactory');
         $this->installments = new Installments($this->rakutenHelper, $logger);
     }
@@ -63,14 +63,14 @@ class Installment extends \Magento\Framework\App\Action\Action implements CsrfAw
             $baseGrandTotal = (float) $this->_request->getParam('baseGrandTotal');
             if (empty($baseGrandTotal)) {
                 $this->logger->error("Parameter is missing.", ['service' => 'getInstallments']);
-                throw new RakutenException("Parameter is missing.");
+                throw new GenCommException("Parameter is missing.");
             }
             $installments = $this->installments->create($baseGrandTotal);
             $resultJsonFactory->setData($installments);
             $this->logger->info(sprintf("Result: %s", json_encode($installments)), ['service' => 'getInstallments']);
 
             return $resultJsonFactory;
-        } catch (RakutenException $e) {
+        } catch (GenCommException $e) {
             $this->logger->error($e->getMessage(), ['service' => 'getInstallments']);
             $resultJsonFactory->setData([
                 'error' => [

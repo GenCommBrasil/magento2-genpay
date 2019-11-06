@@ -20,7 +20,7 @@
             <fieldset data-bind="attr: {class: 'fieldset payment items ccard ' + getCode(), id: 'payment_form_' + getCode()}">
 
                 <input type="hidden"
-                       class="rakutenFingerprint"
+                       class="genpayFingerprint"
                        value=""
                        name="payment[fingerprint]"
                        data-bind="attr: {id: getCode() + '_fingerprint', 'data-container': getCode() + '-fingerprint'}" />
@@ -55,7 +55,7 @@
             <!-- ko if: getDue() -->
             <dt class="title"><!-- ko i18n: 'Due' --><!-- /ko --></dt>
             <dd class="content">
-                <address class="rakutenpay_billet due address" data-bind="html: getDue()"></address>
+                <address class="genpay_billet due address" data-bind="html: getDue()"></address>
             </dd>
 
 
@@ -63,7 +63,7 @@
             <!-- ko if: getInstruction() -->
             <dt class="title"><!-- ko i18n: 'Instruction' --><!-- /ko --></dt>
             <dd class="content">
-                <address class="rakutenpay_billet instruction address" data-bind="html: getInstruction()"></address>
+                <address class="genpay_billet instruction address" data-bind="html: getInstruction()"></address>
             </dd>
             <!-- /ko -->
         </dl>

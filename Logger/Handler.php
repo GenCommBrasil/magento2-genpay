@@ -1,5 +1,5 @@
 <?php
-namespace Rakuten\RakutenPay\Logger;
+namespace GenComm\GenPay\Logger;
 
 use Monolog\Logger;
 

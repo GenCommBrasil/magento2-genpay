@@ -1,14 +1,14 @@
 <?php
 
-namespace Rakuten\RakutenPay\Controller\Adminhtml\System\Config;
+namespace GenComm\GenPay\Controller\Adminhtml\System\Config;
 
 use Magento\Backend\App\Action;
-use Rakuten\Connector\RakutenPay;
-use Rakuten\RakutenPay\Helper\Data;
+use GenComm\GenPay;
+use GenComm\GenPay\Helper\Data;
 
 /**
  * Class ValidateCredential
- * @package Rakuten\RakutenPay\Controller\Adminhtml\System\Config
+ * @package GenComm\GenPay\Controller\Adminhtml\System\Config
  */
 class ValidateCredential extends Action
 {
@@ -57,7 +57,7 @@ class ValidateCredential extends Action
         $resultJson = $this->resultJsonFactory->create();
         try {
             $message = 'Credenciais validadas com sucesso.';
-            $rakutenPay = new RakutenPay($document, $apiKey, $signature, $environment);
+            $rakutenPay = new GenPay($document, $apiKey, $signature, $environment);
             $response = $rakutenPay->authorizationValidate();
 
             if ($response->isError()) {

@@ -1,14 +1,14 @@
 <?php
-namespace Rakuten\RakutenPay\Model\Payment;
+namespace GenComm\GenPay\Model\Payment;
 
+use GenComm\GenPay\Enum\DirectPayment\Status;
+use GenComm\GenPay\Helper\Data;
+use GenComm\GenPay\Logger\Logger;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Rakuten\RakutenPay\Enum\DirectPayment\Status;
-use Rakuten\RakutenPay\Helper\Data;
-use Rakuten\RakutenPay\Logger\Logger;
 
 /**
  * Class Notification
- * @package Rakuten\RakutenPay\Model\Payment
+ * @package GenComm\GenPay\Model\Payment
  */
 class Notification
 {
@@ -73,7 +73,7 @@ class Notification
     private $helper;
 
     /**
-     * @var \Rakuten\RakutenPay\Logger\Logger
+     * @var \GenComm\GenPay\Logger\Logger
      */
     protected $logger;
 
@@ -156,7 +156,7 @@ class Notification
             if ($this->order->getState() != $status) {
                 $history = [
                     'status' => $this->history->setStatus($status),
-                    'comment' => $this->history->setComment(__('RakutenPay Notification')),
+                    'comment' => $this->history->setComment(__('GenPay Notification')),
                 ];
                 $this->order->setStatus($status);
                 $this->order->setState($status);

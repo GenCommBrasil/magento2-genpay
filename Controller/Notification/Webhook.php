@@ -1,18 +1,18 @@
 <?php
 
-namespace Rakuten\RakutenPay\Controller\Notification;
+namespace GenComm\GenPay\Controller\Notification;
 
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\App\RequestInterface;
-use Rakuten\Connector\Enum\Status;
-use Rakuten\RakutenPay\Helper\Data;
-use Rakuten\RakutenPay\Logger\Logger;
-use Rakuten\RakutenPay\Model\Payment\Notification;
+use GenComm\Enum\Status;
+use GenComm\GenPay\Helper\Data;
+use GenComm\GenPay\Logger\Logger;
+use GenComm\GenPay\Model\Payment\Notification;
 
 /**
  * Class Webhook
- * @package Rakuten\RakutenPay\Controller\Notification
+ * @package GenComm\GenPay\Controller\Notification
  */
 class Webhook extends \Magento\Framework\App\Action\Action implements CsrfAwareActionInterface
 {
@@ -28,7 +28,7 @@ class Webhook extends \Magento\Framework\App\Action\Action implements CsrfAwareA
     protected $resultJsonFactory;
 
     /**
-     * @var \Rakuten\RakutenPay\Logger\Logger
+     * @var \GenComm\GenPay\Logger\Logger
      */
     protected $logger;
 
@@ -44,7 +44,7 @@ class Webhook extends \Magento\Framework\App\Action\Action implements CsrfAwareA
         parent::__construct($context);
         $this->logger = $logger;
         $this->resultJsonFactory = $this->_objectManager->create('Magento\Framework\Controller\Result\JsonFactory');
-        $this->helper = $this->_objectManager->create('Rakuten\RakutenPay\Helper\Data');
+        $this->helper = $this->_objectManager->create('GenComm\GenPay\Helper\Data');
     }
 
     public function execute()

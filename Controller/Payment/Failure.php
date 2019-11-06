@@ -1,12 +1,12 @@
 <?php
 
-namespace Rakuten\RakutenPay\Controller\Payment;
+namespace GenComm\GenPay\Controller\Payment;
 
-use Rakuten\RakutenPay\Logger\Logger;
+use GenComm\GenPay\Logger\Logger;
 
 /**
  * Class Failure
- * @package Rakuten\RakutenPay\Controller\Payment
+ * @package GenComm\GenPay\Controller\Payment
  */
 class Failure extends \Magento\Framework\App\Action\Action
 {
@@ -14,7 +14,7 @@ class Failure extends \Magento\Framework\App\Action\Action
     protected $_resultPageFactory;
 
     /**
-     * @var \Rakuten\RakutenPay\Logger\Logger
+     * @var \GenComm\GenPay\Logger\Logger
      */
     protected $logger;
 

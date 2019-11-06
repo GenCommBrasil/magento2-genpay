@@ -1,9 +1,9 @@
 <?php
-namespace Rakuten\RakutenPay\Logger;
+namespace GenComm\GenPay\Logger;
 
 /**
  * Class Logger
- * @package Rakuten\RakutenPay\Logger
+ * @package GenComm\GenPay\Logger
  */
 class Logger extends \Monolog\Logger
 {
@@ -15,7 +15,7 @@ class Logger extends \Monolog\Logger
         $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
         $scopeConfig = $objectManager->get('\Magento\Framework\App\Config\ScopeConfigInterface');
 
-        return $scopeConfig->getValue('payment/rakutenpay_configuration/log', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        return $scopeConfig->getValue('payment/genpay_configuration/log', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**

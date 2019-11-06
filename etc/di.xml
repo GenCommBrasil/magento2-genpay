@@ -1,20 +1,20 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
-    <type name="Rakuten\RakutenPay\Logger\Handler">
+    <type name="GenComm\GenPay\Logger\Handler">
         <arguments>
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
         </arguments>
     </type>
-    <type name="Rakuten\RakutenPay\Logger\Logger">
+    <type name="GenComm\GenPay\Logger\Logger">
         <arguments>
-            <argument name="name" xsi:type="string">RakutenConnector</argument>
+            <argument name="name" xsi:type="string">GenComm</argument>
             <argument name="handlers"  xsi:type="array">
-                <item name="system" xsi:type="object">Rakuten\RakutenPay\Logger\Handler</item>
+                <item name="system" xsi:type="object">GenComm\GenPay\Logger\Handler</item>
             </argument>
         </arguments>
     </type>
     <type name="Magento\Checkout\Block\Checkout\AttributeMerger">
-        <plugin name="shippingAddress" type="Rakuten\RakutenPay\Block\Checkout\AttributeMerger"/>
+        <plugin name="shippingAddress" type="GenComm\GenPay\Block\Checkout\AttributeMerger"/>
     </type>
 </config>

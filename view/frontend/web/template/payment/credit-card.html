@@ -15,11 +15,11 @@
             <!--/ko-->
         </div>
         <form class="form" data-bind="attr: {id: getCode() + '-form'}" method="post">
-            <div id="rakutenpay-cc-method-div"></div>
+            <div id="genpay-cc-method-div"></div>
             <fieldset data-bind="attr: {class: 'fieldset payment items ccard ' + getCode(), id: getCode() + '_payment_form'}">
 
                 <input type="hidden"
-                       class="rakutenFingerprint"
+                       class="genpayFingerprint"
                        value=""
                        name="payment[fingerprint]"
                        data-bind="attr: {id: getCode() + '_fingerprint', 'data-container': getCode() + '-fingerprint'}" />
@@ -72,7 +72,7 @@
                                maxlength="19"
                                onblur="creditCardMask(event, this); getBrand(this);"
                                onkeydown="creditCardMask(event, this)"
-                               data-validate="{'required-entry':true, 'required':true, 'validate-credit-card-number':true, 'validate-rakutenpay-form':true}"
+                               data-validate="{'required-entry':true, 'required':true, 'validate-credit-card-number':true, 'validate-genpay-form':true}"
                                data-bind="attr: {
                                 autocomplete: off,
                                 id: getCode() + '_creditCardNumber',
@@ -117,7 +117,7 @@
                             <div class="field no-label month">
                                 <div class="control">
                                     <select
-                                        name="rakutenpay_credit_card_creditCardExpirationMonth"
+                                        name="genpay_credit_card_creditCardExpirationMonth"
                                         class="select select-month"
                                         data-rkp="card-expiration-month"
                                         data-validate="{'required':true, 'validate-card-date':true}"
@@ -144,7 +144,7 @@
                             </div>
                             <div class="field no-label year">
                                 <div class="control">
-                                    <select name="rakutenpay_credit_card_creditCardExpirationYear"
+                                    <select name="genpay_credit_card_creditCardExpirationYear"
                                             class="select select-year"
                                             data-rkp="card-expiration-year"
                                             data-validate="{'required':true, 'validate-card-date':true}"
@@ -214,7 +214,7 @@
                     </label>
                     <div class="control">
                         <select
-                            name="rakutenpay_credit_card_installments"
+                            name="genpay_credit_card_installments"
                             class="select select-installments"
                             data-validate="{'required-entry':true, 'validate-credit-card-installments':true, 'required':true}"
                             data-bind="attr: {id: getCode() + '_installments',

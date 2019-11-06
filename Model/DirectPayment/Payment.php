@@ -1,14 +1,14 @@
 <?php
 
-namespace Rakuten\RakutenPay\Model\DirectPayment;
+namespace GenComm\GenPay\Model\DirectPayment;
 
-use Rakuten\Connector\Parser\Error;
-use Rakuten\Connector\Parser\RakutenPay\Transaction\Billet;
-use Rakuten\Connector\Parser\RakutenPay\Transaction\CreditCard;
+use GenComm\Parser\Error;
+use GenComm\Parser\GenPay\Transaction\Billet;
+use GenComm\Parser\GenPay\Transaction\CreditCard;
 
 /**
  * Interface Payment
- * @package Rakuten\RakutenPay\Model\DirectPayment
+ * @package GenComm\GenPay\Model\DirectPayment
  */
 interface Payment
 {

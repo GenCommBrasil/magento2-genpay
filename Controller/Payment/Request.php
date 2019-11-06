@@ -1,20 +1,20 @@
 <?php
 
-namespace Rakuten\RakutenPay\Controller\Payment;
+namespace GenComm\GenPay\Controller\Payment;
 
-use Rakuten\Connector\Exception\RakutenException;
-use Rakuten\Connector\Parser\Error;
-use Rakuten\RakutenPay\Enum\DirectPayment\CodeError;
-use Rakuten\RakutenPay\Enum\DirectPayment\Message;
-use Rakuten\RakutenPay\Enum\DirectPayment\Status;
-use Rakuten\RakutenPay\Enum\PaymentMethod;
-use Rakuten\RakutenPay\Logger\Logger;
-use Rakuten\RakutenPay\Model\DirectPayment\BilletMethod;
-use Rakuten\RakutenPay\Model\DirectPayment\CreditCardMethod;
+use GenComm\Exception\GenCommException;
+use GenComm\Parser\Error;
+use GenComm\GenPay\Enum\DirectPayment\CodeError;
+use GenComm\GenPay\Enum\DirectPayment\Message;
+use GenComm\GenPay\Enum\DirectPayment\Status;
+use GenComm\GenPay\Enum\PaymentMethod;
+use GenComm\GenPay\Logger\Logger;
+use GenComm\GenPay\Model\DirectPayment\BilletMethod;
+use GenComm\GenPay\Model\DirectPayment\CreditCardMethod;
 
 /**
  * Class Request
- * @package Rakuten\RakutenPay\Controller\Payment
+ * @package GenComm\GenPay\Controller\Payment
  */
 class Request extends \Magento\Framework\App\Action\Action
 {
@@ -40,12 +40,12 @@ class Request extends \Magento\Framework\App\Action\Action
     protected $resultJsonFactory;
 
     /**
-     * @var \Rakuten\RakutenPay\Helper\Data
+     * @var \GenComm\GenPay\Helper\Data
      */
     protected $rakutenHelper;
 
     /**
-     * @var \Rakuten\RakutenPay\Logger\Logger
+     * @var \GenComm\GenPay\Logger\Logger
      */
     protected $logger;
 
@@ -57,7 +57,7 @@ class Request extends \Magento\Framework\App\Action\Action
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
-        \Rakuten\RakutenPay\Helper\Data $rakutenHelper,
+        \GenComm\GenPay\Helper\Data $rakutenHelper,
         \Magento\Checkout\Model\Session $session,
         Logger $logger
     ) {
@@ -165,7 +165,7 @@ class Request extends \Magento\Framework\App\Action\Action
             $this->clearAdditionalInformation();
             if (is_null($this->orderId)) {
                 $this->logger->error("There is not order associated with this session.");
-                throw new RakutenException("There is not order associated with this session.");
+                throw new GenCommException("There is not order associated with this session.");
             }
             $paymentMethod = $lastRealOrder->getPayment()->getMethod();
             switch ($paymentMethod) {
@@ -213,7 +213,7 @@ class Request extends \Magento\Framework\App\Action\Action
                     $result = $creditCard->createOrder();
                     break;
                 default:
-                    throw new RakutenException(sprintf("Payment Method invalid. PaymentMethod: %s", $paymentMethod));
+                    throw new GenCommException(sprintf("Payment Method invalid. PaymentMethod: %s", $paymentMethod));
             }
 
             if ($result instanceof Error) {

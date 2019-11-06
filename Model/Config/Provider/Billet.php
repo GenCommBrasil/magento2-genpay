@@ -1,12 +1,12 @@
 <?php
-namespace Rakuten\RakutenPay\Model\Config\Provider;
+namespace GenComm\GenPay\Model\Config\Provider;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Escaper;
 use Magento\Payment\Helper\Data as PaymentHelper;
-use Rakuten\RakutenPay\Enum\PaymentMethod;
-use Rakuten\RakutenPay\Logger\Logger;
+use GenComm\GenPay\Enum\PaymentMethod;
+use GenComm\GenPay\Logger\Logger;
 
 class Billet implements ConfigProviderInterface
 {
@@ -26,12 +26,12 @@ class Billet implements ConfigProviderInterface
     protected $scopeConfig;
 
     /**
-     * @var \Rakuten\RakutenPay\Model\Payment\Billet
+     * @var \GenComm\GenPay\Model\Payment\Billet
      */
     protected $billetMethod;
 
     /**
-     * @var \Rakuten\RakutenPay\Logger\Logger
+     * @var \GenComm\GenPay\Logger\Logger
      */
     protected $logger;
 
@@ -63,7 +63,7 @@ class Billet implements ConfigProviderInterface
     {
         return $this->method->isAvailable() ? [
             'payment' => [
-                'rakutenpay_billet' => [
+                'genpay_billet' => [
                     'url' => $this->billetMethod->getCheckoutPaymentUrl(),
                     'instruction' =>  $this->getInstruction(),
                     'due' => $this->getDue(),
@@ -79,7 +79,7 @@ class Billet implements ConfigProviderInterface
      */
     protected function getTitle()
     {
-        return $this->scopeConfig->getValue('payment/rakutenpay_billet/title', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue('payment/genpay_billet/title', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
     /**
@@ -89,7 +89,7 @@ class Billet implements ConfigProviderInterface
      */
     protected function getInstruction()
     {
-        return nl2br($this->escaper->escapeHtml($this->scopeConfig->getValue('payment/rakutenpay_billet/instruction', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)));
+        return nl2br($this->escaper->escapeHtml($this->scopeConfig->getValue('payment/genpay_billet/instruction', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)));
     }
 
     /**
@@ -99,7 +99,7 @@ class Billet implements ConfigProviderInterface
      */
     protected function getDue()
     {
-        $day = (int)$this->scopeConfig->getValue('payment/rakutenpay_billet/expiration', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $day = (int)$this->scopeConfig->getValue('payment/genpay_billet/expiration', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
         if ($day > 1) {
             return nl2br(sprintf(__('Expiration in %s days'), $day));
         } else {

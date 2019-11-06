@@ -2,38 +2,38 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Store/etc/config.xsd">
     <default>
         <payment>
-            <rakutenpay_configuration>
+            <genpay_configuration>
                 <title>Configuração GenPay</title>
-                <model>Rakuten\RakutenPay\Model\Payment\Billet</model>
+                <model>GenComm\GenPay\Model\Payment\Billet</model>
                 <environment>sandbox</environment>
                 <document>document</document>
                 <api_key>api_key</api_key>
                 <signature>signature</signature>
                 <email>email</email>
                 <log>0</log>
-                <notification>rakutenpay/notification/webhook/</notification>
+                <notification>genpay/notification/webhook/</notification>
                 <street>0</street>
                 <street_number>1</street_number>
                 <street_complement>3</street_complement>
                 <street_district>2</street_district>
-            </rakutenpay_configuration>
-            <rakutenpay_billet>
+            </genpay_configuration>
+            <genpay_billet>
                 <active>0</active>
-                <model>Rakuten\RakutenPay\Model\Payment\Billet</model>
+                <model>GenComm\GenPay\Model\Payment\Billet</model>
                 <title>GenPay Boleto Bancário</title>
                 <expiration>3</expiration>
                 <instruction><![CDATA[Imprima o boleto e pague no banco ou na internet utilizando o seu código de barras. O boleto não será enviado ao seu endereço. Não parcelamos no boleto.]]></instruction>
-            </rakutenpay_billet>
-            <rakutenpay_credit_card>
+            </genpay_billet>
+            <genpay_credit_card>
                 <active>0</active>
-                <group>rakutenpay</group>
-                <model>Rakuten\RakutenPay\Model\Payment\CreditCard</model>
+                <group>genpay</group>
+                <model>GenComm\GenPay\Model\Payment\CreditCard</model>
                 <title>GenPay Cartão de Crédito</title>
                 <installments_active>0</installments_active>
                 <customer_interest>0</customer_interest>
                 <minimum_installments>10</minimum_installments>
                 <maximum_installments_quantity>10</maximum_installments_quantity>
-            </rakutenpay_credit_card>
+            </genpay_credit_card>
         </payment>
     </default>
 </config>

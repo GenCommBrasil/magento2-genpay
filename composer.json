@@ -1,32 +1,32 @@
 {
-  "name": "rakuten/magento2-connector",
-  "description": "Module Rakuten Connector for Magento 2.3",
-  "keywords": ["modules", "magento", "magento2", "rakuten", "intermediary", "checkout", "marketplace"],
-  "homepage": "https://digitalcommerce.rakuten.com.br/developers/",
+  "name": "gencomm/magento2-genpay",
+  "description": "Module GenPay for Magento 2.3",
+  "keywords": ["modules", "magento", "magento2", "gencomm", "genpay", "intermediary", "checkout", "marketplace"],
+  "homepage": "https://www.gencomm.com.br/developers/",
   "license": "MIT",
   "type": "magento2-module",
   "support": {
-    "issues": "https://github.com/RakutenBrasil/magento2-rakuten-pay/issues",
-    "source": "https://github.com/RakutenBrasil/magento2-rakuten-pay/"
+    "issues": "https://github.com/GenCommBrasil/magento2-genpay/issues",
+    "source": "https://github.com/GenCommBrasil/magento2-genpay/"
   },
   "authors": [
     {
-      "name": "Rakuten Digital Commerce",
-      "email": "paytech@rakuten.com.br",
-      "homepage": "https://digitalcommerce.rakuten.com.br/"
+      "name": "GenComm",
+      "email": "paytech@gencomm.com.br",
+      "homepage": "https://www.gencomm.com.br/developers/"
     }
   ],
   "require": {
     "php": "7.0.2|7.0.4|~7.0.6|~7.1.0|~7.2.0",
     "magento/magento-composer-installer": "*",
-    "rakuten/rakuten-sdk-php": "*"
+    "gencomm/genpay-sdk-php": "*"
   },
   "autoload": {
     "files": [
       "registration.php"
     ],
     "psr-4": {
-      "Rakuten\\RakutenPay\\": ""
+      "GenComm\\GenPay\\": ""
     }
   },
   "minimum-stability": "dev"

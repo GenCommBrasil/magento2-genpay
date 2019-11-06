@@ -1,20 +1,20 @@
 <?php
-namespace Rakuten\RakutenPay\Observer;
+namespace GenComm\GenPay\Observer;
 
+use GenComm\Enum\Refund\Requester;
+use GenComm\Parser\Error;
+use GenComm\Parser\GenPay\Transaction\Refund as TransationRefund;
+use GenComm\Resource\GenPay\Refund as ResourceRefund;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Sales\Model\Order;
-use Rakuten\Connector\Enum\Refund\Requester;
-use Rakuten\Connector\Parser\Error;
-use Rakuten\Connector\Parser\RakutenPay\Transaction\Refund as TransationRefund;
-use Rakuten\Connector\Resource\RakutenPay\Refund as ResourceRefund;
-use Rakuten\RakutenPay\Enum\DirectPayment\Status;
-use Rakuten\RakutenPay\Enum\PaymentMethod;
-use Rakuten\RakutenPay\Helper\Data;
-use Rakuten\RakutenPay\Logger\Logger;
+use GenComm\GenPay\Enum\DirectPayment\Status;
+use GenComm\GenPay\Enum\PaymentMethod;
+use GenComm\GenPay\Helper\Data;
+use GenComm\GenPay\Logger\Logger;
 
 /**
  * Class Refund
- * @package Rakuten\RakutenPay\Observer
+ * @package GenComm\GenPay\Observer
  */
 class Refund implements \Magento\Framework\Event\ObserverInterface
 {
@@ -34,7 +34,7 @@ class Refund implements \Magento\Framework\Event\ObserverInterface
     private $creditmemo;
 
     /**
-     * @var \Rakuten\Connector\RakutenPay
+     * @var \GenComm\GenPay
      */
     private $rakutenPay;
 
@@ -80,8 +80,8 @@ class Refund implements \Magento\Framework\Event\ObserverInterface
     private function validateBillet()
     {
         if ($this->creditmemo->getOrder()->getPayment()->getMethod() == PaymentMethod::BILLET_CODE) {
-            $this->logger->error('Refund of the billet is only available on the RakutenPay Dashboard');
-            throw new CouldNotSaveException(__('Refund of the billet is only available on the RakutenPay Dashboard'));
+            $this->logger->error('Refund of the billet is only available on the GenPay Dashboard');
+            throw new CouldNotSaveException(__('Refund of the billet is only available on the GenPay Dashboard'));
         }
     }
 
@@ -101,7 +101,7 @@ class Refund implements \Magento\Framework\Event\ObserverInterface
      * @param $amount
      * @param $refundAmount
      * @return mixed
-     * @throws \Rakuten\Connector\Exception\RakutenException
+     * @throws \GenComm\Exception\GenCommException
      */
     private function runRefundRakutenPay(ResourceRefund $refund, $chargeId, $amount, $refundAmount)
     {
@@ -120,7 +120,7 @@ class Refund implements \Magento\Framework\Event\ObserverInterface
      * @param $paymentId
      * @return $this
      * @throws CouldNotSaveException
-     * @throws \Rakuten\Connector\Exception\RakutenException
+     * @throws \GenComm\Exception\GenCommException
      */
     private function refund($amount, $refundAmount, $paymentId)
     {
@@ -156,8 +156,8 @@ class Refund implements \Magento\Framework\Event\ObserverInterface
             }
         }
 
-        $this->logger->error("Error: Order not found on table RakutenPayOrder.", ['service' => 'Observer']);
-        throw new CouldNotSaveException(__("Error: Order not found on table RakutenPayOrder."));
+        $this->logger->error("Error: Order not found on table GenPayOrder.", ['service' => 'Observer']);
+        throw new CouldNotSaveException(__("Error: Order not found on table GenPayOrder."));
     }
 
     public function execute(\Magento\Framework\Event\Observer $observer)

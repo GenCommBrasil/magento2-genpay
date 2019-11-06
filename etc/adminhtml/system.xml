@@ -2,57 +2,57 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <section id="payment">
-            <group id="rakutenpay" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="genpay" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label><![CDATA[<div class="genpay-payment-logo"></div><div class="genpay-payment-byline"><b>GenPay Payment Method</b><br/>Express payment method.<br/>Configure using your credentials created on GenPay to use the service.</div>]]></label>
                 <fieldset_css>complex genpay-payment-section</fieldset_css>
                 <frontend_model>Magento\Paypal\Block\Adminhtml\System\Config\Fieldset\Payment</frontend_model>
                 <field id="version" type="text" translate="label comment" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <frontend_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\Form\Version</frontend_model>
+                    <frontend_model>GenComm\GenPay\Block\Adminhtml\System\Config\Form\Version</frontend_model>
                 </field>
-                <group id="rakutenpay_configuration" translate="label" type="text" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
+                <group id="genpay_configuration" translate="label" type="text" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Configuration</label>
                     <field id="environment" translate="label comment" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Environment</label>
-                        <source_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\Environment</source_model>
+                        <source_model>GenComm\GenPay\Block\Adminhtml\System\Config\Environment</source_model>
                         <comment>For testing use the sandbox environment.</comment>
-                        <config_path>payment/rakutenpay_configuration/environment</config_path>
+                        <config_path>payment/genpay_configuration/environment</config_path>
                     </field>
                     <field id="document" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Document/CNPJ</label>
                         <validate>required-entry validate-number</validate>
                         <comment>CNPJ number.</comment>
-                        <config_path>payment/rakutenpay_configuration/document</config_path>
+                        <config_path>payment/genpay_configuration/document</config_path>
                     </field>
                     <field id="api_key" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>API Key</label>
                         <validate>required-entry</validate>
                         <comment>API generated on GenPay.</comment>
-                        <config_path>payment/rakutenpay_configuration/api_key</config_path>
+                        <config_path>payment/genpay_configuration/api_key</config_path>
                     </field>
                     <field id="signature" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Signature Key</label>
                         <validate>required-entry</validate>
                         <comment>Signature generated on GenPay.</comment>
-                        <config_path>payment/rakutenpay_configuration/signature</config_path>
+                        <config_path>payment/genpay_configuration/signature</config_path>
                     </field>
                     <field id="validation_credencial" translate="button_label" type="button" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
                         <button_label>Validate Credential in GenPay</button_label>
-                        <frontend_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\ValidateCredential</frontend_model>
+                        <frontend_model>GenComm\GenPay\Block\Adminhtml\System\Config\ValidateCredential</frontend_model>
                     </field>
                     <field id="email" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Email</label>
                         <validate>required-entry validate-email</validate>
                         <comment>Email registered with GenPay.</comment>
-                        <config_path>payment/rakutenpay_configuration/email</config_path>
+                        <config_path>payment/genpay_configuration/email</config_path>
                     </field>
                     <field id="log" translate="label" type="select" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Enable Log</label>
                         <comment>Enable Log for Debug Module.</comment>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/rakutenpay_configuration/log</config_path>
+                        <config_path>payment/genpay_configuration/log</config_path>
                     </field>
                     <field id="download_log" translate="label comment" type="button" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="0">
-                        <frontend_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\DownloadLog</frontend_model>
+                        <frontend_model>GenComm\GenPay\Block\Adminhtml\System\Config\DownloadLog</frontend_model>
                         <label>Download Log</label>
                         <comment>Download Log File</comment>
                     </field>
@@ -61,86 +61,86 @@
                         <comment>List the attributes of your Magento.</comment>
                         <field id="street" translate="label" type="select" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="0">
                             <label>The Street attribute is</label>
-                            <source_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\Street</source_model>
-                            <config_path>payment/rakutenpay_configuration/street</config_path>
+                            <source_model>GenComm\GenPay\Block\Adminhtml\System\Config\Street</source_model>
+                            <config_path>payment/genpay_configuration/street</config_path>
                         </field>
                         <field id="street_number" translate="label" type="select" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="0">
                             <label>The address number is</label>
-                            <source_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\Street</source_model>
-                            <config_path>payment/rakutenpay_configuration/street_number</config_path>
+                            <source_model>GenComm\GenPay\Block\Adminhtml\System\Config\Street</source_model>
+                            <config_path>payment/genpay_configuration/street_number</config_path>
                         </field>
                         <field id="street_complement" translate="label" type="select" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="0">
                             <label>The address complement is</label>
-                            <source_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\Street</source_model>
-                            <config_path>payment/rakutenpay_configuration/street_complement</config_path>
+                            <source_model>GenComm\GenPay\Block\Adminhtml\System\Config\Street</source_model>
+                            <config_path>payment/genpay_configuration/street_complement</config_path>
                         </field>
                         <field id="street_district" translate="label" type="select" sortOrder="19" showInDefault="1" showInWebsite="1" showInStore="0">
                             <label>The address district is</label>
-                            <source_model>Rakuten\RakutenPay\Block\Adminhtml\System\Config\Street</source_model>
-                            <config_path>payment/rakutenpay_configuration/street_district</config_path>
+                            <source_model>GenComm\GenPay\Block\Adminhtml\System\Config\Street</source_model>
+                            <config_path>payment/genpay_configuration/street_district</config_path>
                         </field>
                     </group>
                 </group>
-                <group id="rakutenpay_billet" translate="label" type="text" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
+                <group id="genpay_billet" translate="label" type="text" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Boleto</label>
                     <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
                         <label>Enable</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/rakutenpay_billet/active</config_path>
+                        <config_path>payment/genpay_billet/active</config_path>
                     </field>
                     <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Title</label>
-                        <config_path>payment/rakutenpay_billet/title</config_path>
+                        <config_path>payment/genpay_billet/title</config_path>
                     </field>
                     <field id="expiration" translate="label comment" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Days due</label>
                         <comment>Consecutive days.</comment>
                         <validate>required-entry validate-number</validate>
-                        <config_path>payment/rakutenpay_billet/expiration</config_path>
+                        <config_path>payment/genpay_billet/expiration</config_path>
                     </field>
                     <field id="instruction" translate="label" type="textarea" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Customer orientation at checkout</label>
                         <comment>Information displayed on checkout.</comment>
-                        <config_path>payment/rakutenpay_billet/instruction</config_path>
+                        <config_path>payment/genpay_billet/instruction</config_path>
                     </field>
                 </group>
-                <group id="rakutenpay_credit_card" translate="label" type="text" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
+                <group id="genpay_credit_card" translate="label" type="text" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Cartão de Crédito</label>
                     <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Enable</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/rakutenpay_credit_card/active</config_path>
+                        <config_path>payment/genpay_credit_card/active</config_path>
                     </field>
                     <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Title</label>
-                        <config_path>payment/rakutenpay_credit_card/title</config_path>
+                        <config_path>payment/genpay_credit_card/title</config_path>
                     </field>
                     <group id="installments" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Installment and interest</label>
                         <field id="installments_active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Enable installment</label>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                            <config_path>payment/rakutenpay_credit_card/installments_active</config_path>
+                            <config_path>payment/genpay_credit_card/installments_active</config_path>
                         </field>
                         <field id="customer_interest" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Enable customer interest</label>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                            <config_path>payment/rakutenpay_credit_card/customer_interest</config_path>
+                            <config_path>payment/genpay_credit_card/customer_interest</config_path>
                             <depends>
                                 <field id="installments_active">1</field>
                             </depends>
                         </field>
                         <field id="customer_interest_minimum_installments" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Minimum value of interest installment</label>
-                            <source_model>Rakuten\RakutenPay\Model\Config\Source\MinimumInterestInstallment</source_model>
-                            <config_path>payment/rakutenpay_credit_card/customer_interest_minimum_installments</config_path>
+                            <source_model>GenComm\GenPay\Model\Config\Source\MinimumInterestInstallment</source_model>
+                            <config_path>payment/genpay_credit_card/customer_interest_minimum_installments</config_path>
                             <depends>
                                 <field id="customer_interest">1</field>
                             </depends>
                         </field>
                         <field id="minimum_installments" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Minimum value of installment</label>
-                            <config_path>payment/rakutenpay_credit_card/minimum_installments</config_path>
+                            <config_path>payment/genpay_credit_card/minimum_installments</config_path>
                             <depends>
                                 <field id="installments_active">1</field>
                                 <field id="customer_interest">0</field>
@@ -148,7 +148,7 @@
                         </field>
                         <field id="maximum_installments_quantity" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Maximum value of installment quantity</label>
-                            <config_path>payment/rakutenpay_credit_card/maximum_installments_quantity</config_path>
+                            <config_path>payment/genpay_credit_card/maximum_installments_quantity</config_path>
                             <depends>
                                 <field id="installments_active">1</field>
                                 <field id="customer_interest">0</field>

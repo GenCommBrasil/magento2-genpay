@@ -3,9 +3,9 @@ define([
     'jquery/ui',
     'jquery/validate',
     'mage/translate',
-    'Rakuten_RakutenPay/js/model/custom',
-    'Rakuten_RakutenPay/js/model/credit-card',
-    'Rakuten_RakutenPay/js/model/validation/payment-validation'
+    'GenComm_GenPay/js/model/custom',
+    'GenComm_GenPay/js/model/credit-card',
+    'GenComm_GenPay/js/model/validation/payment-validation'
 ], function($) {
     'use strict';
     return function () {
@@ -103,17 +103,17 @@ define([
         );
 
         $.validator.addMethod(
-            "validate-rakutenpay-form",
+            "validate-genpay-form",
             function (value, element) {
 
-                return $('#rakutenpay_credit_card_fingerprint').val() !== "" &&
-                    $('#rakutenpay_credit_card_creditCardToken').val() !== "" &&
-                    $('#rakutenpay_credit_card_creditCardBrand').val() !== "" &&
-                    $('#rakutenpay_credit_card_creditCardInstallment').val() !== "" &&
-                    $('#rakutenpay_credit_card_creditCardInstallmentValue').val() !== "" &&
-                    $('#rakutenpay_credit_card_creditCardInterestPercent').val() !== "" &&
-                    $('#rakutenpay_credit_card_creditCardInterestAmount').val() !== "" &&
-                    $('#rakutenpay_credit_card_creditCardInstallmentTotalValue')
+                return $('#genpay_credit_card_fingerprint').val() !== "" &&
+                    $('#genpay_credit_card_creditCardToken').val() !== "" &&
+                    $('#genpay_credit_card_creditCardBrand').val() !== "" &&
+                    $('#genpay_credit_card_creditCardInstallment').val() !== "" &&
+                    $('#genpay_credit_card_creditCardInstallmentValue').val() !== "" &&
+                    $('#genpay_credit_card_creditCardInterestPercent').val() !== "" &&
+                    $('#genpay_credit_card_creditCardInterestAmount').val() !== "" &&
+                    $('#genpay_credit_card_creditCardInstallmentTotalValue')
             },
             $.mage.__("Erro ao processar dados, verifique se todas as informações estão corretas e tente novamente.")
         );

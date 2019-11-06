@@ -1,14 +1,15 @@
 <?php
 
-namespace Rakuten\RakutenPay\Block\Adminhtml\System\Config\Form;
+namespace GenComm\GenPay\Block\Adminhtml\System\Config\Form;
 
+use GenComm\GenPay\Helper\Data as CoreHelper;
+use GenComm\GenPay\Logger\Logger;
 use Magento\Backend\Block\Template\Context;
-use Rakuten\RakutenPay\Helper\Data as CoreHelper;
-use Rakuten\RakutenPay\Logger\Logger;
+use Magento\Framework\Data\Form\Element\AbstractElement;
 
 /**
  * Class Version
- * @package Rakuten\RakutenPay\Block\Adminhtml\System\Config\Form
+ * @package GenComm\GenPay\Block\Adminhtml\System\Config\Form
  */
 class Version extends \Magento\Config\Block\System\Config\Form\Field
 {
@@ -18,7 +19,7 @@ class Version extends \Magento\Config\Block\System\Config\Form\Field
     private $coreHelper;
 
     /**
-     * @var \Rakuten\RakutenPay\Logger\Logger
+     * @var Logger
      */
     protected $logger;
 
@@ -44,11 +45,11 @@ class Version extends \Magento\Config\Block\System\Config\Form\Field
     /**
      * Render element value
      *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
+     * @param AbstractElement $element
      * @return string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function render(\Magento\Framework\Data\Form\Element\AbstractElement $element)
+    public function render(AbstractElement $element)
     {
         $this->logger->info("Processing render.");
         $version = $this->coreHelper->getVersion();

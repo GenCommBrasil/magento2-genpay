@@ -1,12 +1,11 @@
 <?php
-namespace Rakuten\RakutenPay\Model\Payment;
+namespace GenComm\GenPay\Model\Payment;
 
-use Rakuten\Connector\RakutenPay;
-use Rakuten\RakutenPay\Enum\PaymentMethod;
+use GenComm\GenPay\Enum\PaymentMethod;
 
 /**
  * Class Billet
- * @package Rakuten\RakutenPay\Model\Payment
+ * @package GenComm\GenPay\Model\Payment
  */
 class Billet extends \Magento\Payment\Model\Method\Cc
 {
@@ -25,14 +24,9 @@ class Billet extends \Magento\Payment\Model\Method\Cc
     protected $_supportedCurrencyCodes = ['BRL'];
     protected $_cart;
     protected $_rakutenHelper;
-    protected $_infoBlockType = '\Rakuten\RakutenPay\Block\Info\Billet';
+    protected $_infoBlockType = '\GenComm\GenPay\Block\Info\Billet';
     protected $_canUseInternal = false;
     protected $_canFetchTransactionInfo = true;
-
-    /**
-     * @var RakutenPay
-     */
-    protected $rakutenPay;
 
     /**
      * Billet constructor.
@@ -47,7 +41,7 @@ class Billet extends \Magento\Payment\Model\Method\Cc
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
      * @param \Magento\Directory\Model\CountryFactory $countryFactory
      * @param \Magento\Checkout\Model\Cart $cart
-     * @param \Rakuten\RakutenPay\Helper\Data $rakutenHelper
+     * @param \GenComm\GenPay\Helper\Data $rakutenHelper
      */
     public function __construct(
         \Magento\Framework\Model\Context $context,
@@ -61,7 +55,7 @@ class Billet extends \Magento\Payment\Model\Method\Cc
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
         \Magento\Directory\Model\CountryFactory $countryFactory,
         \Magento\Checkout\Model\Cart $cart,
-        \Rakuten\RakutenPay\Helper\Data $rakutenHelper
+        \GenComm\GenPay\Helper\Data $rakutenHelper
     ) {
         parent::__construct(
             $context,
@@ -108,7 +102,7 @@ class Billet extends \Magento\Payment\Model\Method\Cc
      */
     public function getCheckoutPaymentUrl()
     {
-        return $this->_cart->getQuote()->getStore()->getUrl("rakutenpay/payment/request/");
+        return $this->_cart->getQuote()->getStore()->getUrl("genpay/payment/request/");
     }
 
     /**

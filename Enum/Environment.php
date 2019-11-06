@@ -1,10 +1,10 @@
 <?php
 
-namespace Rakuten\RakutenPay\Enum;
+namespace GenComm\GenPay\Enum;
 
 /**
  * Class Environment
- * @package Rakuten\RakutenPay\Enum
+ * @package GenComm\GenPay\Enum
  */
 class Environment
 {

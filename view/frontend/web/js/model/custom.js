@@ -1,29 +1,8 @@
-/**
- ************************************************************************
- * Copyright [2019] [RakutenConnector]
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ************************************************************************
- */
-/*
- * This file have all the rakutenpay direct payment common functions, like
- * form input masks and  validations and calls to the rakutenpay js api
- */
 
 /** Generate Fingerprint */
 function generateFingerprint() {
     var rpay = new RPay();
-    var fingerprintFields = document.querySelectorAll(".rakutenFingerprint");
+    var fingerprintFields = document.querySelectorAll(".genpayFingerprint");
     rpay.fingerprint(function(error, fingerprint) {
         if (error) {
             console.log("Erro ao gerar fingerprint", error);
@@ -92,7 +71,7 @@ function MaskCPF(event, cpf) {
  * @returns {Boolean}
  */
 function creditCardMask(event, cc) {
-    var creditCardNumber = document.getElementById("rakutenpay_credit_card_creditCardNumber");
+    var creditCardNumber = document.getElementById("genpay_credit_card_creditCardNumber");
     creditCardNumber.value = cc.value;
     maskInteger(event, cc);
     return formatField(cc, '0000 0000 0000 0000', event);

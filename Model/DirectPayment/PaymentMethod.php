@@ -1,21 +1,25 @@
 <?php
 
-namespace Rakuten\RakutenPay\Model\DirectPayment;
+namespace GenComm\GenPay\Model\DirectPayment;
 
-use Rakuten\Connector\Enum\Address;
-use Rakuten\Connector\Enum\Category;
-use Rakuten\Connector\Exception\RakutenException;
-use Rakuten\Connector\Helper\StringFormat;
-use Rakuten\Connector\Parser\Error;
-use Rakuten\Connector\Parser\Transaction;
-use Rakuten\Connector\Resource\RakutenPay\Customer;
-use Rakuten\Connector\Resource\RakutenPay\Order;
-use Rakuten\RakutenPay\Helper\Data;
-use Rakuten\RakutenPay\Logger\Logger;
+use GenComm\Enum\Address;
+use GenComm\Enum\Category;
+use GenComm\Exception\GenCommException;
+use GenComm\GenPay;
+use GenComm\Helper\StringFormat;
+use GenComm\Parser\Error;
+use GenComm\Parser\Transaction;
+use GenComm\Resource\GenPay\Customer;
+use GenComm\Resource\GenPay\Order;
+use GenComm\GenPay\Helper\Data;
+use GenComm\GenPay\Logger\Logger;
+use Magento\Directory\Api\CountryInformationAcquirerInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\ObjectManagerInterface;
 
 /**
  * Class PaymentMethod
- * @package Rakuten\RakutenPay\Model\DirectPayment
+ * @package GenComm\GenPay\Model\DirectPayment
  */
 abstract class PaymentMethod
 {
@@ -25,12 +29,12 @@ abstract class PaymentMethod
     protected $checkoutSession;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var ScopeConfigInterface
      */
     protected $scopeConfig;
 
     /**
-     * @var \Magento\Directory\Api\CountryInformationAcquirerInterface
+     * @var CountryInformationAcquirerInterface
      */
     protected $countryInformation;
 
@@ -40,17 +44,17 @@ abstract class PaymentMethod
     protected $order;
 
     /**
-     * @var \Magento\Framework\ObjectManagerInterface
+     * @var ObjectManagerInterface
      */
     protected $objectManager;
 
     /**
-     * @var \Rakuten\RakutenPay\Helper\Data
+     * @var Data
      */
     protected $helper;
 
     /**
-     * @var \Rakuten\Connector\RakutenPay
+     * @var GenPay
      */
     protected $rakutenPay;
 
@@ -70,32 +74,32 @@ abstract class PaymentMethod
     protected $rakutenPayOrder;
 
     /**
-     * @var \Rakuten\Connector\Resource\RakutenPay\PaymentMethod
+     * @var \GenComm\Resource\GenPay\PaymentMethod
      */
     protected $rakutenPayPayment;
 
     /**
-     * @var \Rakuten\RakutenPay\Logger\Logger
+     * @var \GenComm\GenPay\Logger\Logger
      */
     protected $logger;
 
     /**
      * PaymentMethod constructor.
-     * @param \Magento\Directory\Api\CountryInformationAcquirerInterface $countryInformation
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface
-     * @param \Magento\Framework\ObjectManagerInterface $objectManager
+     * @param CountryInformationAcquirerInterface $countryInformation
+     * @param ScopeConfigInterface $scopeConfigInterface
+     * @param ObjectManagerInterface $objectManager
      * @param \Magento\Sales\Model\Order $order
-     * @param \Rakuten\RakutenPay\Helper\Data $helper
+     * @param Data $helper
      * @param Logger $logger
      * @param array $customerPaymentData
      * @throws \Exception
      */
     public function __construct(
-        \Magento\Directory\Api\CountryInformationAcquirerInterface $countryInformation,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
+        CountryInformationAcquirerInterface $countryInformation,
+        ScopeConfigInterface $scopeConfigInterface,
+        ObjectManagerInterface $objectManager,
         \Magento\Sales\Model\Order $order,
-        \Rakuten\RakutenPay\Helper\Data $helper,
+        Data $helper,
         Logger $logger,
         $customerPaymentData = []
     ) {
@@ -112,7 +116,7 @@ abstract class PaymentMethod
     }
 
     /**
-     * @return \Rakuten\Connector\Resource\RakutenPay\PaymentMethod
+     * @return \GenComm\Resource\GenPay\PaymentMethod
      */
     abstract protected function buildPayment();
 
@@ -128,13 +132,13 @@ abstract class PaymentMethod
             $this->rakutenPayCustomer = $this->buildCustomer();
             $this->rakutenPayOrder = $this->buildOrder();
             $this->rakutenPayPayment = $this->buildPayment();
-        } catch (RakutenException $e) {
+        } catch (GenCommException $e) {
             throw $e;
         }
     }
 
     /**
-     * @return \Rakuten\Connector\Parser\RakutenPay\Transaction\Billet|\Rakuten\Connector\Parser\RakutenPay\Transaction\CreditCard|\Rakuten\Connector\Parser\Error|false
+     * @return bool
      */
     protected function createRakutenPayOrder()
     {
@@ -159,7 +163,7 @@ abstract class PaymentMethod
             $this->saveRakutenPayOrder($response);
 
             return $response;
-        } catch (RakutenException $e) {
+        } catch (GenCommException $e) {
             $this->logger->error($e->getMessage(), ['service' => 'Create Order']);
             return false;
         }
@@ -236,7 +240,8 @@ abstract class PaymentMethod
 
     /**
      * @return Order
-     * @throws \Rakuten\Connector\Exception\RakutenException
+     * @throws GenCommException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     protected function buildOrder()
     {
@@ -261,7 +266,7 @@ abstract class PaymentMethod
      * @param Order $order
      * @param array $items
      * @return Order
-     * @throws \Rakuten\Connector\Exception\RakutenException
+     * @throws \GenComm\Exception\GenCommException
      */
     protected function setItems(Order $order, array $items)
     {
@@ -283,7 +288,7 @@ abstract class PaymentMethod
     /**
      * @param $item
      * @return array
-     * @throws \Rakuten\Connector\Exception\RakutenException
+     * @throws GenCommException
      */
     protected function getCategories($item)
     {
@@ -312,7 +317,7 @@ abstract class PaymentMethod
         $resource = $this->objectManager->create('Magento\Framework\App\ResourceConnection');
         $connection = $resource->getConnection();
         try {
-            $tableName = $resource->getTableName(Data::RAKUTENPAY_ORDER);
+            $tableName = $resource->getTableName(Data::GENPAY_ORDER);
             $connection->beginTransaction();
             $connection->insert($tableName, [
                 'entity_id' => $this->order->getEntityId(),
@@ -323,7 +328,7 @@ abstract class PaymentMethod
             ]);
             $connection->commit();
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), ['service' => 'Save RakutenPay Order']);
+            $this->logger->error($e->getMessage(), ['service' => 'Save GenPay Order']);
             $connection->rollBack();
         }
     }

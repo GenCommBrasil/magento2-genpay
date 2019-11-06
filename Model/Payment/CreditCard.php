@@ -1,18 +1,14 @@
 <?php
-namespace Rakuten\RakutenPay\Model\Payment;
+namespace GenComm\GenPay\Model\Payment;
 
-use Rakuten\Connector\RakutenPay;
-use Rakuten\RakutenPay\Enum\PaymentMethod;
+use GenComm\GenPay\Enum\PaymentMethod;
 
 /**
  * Class CreditCard
- * @package Rakuten\RakutenPay\Model\Payment
+ * @package GenComm\GenPay\Model\Payment
  */
 class CreditCard extends \Magento\Payment\Model\Method\Cc
 {
-    const DEFAULT_MINIMUM_VALUE = 10.0;
-    const DEFAULT_INSTALLMENTS = 1;
-
     protected $_canAuthorize = true;
     protected $_canCapture = true;
     protected $_canRefund = true;
@@ -27,7 +23,7 @@ class CreditCard extends \Magento\Payment\Model\Method\Cc
     protected $_countryFactory;
     protected $_supportedCurrencyCodes = ['BRL'];
     protected $_cart;
-    protected $_infoBlockType = '\Rakuten\RakutenPay\Block\Info\CreditCard';
+    protected $_infoBlockType = '\GenComm\GenPay\Block\Info\CreditCard';
     protected $_canUseInternal          		= false;
     protected $_canFetchTransactionInfo 		= true;
 
@@ -37,14 +33,9 @@ class CreditCard extends \Magento\Payment\Model\Method\Cc
     protected $scopeConfig;
 
     /**
-     * @var \Rakuten\RakutenPay\Helper\Data
+     * @var \GenComm\GenPay\Helper\Data
      */
     protected $rakutenHelper;
-
-    /**
-     * @var RakutenPay
-     */
-    protected $rakutenPay;
 
     /**
      * @var array
@@ -76,7 +67,7 @@ class CreditCard extends \Magento\Payment\Model\Method\Cc
      * @param \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate
      * @param \Magento\Directory\Model\CountryFactory $countryFactory
      * @param \Magento\Checkout\Model\Cart $cart
-     * @param \Rakuten\RakutenPay\Helper\Data $rakutenHelper
+     * @param \GenComm\GenPay\Helper\Data $rakutenHelper
      */
     public function __construct(
         \Magento\Framework\Model\Context $context,
@@ -90,7 +81,7 @@ class CreditCard extends \Magento\Payment\Model\Method\Cc
         \Magento\Framework\Stdlib\DateTime\TimezoneInterface $localeDate,
         \Magento\Directory\Model\CountryFactory $countryFactory,
         \Magento\Checkout\Model\Cart $cart,
-        \Rakuten\RakutenPay\Helper\Data $rakutenHelper
+        \GenComm\GenPay\Helper\Data $rakutenHelper
     ) {
         parent::__construct(
             $context,
@@ -136,7 +127,7 @@ class CreditCard extends \Magento\Payment\Model\Method\Cc
      */
     public function getCheckoutPaymentUrl()
     {
-        return $this->_cart->getQuote()->getStore()->getUrl("rakutenpay/payment/request/");
+        return $this->_cart->getQuote()->getStore()->getUrl("genpay/payment/request/");
     }
 
     /**
@@ -145,7 +136,7 @@ class CreditCard extends \Magento\Payment\Model\Method\Cc
      */
     public function getInstallmentUrl()
     {
-        return $this->_cart->getQuote()->getStore()->getUrl("rakutenpay/payment/installment/");
+        return $this->_cart->getQuote()->getStore()->getUrl("genpay/payment/installment/");
     }
 
     /**
