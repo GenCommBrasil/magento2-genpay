@@ -51,7 +51,7 @@ class ValidateCredential extends Field
      */
     public function getAjaxUrl()
     {
-        return $this->getUrl('rakutenpay/system_config/validateCredential');
+        return $this->getUrl('genpay/system_config/validateCredential');
     }
 
     public function getButtonHtml()

@@ -11,10 +11,10 @@ class PaymentMethod
     /**
      * string
      */
-    const BILLET_CODE = 'rakutenpay_billet';
+    const BILLET_CODE = 'genpay_billet';
 
     /**
      * string
      */
-    const CREDIT_CARD_CODE = 'rakutenpay_credit_card';
+    const CREDIT_CARD_CODE = 'genpay_credit_card';
 }
