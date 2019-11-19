@@ -104,7 +104,7 @@ class Request extends \Magento\Framework\App\Action\Action
             'success' => false,
             'payload' => [
                 'error'    => $message,
-                'redirect' => sprintf('%s%s', $this->baseUrl(), 'rakutenpay/payment/failure')
+                'redirect' => sprintf('%s%s', $this->baseUrl(), 'genpay/payment/failure')
             ]
         ]);
     }
@@ -239,7 +239,7 @@ class Request extends \Magento\Framework\App\Action\Action
             $this->logger->error($exception->getMessage());
             $this->cancelOrder($exception->getMessage());
             $this->whenError($exception->getMessage());
-            return $this->_redirect('rakutenpay/payment/failure');
+            return $this->_redirect('genpay/payment/failure');
         }
     }
 }

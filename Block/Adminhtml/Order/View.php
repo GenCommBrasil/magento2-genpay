@@ -16,14 +16,14 @@ class View
     {
         $message = __('You will be redirected to GenPay Dashboard click OK to continue');
         $chargeId = $view->getOrder()->getPayment()->getAdditionalInformation('charge_uuid');
-        $url = 'https://dashboard.rakutenpay.com.br/sales/' . $chargeId;
+        $url = 'https://dashboard.genpay.com.br/sales/' . $chargeId;
 
         if (self::isRakutenPayOrder($view->getOrder())) {
             /** Remove Button Cancel in Order */
             $view->removeButton("order_cancel");
             /** Add GenPay Dashboard Button */
             $view->addButton(
-                'rakutenpay_refund',
+                'genpay_refund',
                 [
                     'label' => __('GenPay Dashboard'),
                     'onclick' => "confirmSetLocation('{$message}', '{$url}')"
