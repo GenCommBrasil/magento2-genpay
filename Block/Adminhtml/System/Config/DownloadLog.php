@@ -54,7 +54,7 @@ class DownloadLog extends Field
      */
     public function getAjaxUrl()
     {
-        return $this->getUrl('rakutenpay/system_config/downloadLog');
+        return $this->getUrl('genpay/system_config/downloadLog');
     }
 
     /**
