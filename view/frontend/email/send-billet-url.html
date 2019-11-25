@@ -1,0 +1,105 @@
+<script>
+    function copyTextToClipboard(text) {
+        var textArea = document.createElement("textarea");
+        textArea.style.position = 'fixed';
+        textArea.style.top = 0;
+        textArea.style.left = 0;
+        // Ensure it has a small width and height. Setting to 1px / 1em
+        // doesn't work as this gives a negative w/h on some browsers.
+        textArea.style.width = '2em';
+        textArea.style.height = '2em';
+        // We don't need padding, reducing the size if it does flash render.
+        textArea.style.padding = 0;
+        // Clean up any borders.
+        textArea.style.border = 'none';
+        textArea.style.outline = 'none';
+        textArea.style.boxShadow = 'none';
+        // Avoid flash of white box if rendered for any reason.
+        textArea.style.background = 'transparent';
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            var successful = document.execCommand('copy');
+            var msg = successful ? '*Link copiado com sucesso.' : '*Erro ao copiar link.';
+        } catch (err) {
+            console.log(msg);
+        }
+        document.body.removeChild(textArea);
+    }
+    window.addEventListener('load', function() {
+        function modal() {
+            show();
+        }
+        function show() {
+            var modal = document.querySelector('.modal');
+            modal.classList.remove('hide');
+            modal.classList.add('show-modal');
+        }
+        function hide() {
+            var modal = document.querySelector('.modal');
+            modal.classList.remove('show-modal');
+            modal.classList.add('hide');
+        }
+        var content = document.querySelector('.modal');
+        var button = document.getElementById('botao');
+        var close = document.getElementById('close');
+        content.onclick = function() {
+            hide();
+        };
+        button.onclick = function() {
+            modal();
+        };
+        close.onclick = function() {
+            hide();
+        }
+    });
+</script>
+
+<!--@subject {{trans "Link de pagamento do Boleto"}}  @-->
+{{template config_path="design/email/header_template"}}
+
+<table>
+    <tr class="email-intro">
+        <td>
+            <p class="greeting">{{trans "%customer_name," customer_name=$order.getCustomerName()}}</p>
+            <p>
+                {{trans "Thank you for your order from %store_name." store_name=$store.getFrontendName()}}
+                {{trans "We are sending the link for payment of Billet."}}
+                {{trans 'You can check the status of your order by <a href="%account_url">logging into your account</a>.' account_url=$this.getUrl($store,'customer/account/',[_nosid:1]) |raw}}
+            </p>
+            <p>
+                {{trans 'If you have questions about your order, you can email us at <a href="mailto:%store_email">%store_email</a>' store_email=$store_email |raw}}{{depend store_phone}} {{trans ' or call us at <a href="tel:%store_phone">%store_phone</a>' store_phone=$store_phone |raw}}{{/depend}}.
+                {{depend store_hours}}
+                {{trans 'Our hours are <span class="no-link">%store_hours</span>.' store_hours=$store_hours |raw}}
+                {{/depend}}
+            </p>
+        </td>
+    </tr>
+    <tr class="email-summary">
+        <td>
+            <h1>{{trans 'Your Order <span class="no-link">#%increment_id</span>' increment_id=$order.increment_id |raw}}</h1>
+            <p>{{trans 'Placed on <span class="no-link">%created_at</span>' created_at=$order.getCreatedAtFormatted(2) |raw}}</p>
+        </td>
+    </tr>
+    <tr class="email-information">
+        <td>
+            <table class="order-details">
+                <tr>
+                    <td class="method-info">
+                        <h3>{{trans "Payment Method"}}</h3>
+                        <p>{{trans '%paymentMethodTitle' paymentMethodTitle=$paymentMethodTitle}}</p>
+                        <p>
+                            {{trans '<a href="%billetUrl" class="primary action">Visualizar Boleto</a>' billetUrl=$billetUrl |raw}}
+                            {{trans '<button class="primary action" onclick="copyTextToClipboard('%billetUrl')">Copiar Link do Boleto</button>' billetUrl=$billetUrl |raw}}
+                        </p>
+                    </td>
+                </tr>
+            </table>
+            {{layout handle="sales_email_order_items" order=$order area="frontend"}}
+        </td>
+    </tr>
+</table>
+
+{{template config_path="design/email/footer_template"}}
+
