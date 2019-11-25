@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
+    <template id="genpay_send_billet_url" label="Boleto para Pagamento" file="send-billet-url.html" type="html" module="GenComm_GenPay" area="frontend"/>
+</config>

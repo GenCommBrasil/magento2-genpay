@@ -3,6 +3,7 @@
 namespace GenComm\GenPay\Controller\Payment;
 
 use GenComm\Exception\GenCommException;
+use GenComm\GenPay\Helper\Email;
 use GenComm\Parser\Error;
 use GenComm\GenPay\Enum\DirectPayment\CodeError;
 use GenComm\GenPay\Enum\DirectPayment\Message;
@@ -45,20 +46,30 @@ class Request extends \Magento\Framework\App\Action\Action
     protected $rakutenHelper;
 
     /**
+     * @var Email
+     */
+    protected $email;
+
+    /**
      * @var \GenComm\GenPay\Logger\Logger
      */
     protected $logger;
 
     /**
      * Request constructor.
-     *
      * @param \Magento\Framework\App\Action\Context $context
+     * @param \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory
+     * @param \GenComm\GenPay\Helper\Data $rakutenHelper
+     * @param \Magento\Checkout\Model\Session $session
+     * @param Email $email
+     * @param Logger $logger
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Framework\Controller\Result\JsonFactory $resultJsonFactory,
         \GenComm\GenPay\Helper\Data $rakutenHelper,
         \Magento\Checkout\Model\Session $session,
+        Email $email,
         Logger $logger
     ) {
         parent::__construct($context);
@@ -66,6 +77,7 @@ class Request extends \Magento\Framework\App\Action\Action
         $this->result = $this->resultJsonFactory->create();
         $this->rakutenHelper = $rakutenHelper;
         $this->checkoutSession = $session;
+        $this->email = $email;
         $this->logger = $logger;
     }
 
@@ -181,6 +193,7 @@ class Request extends \Magento\Framework\App\Action\Action
                         $this->_objectManager,
                         $this->order,
                         $this->rakutenHelper,
+                        $this->email,
                         $this->logger,
                         $customerPaymentData
                     );

@@ -3,6 +3,7 @@
 namespace GenComm\GenPay\Model\DirectPayment;
 
 use GenComm\GenPay\Helper\Data;
+use GenComm\GenPay\Helper\Email;
 use GenComm\Helper\StringFormat;
 use GenComm\Parser\Error;
 use GenComm\Parser\GenPay\Transaction\Billet;
@@ -19,12 +20,18 @@ use Magento\Sales\Model\Order;
 class BilletMethod extends PaymentMethod implements Payment
 {
     /**
+     * @var Email
+     */
+    protected $email;
+
+    /**
      * BilletMethod constructor.
      * @param CountryInformationAcquirerInterface $countryInformation
      * @param ScopeConfigInterface $scopeConfigInterface
      * @param ObjectManagerInterface $objectManager
      * @param Order $order
      * @param Data $helper
+     * @param Email $email
      * @param Logger $logger
      * @param array $customerPaymentData
      * @throws \Exception
@@ -35,6 +42,7 @@ class BilletMethod extends PaymentMethod implements Payment
         ObjectManagerInterface $objectManager,
         Order $order,
         Data $helper,
+        Email $email,
         Logger $logger,
         $customerPaymentData = []
     ) {
@@ -47,6 +55,7 @@ class BilletMethod extends PaymentMethod implements Payment
             $logger,
             $customerPaymentData
         );
+        $this->email = $email;
         $this->logger = $logger;
         $this->logger->info("Processing construct in BilletMethod.");
     }
@@ -89,6 +98,7 @@ class BilletMethod extends PaymentMethod implements Payment
 
         if ($response instanceof Billet) {
             $this->setAdditionInformation($response);
+            $this->sendEmail($response);
         }
 
         return $response;
@@ -109,5 +119,15 @@ class BilletMethod extends PaymentMethod implements Payment
         $this->order->getPayment()->setAdditionalInformation('api_key', $this->helper->getApiKey());
         $this->order->getPayment()->setAdditionalInformation('signature', $this->helper->getSignature());
         $this->order->save();
+    }
+
+    /**
+     * @param Billet $billet
+     * @throws \Exception
+     */
+    protected function sendEmail(Billet $billet)
+    {
+        $this->logger->info("Processing sendEmail in BilletMethod.");
+        $this->email->sendBilletEmail($this->order, $billet);
     }
 }
