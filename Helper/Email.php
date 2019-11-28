@@ -48,7 +48,6 @@ class Email extends AbstractHelper
     {
         $this->logger->info("Processing sendBilletEmail");
         $this->emailTransportBuilder->addTo($order->getCustomerEmail(), $order->getCustomerName());
-        $this->emailTransportBuilder->setFrom('general');
         $this->emailTransportBuilder->setTemplateIdentifier('genpay_send_billet_url');
         $this->emailTransportBuilder->setTemplateOptions(
             [
@@ -56,7 +55,14 @@ class Email extends AbstractHelper
                 'store' => $order->getStoreId()
             ]
         );
-
+        $fromName = $this->scopeConfig->getValue('trans_email/ident_sales/name', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $fromEmail = $this->scopeConfig->getValue('trans_email/ident_sales/email', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $this->logger->info(sprintf("Sender: %s <%s>", $fromName, $fromEmail));
+        $this->logger->info(sprintf("Order: %s - Billet URL: %s", $order->getIncrementId(), $billet->getBilletUrl()));
+        $this->emailTransportBuilder->setFromByScope([
+            'name' => $fromName,
+            'email' => $fromEmail,
+        ]);
         $vars = [
             'order' => $order,
             'paymentMethodTitle' => $this->getPaymentMethodTitle(),
@@ -76,6 +82,5 @@ class Email extends AbstractHelper
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
     }
-
-
 }
+
