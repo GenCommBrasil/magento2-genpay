@@ -257,7 +257,7 @@ abstract class PaymentMethod
             ->setDiscountAmount($this->formatDiscountAmount($this->order->getDiscountAmount()))
             ->setShippingAmount($this->order->getShippingAmount())
             ->setTaxesAmount($this->order->getTaxAmount());
-        $order = $this->setItems($order, $this->order->getAllVisibleItems());
+        $order = $this->setItems($order, $this->order->getAllItems());
 
         return $order;
     }
@@ -294,17 +294,21 @@ abstract class PaymentMethod
     {
         $this->logger->info("Processing getCategories.");
         $categories = [];
-        $product = $this->objectManager->get('Magento\Catalog\Model\Product')->load($item->getProductId());
-        foreach ($product->getCategoryIds() as $id) {
-            $category = $this->objectManager->get('Magento\Catalog\Model\Category')->load($id);
-            $categories[] = Category::getCategory($id, $category->getName());
+        $product = $this->objectManager->create('Magento\Catalog\Model\Product')->load($item->getProductId());
+        $this->logger->info(var_export($product->getCategoryIds(), true) . " Categories Ids.");
+        foreach ($product->getCategoryIds() as $categoryId) {
+            $category = $this->objectManager->create('Magento\Catalog\Model\Category')->load($categoryId);
+            $categories[] = Category::getCategory($categoryId, $category->getName());
         }
 
         if (count($categories)) {
             return $categories;
         }
 
-        return Category::getDefaultCategory();
+        $this->logger->info("Return default category");
+        return [
+            Category::getDefaultCategory()
+        ];
     }
 
     /**

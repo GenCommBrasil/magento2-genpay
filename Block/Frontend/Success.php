@@ -71,4 +71,14 @@ class Success extends \Magento\Framework\View\Element\Template
 
         return  $additionalInformation['billet_url'];
     }
+
+    /**
+     * @return string
+     */
+    public function getBilletDisplay()
+    {
+        $billetDisplay = $this->_scopeConfig->getValue('payment/genpay_billet/billet_display', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
+        return $billetDisplay;
+    }
 }

@@ -9,7 +9,7 @@
 "Installment and interest","Parcelamento e taxas de juros"
 "Enable installment","Listar Parcelamento"
 "Enable customer interest","Ativar Juros Comprador"
-"Minimum value of interest installment","Mínimo de parcelas para juros comprador"
+"Minimum value of interest installment","Quantidade Mínima para parcelas sem juros."
 "Minimum value of installment","Valor mínimo de parcela"
 "Maximum value of installment quantity","Quantidade Máxima de parcelas"
 "Module version","Versão do módulo"
@@ -53,3 +53,7 @@
 "Complement","Complemento"
 "Neighborhood","Bairro"
 "We are sending the link for payment of Billet.","Estamos enviando o link para o pagamento do Boleto."
+"Choose a way to display the success slip page.","Escolha uma forma para exibir boleto na página de sucesso."
+"New Tab","Nova Aba"
+"Redirect","Redirecionamento"
+
