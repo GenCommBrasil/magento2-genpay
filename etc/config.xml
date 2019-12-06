@@ -21,6 +21,7 @@
                 <active>0</active>
                 <model>GenComm\GenPay\Model\Payment\Billet</model>
                 <title>GenPay Boleto Bancário</title>
+                <display_billet>redirect</display_billet>
                 <expiration>3</expiration>
                 <instruction><![CDATA[Imprima o boleto e pague no banco ou na internet utilizando o seu código de barras. O boleto não será enviado ao seu endereço. Não parcelamos no boleto.]]></instruction>
             </genpay_billet>
